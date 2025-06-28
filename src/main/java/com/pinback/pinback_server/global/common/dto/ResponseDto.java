@@ -25,6 +25,10 @@ public class ResponseDto<T> {
 		return new ResponseDto<>(exceptionCode.getCode(), exceptionCode.getMessage(), null);
 	}
 
+	public static <T> ResponseDto<T> of(ExceptionCode exceptionCode, String message) {
+		return new ResponseDto<>(exceptionCode.getCode(), message, null);
+	}
+
 	public static <T> ResponseDto<T> ok(T data) {
 		return of(SuccessCode.OK, data);
 	}
