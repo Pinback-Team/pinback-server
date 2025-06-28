@@ -2,6 +2,7 @@ package com.pinback.pinback_server.global.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.pinback.pinback_server.global.common.constant.SuccessCode;
+import com.pinback.pinback_server.global.exception.constant.ExceptionCode;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,6 +19,10 @@ public class ResponseDto<T> {
 
 	public static <T> ResponseDto<T> of(SuccessCode successCode, T data) {
 		return new ResponseDto<>(successCode.getCode(), successCode.getMessage(), data);
+	}
+
+	public static <T> ResponseDto<T> of(ExceptionCode exceptionCode) {
+		return new ResponseDto<>(exceptionCode.getCode(), exceptionCode.getMessage(), null);
 	}
 
 	public static <T> ResponseDto<T> ok(T data) {
