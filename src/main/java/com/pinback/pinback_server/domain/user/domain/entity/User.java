@@ -1,6 +1,8 @@
 package com.pinback.pinback_server.domain.user.domain.entity;
 
-import com.google.type.DateTime;
+import java.time.LocalTime;
+import java.util.UUID;
+
 import com.pinback.pinback_server.global.entity.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -24,15 +26,15 @@ public class User extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	@Column(name = "user_id")
-	private Long id;
+	private UUID id;
 
 	@Column(name = "remind_default", nullable = false)
-	private DateTime remindDefault;
+	private LocalTime remindDefault;
 
 	@Column(name = "acorn_count", nullable = false)
 	private Long acornCount;
 
-	public static User create(DateTime remindDefault) {
+	public static User create(LocalTime remindDefault) {
 		return User.builder()
 			.remindDefault(remindDefault)
 			.acornCount(0L)
