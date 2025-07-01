@@ -28,6 +28,7 @@ public class PushSubscription extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "push_subscription_id", nullable = false, unique = true, length = 512)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
