@@ -16,8 +16,10 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+@Getter
 @Entity
 @Table(name = "article")
 @Builder(access = AccessLevel.PROTECTED)
@@ -54,5 +56,9 @@ public class Article extends BaseEntity {
 			.category(category)
 			.isRead(false)
 			.build();
+	}
+
+	public boolean isRead() {
+		return isRead;
 	}
 }
