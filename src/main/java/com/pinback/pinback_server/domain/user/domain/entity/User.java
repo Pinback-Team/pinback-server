@@ -28,6 +28,9 @@ public class User extends BaseEntity {
 	@Column(name = "user_id")
 	private UUID id;
 
+	@Column(name = "email", nullable = false, unique = true)
+	private String email;
+
 	@Column(name = "remind_default", nullable = false)
 	private LocalTime remindDefault;
 
