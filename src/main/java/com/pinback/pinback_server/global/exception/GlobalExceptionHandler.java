@@ -12,6 +12,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import com.pinback.pinback_server.global.common.dto.ResponseDto;
 import com.pinback.pinback_server.global.exception.constant.ExceptionCode;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -39,6 +42,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ResponseDto<Void>> handleException(Exception e) {
+		log.info(e.getMessage());
 		return ResponseEntity
 			.status(ExceptionCode.INTERNAL_SERVER_ERROR.getStatus())
 			.body(ResponseDto.of(ExceptionCode.INTERNAL_SERVER_ERROR));

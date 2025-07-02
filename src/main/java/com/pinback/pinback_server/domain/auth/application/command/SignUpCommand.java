@@ -6,4 +6,7 @@ public record SignUpCommand(
 	String email,
 	LocalTime remindDefault
 ) {
+	public static SignUpCommand of(String email, LocalTime remindDefault) {
+		return new SignUpCommand(email, remindDefault);
+	}
 }
