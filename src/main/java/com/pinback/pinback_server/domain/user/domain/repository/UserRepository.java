@@ -9,4 +9,6 @@ import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
+
+	boolean existsUserByEmail(String email);
 }
