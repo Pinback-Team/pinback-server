@@ -39,8 +39,9 @@ public class User extends BaseEntity {
 	@Column(name = "acorn_count", nullable = false)
 	private Long acornCount;
 
-	public static User create(LocalTime remindDefault) {
+	public static User create(String email, LocalTime remindDefault) {
 		return User.builder()
+			.email(email)
 			.remindDefault(remindDefault)
 			.acornCount(0L)
 			.build();
