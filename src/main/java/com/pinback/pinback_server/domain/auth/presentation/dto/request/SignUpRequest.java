@@ -13,8 +13,8 @@ public record SignUpRequest(
 	@NotBlank(message = "이메일은 비어있을 수 없습니다.")
 	String email,
 
-	@Schema(description = "기본 알림 시간", example = "08:30:00", pattern = "HH:mm:ss")
-	@JsonFormat(pattern = "HH:mm:ss")
+	@Schema(description = "기본 알림 시간", example = "08:30", pattern = "HH:mm")
+	@JsonFormat(pattern = "HH:mm")
 	@NotNull(message = "리마인드 시간은 비어있을 수 없습니다.")
 	LocalTime remindDefault
 ) {
