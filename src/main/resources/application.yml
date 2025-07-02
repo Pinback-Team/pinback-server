@@ -8,8 +8,18 @@ spring:
     hibernate:
       ddl-auto: ${DDL_AUTO}
     show-sql: ${SHOW_SQL:false}
+
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration
+
 springdoc:
   swagger-ui:
     path: /docs
   api-docs:
     path: /v3/api-docs
+
+jwt:
+  secret-key: ${SECRET_KEY}
+  accessExpirationPeriod: ${EXPIRATION_PERIOD}
+  issuer: ${ISSUER}
