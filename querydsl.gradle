@@ -14,7 +14,7 @@ sourceSets {
 
 tasks.named("clean") {
     doLast {
-        delete file(querydslDir)
+        delete file(querydslSrcDir)
     }
 }
 
