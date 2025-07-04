@@ -10,11 +10,10 @@ public enum ExceptionCode {
 	//400
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "c40000", "잘못된 요청입니다."),
 
-	//401
-	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "c40100", "인증되지 않은 사용자 입니다"),
-
 	//403
-	TOKEN_EXPIRED(HttpStatus.FORBIDDEN, "40400", "만료된 토큰입니다."),
+	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "40101", "유효하지 않은 토큰입니다."),
+	EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "40102", "만료된 토큰입니다."),
+	EMPTY_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "토큰이 비어있습니다."),
 
 	//404
 	NOT_FOUND(HttpStatus.NOT_FOUND, "c40400", "리소스가 존재하지 않습니다."),
