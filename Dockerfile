@@ -8,7 +8,7 @@ RUN ./gradlew clean build -x test
 
 FROM openjdk:21-jre-slim
 
-COPY --from=builder /app/build/libs/pinback-server-0.0.1-SNAPSHOT.jar /pinback.jar
+COPY --from=builder /app/build/libs/*.jar /pinback.jar
 
 EXPOSE 8080
 
