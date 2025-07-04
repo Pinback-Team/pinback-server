@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 
@@ -22,6 +23,7 @@ public class SwaggerConfig {
 				.version("v1.0.0"))
 			.servers(List.of(
 				new Server().url("http://localhost:8080").description("개발 서버")))
+			.addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
 			.components(new Components()
 				.addSecuritySchemes("Bearer Authentication",
 					new SecurityScheme()
