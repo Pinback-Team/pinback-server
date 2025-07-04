@@ -93,18 +93,16 @@ jobs:
             docker stop pinback-server-container || true
             docker rm pinback-server-container || true
             
-            # 3) 새로운 컨테이너 실행
+            # 3) 환경 변수 경로
+            ENV_FILE_PATH="${HOME}/pinback/pinback.env"
+            
+            # 4) 새로운 컨테이너 실행
             docker run -d \
               --name pinback-server-container \
               -p 8080:8080 \
-              -e DATABASE_URL="${{ secrets.DATABASE_URL }}" \
-              -e DB_USERNAME="${{ secrets.DB_USERNAME }}" \
-              -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-              -e DB_DRIVER="${{ secrets.DB_DRIVER }}" \
-              -e DDL_AUTO="validate" \
-              -e SHOW_SQL="false" \
+              --env-file "$ENV_FILE_PATH" \
               ${{ secrets.DOCKER_USERNAME }}/pinback:latest
             
-            # 4) 필요 시 사용 안 하는 이미지 정리
+            # 5) 필요 시 사용 안 하는 이미지 정리
             docker image prune -f
 
