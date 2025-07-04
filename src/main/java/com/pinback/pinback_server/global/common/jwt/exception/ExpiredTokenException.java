@@ -5,6 +5,6 @@ import com.pinback.pinback_server.global.exception.constant.ExceptionCode;
 
 public class ExpiredTokenException extends ApplicationException {
 	public ExpiredTokenException() {
-		super(ExceptionCode.TOKEN_EXPIRED);
+		super(ExceptionCode.EXPIRED_TOKEN);
 	}
 }

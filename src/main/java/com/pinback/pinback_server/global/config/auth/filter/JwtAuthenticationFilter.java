@@ -1,5 +1,7 @@
 package com.pinback.pinback_server.global.config.auth.filter;
 
+import static com.pinback.pinback_server.global.exception.constant.ExceptionCode.*;
+
 import java.io.IOException;
 import java.util.UUID;
 
@@ -25,7 +27,6 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
 	private static final String AUTHORIZATION_HEADER = "Authorization";
 
 	private final JwtUtil jwtUtil;
@@ -34,32 +35,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
 
-		String token = jwtUtil.extractToken(request.getHeader(AUTHORIZATION_HEADER));
+		String token = request.getHeader(AUTHORIZATION_HEADER);
+
+		if (!StringUtils.hasText(token)) {
+			handleTokenException(response, EMPTY_TOKEN.getMessage(), EMPTY_TOKEN.getStatus().value(),
+				EMPTY_TOKEN.getCode());
+			return;
+		}
+
+		String extractToken = jwtUtil.extractToken(token);
 
 		if (StringUtils.hasText(token)) {
 			try {
-				UUID userId = jwtUtil.extractId(token);
+				UUID userId = jwtUtil.extractId(extractToken);
 
 				Authentication authentication = new UsernamePasswordAuthenticationToken(
 					userId, null, null);
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 
-				log.debug("JWT 인증 성공: userId = {}", userId);
-
 			} catch (ExpiredTokenException e) {
 				log.warn("만료된 토큰: {}", token);
-				handleTokenException(response, "만료된 토큰입니다.", 401);
+				handleTokenException(response, EXPIRED_TOKEN.getMessage(), EXPIRED_TOKEN.getStatus().value(),
+					EXPIRED_TOKEN.getCode());
 				return;
 
 			} catch (InvalidTokenException e) {
 				log.warn("유효하지 않은 토큰: {}", token);
-				handleTokenException(response, "유효하지 않은 토큰입니다.", 401);
+				handleTokenException(response, INVALID_TOKEN.getMessage(), INVALID_TOKEN.getStatus().value(),
+					INVALID_TOKEN.getCode());
 				return;
 
 			} catch (Exception e) {
 				log.error("토큰 처리 중 오류 발생", e);
-				handleTokenException(response, "토큰 처리 중 오류가 발생했습니다.", 500);
+				handleTokenException(response, INTERNAL_SERVER_ERROR.getMessage(),
+					INTERNAL_SERVER_ERROR.getStatus().value(), INTERNAL_SERVER_ERROR.getCode());
 				return;
 			}
 		}
@@ -70,12 +80,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	/**
 	 * 토큰 예외 처리
 	 */
-	private void handleTokenException(HttpServletResponse response, String message, int status)
+	private void handleTokenException(HttpServletResponse response, String message, int status, String code)
 		throws IOException {
 		response.setStatus(status);
 		response.setContentType("application/json;charset=UTF-8");
 		response.getWriter().write(
-			String.format("{\"error\": \"%s\", \"status\": %d}", message, status)
+			String.format("{\"code\": \"%s\", \"message\": \"%s\"}", code, message)
 		);
 	}
 
@@ -83,11 +93,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String path = request.getRequestURI();
 
-		return path.startsWith("/api/v1/auth/signup") ||
-			path.startsWith("/api/public/") ||
-			path.equals("/health") ||
-			path.startsWith("/swagger") ||
-			path.startsWith("/v3/api-docs") ||
-			path.startsWith("/docs");
+		return
+			path.startsWith("/api/v1/auth/signup") ||
+				path.startsWith("/api/public/") ||
+				path.equals("/health") ||
+				path.startsWith("/swagger") ||
+				path.startsWith("/v3/api-docs") ||
+				path.startsWith("/docs");
 	}
 }

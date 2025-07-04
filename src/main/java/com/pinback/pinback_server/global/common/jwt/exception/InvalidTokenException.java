@@ -5,6 +5,6 @@ import com.pinback.pinback_server.global.exception.constant.ExceptionCode;
 
 public class InvalidTokenException extends ApplicationException {
 	public InvalidTokenException() {
-		super(ExceptionCode.UNAUTHORIZED);
+		super(ExceptionCode.INVALID_TOKEN);
 	}
 }
