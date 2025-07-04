@@ -28,6 +28,7 @@ class JwtUtilTest {
 		//given
 		UUID userId = UUID.randomUUID();
 		String token = jwtProvider.createAccessToken(userId);
+
 		//when
 		UUID extractedId = jwtUtil.extractId(token);
 		//then
