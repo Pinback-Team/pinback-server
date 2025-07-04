@@ -10,8 +10,15 @@ public enum ExceptionCode {
 	//400
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "c40000", "잘못된 요청입니다."),
 
+	//401
+	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "c40100", "인증되지 않은 사용자 입니다"),
+
+	//403
+	TOKEN_EXPIRED(HttpStatus.FORBIDDEN, "40400", "만료된 토큰입니다."),
+
 	//404
 	NOT_FOUND(HttpStatus.NOT_FOUND, "c40400", "리소스가 존재하지 않습니다."),
+	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "c40400", "사용자가 존재하지 않습니다."),
 
 	//405
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "c40500", "잘못된 HTTP method 요청입니다."),
