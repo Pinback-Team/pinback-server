@@ -13,3 +13,7 @@ springdoc:
     path: /docs
   api-docs:
     path: /v3/api-docs
+jwt:
+  secret-key: ${SECRET_KEY}
+  accessExpirationPeriod: ${ACCESS_EXPIRATION_PERIOD}
+  issuer: ${ISSUER}
