@@ -23,7 +23,7 @@ public class SwaggerConfig {
 			.servers(List.of(
 				new Server().url("http://localhost:8080").description("개발 서버")))
 			.components(new Components()
-				.addSecuritySchemes("bearerAuth",
+				.addSecuritySchemes("Bearer Authentication",
 					new SecurityScheme()
 						.type(SecurityScheme.Type.HTTP)
 						.scheme("bearer")
