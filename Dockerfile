@@ -6,7 +6,7 @@ COPY . .
 
 RUN ./gradlew clean build -x test
 
-FROM openjdk:21-jre-slim
+FROM openjdk:21-jdk-slim AS runtime
 
 COPY --from=builder /app/build/libs/*.jar /pinback.jar
 
