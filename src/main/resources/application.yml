@@ -15,5 +15,5 @@ springdoc:
     path: /v3/api-docs
 jwt:
   secret-key: ${SECRET_KEY}
-  accessExpirationPeriod: ${ACCESS_EXPIRATION_PERIOD}
+  accessExpirationPeriod: ${EXPIRATION_PERIOD}
   issuer: ${ISSUER}
