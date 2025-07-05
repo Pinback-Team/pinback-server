@@ -16,6 +16,7 @@ import com.pinback.pinback_server.domain.auth.application.command.SignUpCommand;
 import com.pinback.pinback_server.domain.auth.presentation.dto.response.SignUpResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.repository.UserRepository;
+import com.pinback.pinback_server.global.common.jwt.JwtUtil;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -28,9 +29,12 @@ class AuthUsecaseTest {
 	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
+	private JwtUtil jwtUtil;
+
 	@DisplayName("사용자는 회원가입을 할 수 있다.")
 	@Test
-	void test() {
+	void signupTest() {
 		//given
 		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0));
 		//when
@@ -41,7 +45,20 @@ class AuthUsecaseTest {
 		assertThat(users).hasSize(1);
 		assertThat(users.get(0).getEmail()).isEqualTo(command.email());
 		assertThat(users.get(0).getRemindDefault()).isEqualTo(command.remindDefault());
-		assertThat(response.token()).isNotBlank();
 
 	}
+
+	@DisplayName("사용자는 회원가입 시 정상적인 토큰을 발급받는다")
+	@Test
+	void getValidToken() {
+		//given
+		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0));
+		//when
+		SignUpResponse response = authUsecase.signUp(command);
+
+		//then
+		List<User> users = userRepository.findAll();
+		assertThat(jwtUtil.extractId(response.token())).isEqualTo(users.get(0).getId());
+	}
+
 }
