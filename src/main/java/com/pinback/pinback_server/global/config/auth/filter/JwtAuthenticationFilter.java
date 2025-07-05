@@ -45,33 +45,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		String extractToken = jwtUtil.extractToken(token);
 
-		if (StringUtils.hasText(token)) {
-			try {
-				UUID userId = jwtUtil.extractId(extractToken);
+		try {
+			UUID userId = jwtUtil.extractId(extractToken);
 
-				Authentication authentication = new UsernamePasswordAuthenticationToken(
-					userId, null, null);
+			Authentication authentication = new UsernamePasswordAuthenticationToken(
+				userId, null, null);
 
-				SecurityContextHolder.getContext().setAuthentication(authentication);
+			SecurityContextHolder.getContext().setAuthentication(authentication);
 
-			} catch (ExpiredTokenException e) {
-				log.warn("만료된 토큰: {}", token);
-				handleTokenException(response, EXPIRED_TOKEN.getMessage(), EXPIRED_TOKEN.getStatus().value(),
-					EXPIRED_TOKEN.getCode());
-				return;
+		} catch (ExpiredTokenException e) {
+			log.warn("만료된 토큰: {}", token);
+			handleTokenException(response, EXPIRED_TOKEN.getMessage(), EXPIRED_TOKEN.getStatus().value(),
+				EXPIRED_TOKEN.getCode());
+			return;
 
-			} catch (InvalidTokenException e) {
-				log.warn("유효하지 않은 토큰: {}", token);
-				handleTokenException(response, INVALID_TOKEN.getMessage(), INVALID_TOKEN.getStatus().value(),
-					INVALID_TOKEN.getCode());
-				return;
+		} catch (InvalidTokenException e) {
+			log.warn("유효하지 않은 토큰: {}", token);
+			handleTokenException(response, INVALID_TOKEN.getMessage(), INVALID_TOKEN.getStatus().value(),
+				INVALID_TOKEN.getCode());
+			return;
 
-			} catch (Exception e) {
-				log.error("토큰 처리 중 오류 발생", e);
-				handleTokenException(response, INTERNAL_SERVER_ERROR.getMessage(),
-					INTERNAL_SERVER_ERROR.getStatus().value(), INTERNAL_SERVER_ERROR.getCode());
-				return;
-			}
+		} catch (Exception e) {
+			log.error("토큰 처리 중 오류 발생", e);
+			handleTokenException(response, INTERNAL_SERVER_ERROR.getMessage(),
+				INTERNAL_SERVER_ERROR.getStatus().value(), INTERNAL_SERVER_ERROR.getCode());
+			return;
 		}
 
 		filterChain.doFilter(request, response);
