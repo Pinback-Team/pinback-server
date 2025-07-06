@@ -19,7 +19,9 @@ public class CorsConfig {
 		configuration.setAllowedOriginPatterns(List.of(
 			"http://localhost:3000",
 			"http://localhost:3001",
-			"chrome-extension://*"
+			"chrome-extension://*",
+			"https://localhost:3000",
+			"https://localhost:3001"
 		));
 
 		configuration.setAllowedMethods(Arrays.asList(
