@@ -11,4 +11,6 @@ import com.pinback.pinback_server.domain.user.domain.entity.User;
 @Repository
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 	Optional<Category> findByIdAndUser(long categoryId, User user);
+
+	boolean existsByNameAndUser(String categoryName, User user);
 }
