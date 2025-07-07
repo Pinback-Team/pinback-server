@@ -26,6 +26,7 @@ public enum ExceptionCode {
 	//409
 	DUPLICATE(HttpStatus.CONFLICT, "c40900", "이미 존재하는 리소스입니다."),
 	USER_ALREADY_EXIST(HttpStatus.CONFLICT, "c40901", "이미 존재하는 사용자입니다."),
+	ARTICLE_ALREADY_EXIST(HttpStatus.CONFLICT, "c40902", "이미 저장한 url 입니다."),
 
 	//500
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50000", "서버 내부 오류가 발생했습니다.");
