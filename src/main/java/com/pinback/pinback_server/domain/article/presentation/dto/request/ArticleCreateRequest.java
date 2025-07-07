@@ -13,10 +13,9 @@ public record ArticleCreateRequest(
 
 	@NotNull(message = "카테고리 ID는 비어있을 수 없습니다.")
 	Long categoryId,
-	
+
 	String memo,
 
-	@NotNull(message = "리마인드 날짜는 비어있을 수 없습니다.")
 	LocalDateTime remindTime
 ) {
 	public ArticleCreateCommand toCommand() {
