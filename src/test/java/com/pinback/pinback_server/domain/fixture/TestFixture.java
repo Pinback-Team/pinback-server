@@ -11,6 +11,10 @@ public class TestFixture {
 		return User.create("testUser@gmail.com", LocalTime.of(12, 0, 0));
 	}
 
+	public static User userWithEmail(String email) {
+		return User.create(email, LocalTime.of(12, 0, 0));
+	}
+
 	public static Category category(User user) {
 		return Category.create("테스트카테고리", user);
 	}
