@@ -52,5 +52,4 @@ class ArticleManagementUsecaseTest {
 		Assertions.assertThat(article.getCategory()).isEqualTo(category);
 		Assertions.assertThat(article.getIsRead()).isFalse();
 	}
-
 }
