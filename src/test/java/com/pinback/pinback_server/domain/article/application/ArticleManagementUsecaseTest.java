@@ -17,6 +17,7 @@ import com.pinback.pinback_server.domain.article.application.command.ArticleCrea
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.ArticleRepository;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.CategoryRepository;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -52,6 +53,7 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 		assertThat(article.getUrl()).isEqualTo(command.url());
 		assertThat(article.getMemo()).isEqualTo(command.memo());
 		assertThat(article.getCategory()).isEqualTo(category);
+		assertThat(article.getRemindAt()).isEqualTo(command.remindTime());
 		assertThat(article.getIsRead()).isFalse();
 	}
 
@@ -69,4 +71,24 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 			.isInstanceOf(ArticleAlreadyExistException.class);
 
 	}
+
+	@DisplayName("사용자는 아티클의 상세정보를 조회할 수 있다.")
+	@Test
+	void getArticleDetail() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		Article article = articleRepository.save(articleWithCategory(user, category));
+		//when
+
+		ArticleDetailResponse response = articleManagementUsecase.getArticleDetail(article.getId());
+
+		//then
+		assertThat(response.url()).isEqualTo(article.getUrl());
+		assertThat(response.memo()).isEqualTo(article.getMemo());
+		assertThat(response.category().categoryId()).isEqualTo(article.getCategory().getId());
+		assertThat(response.category().categoryName()).isEqualTo(article.getCategory().getName());
+		assertThat(response.remindAt()).isEqualTo(article.getRemindAt());
+	}
+
 }

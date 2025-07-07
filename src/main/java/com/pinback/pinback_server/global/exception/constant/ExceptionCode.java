@@ -19,6 +19,7 @@ public enum ExceptionCode {
 	NOT_FOUND(HttpStatus.NOT_FOUND, "c40400", "리소스가 존재하지 않습니다."),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "c40401", "사용자가 존재하지 않습니다."),
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "c40402", "카테고리가 존재하지 않습니다."),
+	ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "c40403", "아티클이 존재하지 않습니다."),
 
 	//405
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "c40500", "잘못된 HTTP method 요청입니다."),
