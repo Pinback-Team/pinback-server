@@ -7,7 +7,7 @@ import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 @Repository
-public interface ArticleRepository extends JpaRepository<Article, Long> {
+public interface ArticleRepository extends JpaRepository<Article, Long>, ArticleRepositoryCustom {
 
 	boolean existsByUserAndUrl(User user, String url);
 }
