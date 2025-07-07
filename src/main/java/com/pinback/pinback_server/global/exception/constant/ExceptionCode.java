@@ -9,6 +9,7 @@ public enum ExceptionCode {
 
 	//400
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "c40000", "잘못된 요청입니다."),
+	CATEGORY_LIMIT_OVER(HttpStatus.BAD_REQUEST, "c40001", "카테고리는 최대 10개까지 생성할 수 있습니다."),
 
 	//401
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "유효하지 않은 토큰입니다."),

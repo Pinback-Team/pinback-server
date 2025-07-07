@@ -23,4 +23,8 @@ public class CategoryGetService {
 	public boolean checkExistsByCategoryNameAndUser(String categoryName, User user) {
 		return categoryRepository.existsByNameAndUser(categoryName, user);
 	}
+
+	public long countCategoriesByUser(User user) {
+		return categoryRepository.countByUser(user);
+	}
 }
