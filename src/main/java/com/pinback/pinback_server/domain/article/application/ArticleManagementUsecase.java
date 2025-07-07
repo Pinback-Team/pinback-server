@@ -30,7 +30,7 @@ public class ArticleManagementUsecase {
 			throw new ArticleAlreadyExistException();
 		}
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
-		Article article = Article.create(command.url(), command.memo(), user, category);
+		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
 		articleSaveService.save(article);
 	}
 }
