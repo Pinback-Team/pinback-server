@@ -1,0 +1,21 @@
+package com.pinback.pinback_server.domain.category.domain.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.pinback.pinback_server.domain.category.domain.entity.Category;
+import com.pinback.pinback_server.domain.category.domain.repository.CategoryRepository;
+import com.pinback.pinback_server.domain.category.exception.CategoryNotFoundException;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@Transactional
+@RequiredArgsConstructor
+public class CategoryGetService {
+	private final CategoryRepository categoryRepository;
+
+	public Category getCategory(long categoryId) {
+		return categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
+	}
+}
