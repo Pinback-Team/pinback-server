@@ -1,5 +1,9 @@
 package com.pinback.pinback_server.domain.article.application;
 
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,7 +12,9 @@ import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -38,5 +44,18 @@ public class ArticleManagementUsecase {
 	public ArticleDetailResponse getArticleDetail(long articleId) {
 		Article article = articleGetService.findById(articleId);
 		return ArticleDetailResponse.from(article);
+	}
+
+	public ArticleAllResponse getAllArticles(User user, int pageNumber, int pageSize) {
+		Page<Article> articles = articleGetService.findAll(user.getId(), PageRequest.of(pageNumber, pageSize));
+
+		List<ArticlesResponse> articlesResponses = articles.stream()
+			.map(ArticlesResponse::from)
+			.toList();
+
+		return ArticleAllResponse.of(
+			articles.getTotalElements(),
+			articlesResponses
+		);
 	}
 }
