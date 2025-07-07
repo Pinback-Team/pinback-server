@@ -1,5 +1,7 @@
 package com.pinback.pinback_server.domain.article.domain.entity;
 
+import java.time.LocalDateTime;
+
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.entity.BaseEntity;
@@ -49,16 +51,20 @@ public class Article extends BaseEntity {
 	@JoinColumn(name = "category_id")
 	private Category category;
 
+	@Column(name = "remind_at")
+	private LocalDateTime remindAt;
+
 	@Column(name = "is_read", nullable = false)
 	private Boolean isRead;
 
-	public static Article create(String url, String memo, User user, Category category) {
+	public static Article create(String url, String memo, User user, Category category, LocalDateTime remindAt) {
 		return Article.builder()
 			.url(url)
 			.memo(memo)
 			.user(user)
 			.category(category)
 			.isRead(false)
+			.remindAt(remindAt)
 			.build();
 	}
 
