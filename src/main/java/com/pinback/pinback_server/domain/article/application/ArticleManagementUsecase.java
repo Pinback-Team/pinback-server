@@ -21,6 +21,7 @@ public class ArticleManagementUsecase {
 	private final ArticleSaveService articleSaveService;
 
 	//TODO: 리마인드 로직 추가 필요
+	@Transactional
 	public void createArticle(User user, ArticleCreateCommand command) {
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category);
