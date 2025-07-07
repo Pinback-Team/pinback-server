@@ -21,9 +21,8 @@ public class ArticleManagementUsecase {
 	private final ArticleSaveService articleSaveService;
 
 	//TODO: 리마인드 로직 추가 필요
-	//TODO: 자신의 카테고리가 아닐경우 예외처리
 	public void createArticle(User user, ArticleCreateCommand command) {
-		Category category = categoryGetService.getCategory(command.categoryId());
+		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category);
 		articleSaveService.save(article);
 	}
