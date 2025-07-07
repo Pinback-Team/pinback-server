@@ -12,6 +12,7 @@ import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
@@ -45,11 +46,16 @@ public class ArticleManagementUsecase {
 		return ArticleDetailResponse.from(article);
 	}
 
-	public List<ArticlesResponse> getAllArticles(User user, int pageNumber, int pageSize) {
+	public ArticleAllResponse getAllArticles(User user, int pageNumber, int pageSize) {
 		Page<Article> articles = articleGetService.findAll(user.getId(), PageRequest.of(pageNumber, pageSize));
 
-		return articles.stream()
+		List<ArticlesResponse> articlesResponses = articles.stream()
 			.map(ArticlesResponse::from)
 			.toList();
+
+		return ArticleAllResponse.of(
+			articles.getTotalElements(),
+			articlesResponses
+		);
 	}
 }
