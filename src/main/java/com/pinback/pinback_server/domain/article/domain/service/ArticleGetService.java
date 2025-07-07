@@ -1,5 +1,9 @@
 package com.pinback.pinback_server.domain.article.domain.service;
 
+import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,5 +26,9 @@ public class ArticleGetService {
 
 	public Article findById(long articleId) {
 		return articleRepository.findById(articleId).orElseThrow(ArticleNotFoundException::new);
+	}
+
+	public Page<Article> findAll(UUID userId, PageRequest pageRequest) {
+		return articleRepository.findAllCustom(userId, pageRequest);
 	}
 }
