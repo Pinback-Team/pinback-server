@@ -74,7 +74,7 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 
 	@DisplayName("사용자는 아티클의 상세정보를 조회할 수 있다.")
 	@Test
-	void test() {
+	void getArticleDetail() {
 		//given
 		User user = userRepository.save(user());
 		Category category = categoryRepository.save(category(user));
