@@ -52,6 +52,7 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 		assertThat(article.getUrl()).isEqualTo(command.url());
 		assertThat(article.getMemo()).isEqualTo(command.memo());
 		assertThat(article.getCategory()).isEqualTo(category);
+		assertThat(article.getRemindAt()).isEqualTo(command.remindTime());
 		assertThat(article.getIsRead()).isFalse();
 	}
 

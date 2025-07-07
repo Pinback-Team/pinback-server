@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.fixture;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
@@ -22,10 +23,10 @@ public class TestFixture {
 
 	public static Article article(User user) {
 		Category category = category(user);
-		return Article.create("test", "testmemo", user, category);
+		return Article.create("test", "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));
 	}
 
 	public static Article articleWithCategory(User user, Category category) {
-		return Article.create("test", "testmemo", user, category);
+		return Article.create("test", "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));
 	}
 }
