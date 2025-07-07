@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +18,7 @@ import com.pinback.pinback_server.domain.article.application.command.ArticleCrea
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.ArticleRepository;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
@@ -112,10 +112,11 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 		}
 
 		//when
-		List<ArticlesResponse> responses = articleManagementUsecase.getAllArticles(user, 0, 5);
+		ArticleAllResponse responses = articleManagementUsecase.getAllArticles(user, 0, 5);
 
 		//then
-		assertThat(responses).hasSize(5);
+		assertThat(responses.articles()).hasSize(5);
+		assertThat(responses.totalArticle()).isEqualTo(12);
 
 	}
 
@@ -131,11 +132,11 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 		}
 
 		//when
-		List<ArticlesResponse> responses = articleManagementUsecase.getAllArticles(user, 0, 10);
+		ArticleAllResponse responses = articleManagementUsecase.getAllArticles(user, 0, 5);
 
 		//then
-		assertThat(responses)
-			.hasSize(10)
+		assertThat(responses.articles())
+			.hasSize(5)
 			.extracting(ArticlesResponse::articleId)
 			.isSortedAccordingTo(Comparator.reverseOrder());
 	}
