@@ -141,4 +141,36 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 			.isSortedAccordingTo(Comparator.reverseOrder());
 	}
 
+	@DisplayName("카테고리 별로 게시글을 조회할 수 있다.")
+	@Test
+	void getByCategory() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		Category category2 = categoryRepository.save(category(user));
+
+		for (int i = 0; i < 5; i++) {
+			articleRepository.save(article(user, "article" + i, category));
+		}
+
+		for (int i = 0; i < 5; i++) {
+			articleRepository.save(article(user, "article2" + i, category2));
+		}
+
+		//when
+
+		ArticleAllResponse responses = articleManagementUsecase.getAllArticlesByCategory(user, category.getId(), 0, 5);
+
+		//then
+
+		assertThat(responses.articles())
+			.hasSize(5)
+			.extracting(ArticlesResponse::articleId)
+			.isSortedAccordingTo(Comparator.reverseOrder());
+
+		assertThat(responses.totalArticle())
+			.isEqualTo(5);
+
+	}
+
 }
