@@ -8,7 +8,7 @@ import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
 import com.pinback.pinback_server.domain.category.exception.CategoryAlreadyExistException;
-import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverEception;
+import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverException;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CreateCategoryResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
@@ -25,13 +25,13 @@ public class CategoryManagementUsecase {
 	public CreateCategoryResponse createCategory(User user, CategoryCreateCommand command) {
 		long existingCategoryCnt = categoryGetService.countCategoriesByUser(user);
 		if (existingCategoryCnt >= MAX_CATEGORY_LIMIT) {
-			throw new CategoryLimitOverEception();
+			throw new CategoryLimitOverException();
 		}
 
-		if (categoryGetService.checkExistsByCategoryNameAndUser(command.CategoryName(), user)) {
+		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
 			throw new CategoryAlreadyExistException();
 		}
-		Category category = Category.create(command.CategoryName(), user);
+		Category category = Category.create(command.categoryName(), user);
 		Category savedCategory = categorySaveService.save(category);
 		return CreateCategoryResponse.of(savedCategory.getId(), savedCategory.getName());
 	}
