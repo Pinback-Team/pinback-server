@@ -45,4 +45,14 @@ public class ArticleController {
 		return ResponseDto.ok(response);
 	}
 
+	@GetMapping("/{categoryId}")
+	public ResponseDto<ArticleAllResponse> getAllByCategory(@CurrentUser User user, @RequestParam Long categoryId,
+		@RequestParam int pageNumber,
+		@RequestParam int pageSize) {
+
+		ArticleAllResponse response = articleManagementUsecase.getAllArticlesByCategory(user, categoryId, pageNumber,
+			pageSize);
+		return ResponseDto.ok(response);
+	}
+
 }
