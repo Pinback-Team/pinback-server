@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.pinback_server.domain.category.application.CategoryManagementUsecase;
 import com.pinback.pinback_server.domain.category.presentation.dto.request.CategoryCreateRequest;
+import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllDashboardResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllExtensionResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CreateCategoryResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -34,6 +35,12 @@ public class CategoryController {
 	@GetMapping("/extension")
 	public ResponseDto<?> getAllExtension(@CurrentUser User user) {
 		CategoryAllExtensionResponse response = categoryManagementUsecase.getAllCategoriesExtension(user);
+		return ResponseDto.ok(response);
+	}
+
+	@GetMapping("/dashboard")
+	public ResponseDto<CategoryAllDashboardResponse> getAllDashboard(@CurrentUser User user) {
+		CategoryAllDashboardResponse response = categoryManagementUsecase.getAllCategoriesDashboard(user);
 		return ResponseDto.ok(response);
 	}
 }
