@@ -1,6 +1,7 @@
 package com.pinback.pinback_server.global.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
@@ -64,4 +65,19 @@ public class GlobalExceptionHandler {
 			.body(ResponseDto.of(ExceptionCode.INVALID_INPUT_VALUE, errorMessage));
 	}
 
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public ResponseEntity<ResponseDto<Void>> handleJsonParse(HttpMessageNotReadableException ex) {
+		Throwable cause = ex.getMostSpecificCause();
+
+		if (cause instanceof ApplicationException applicationException) {
+			ExceptionCode exceptionCode = applicationException.getExceptionCode();
+			return ResponseEntity
+				.status(exceptionCode.getStatus())
+				.body(ResponseDto.of(exceptionCode));
+		}
+
+		return ResponseEntity
+			.status(ExceptionCode.INTERNAL_SERVER_ERROR.getStatus())
+			.body(ResponseDto.of(ExceptionCode.INTERNAL_SERVER_ERROR));
+	}
 }
