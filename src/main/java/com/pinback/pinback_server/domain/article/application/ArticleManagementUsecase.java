@@ -58,4 +58,22 @@ public class ArticleManagementUsecase {
 			articlesResponses
 		);
 	}
+
+	public ArticleAllResponse getAllArticlesByCategory(User user, long categoryId, int pageNumber, int pageSize) {
+
+		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
+
+		Page<Article> articles = articleGetService.findAllByCategory(user.getId(), category,
+			PageRequest.of(pageNumber, pageSize));
+
+		List<ArticlesResponse> articlesResponses = articles.stream()
+			.map(ArticlesResponse::from)
+			.toList();
+
+		return ArticleAllResponse.of(
+			articles.getTotalElements(),
+			articlesResponses
+		);
+	}
+
 }
