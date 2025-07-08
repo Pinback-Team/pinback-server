@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.dto.ArticlesWithUnreadCount;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -26,10 +27,13 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 	@Override
 	public ArticlesWithUnreadCount findAllCustom(UUID userId, Pageable pageable) {
+
+		BooleanExpression conditions = article.user.id.eq(userId);
+
 		List<Article> articles = queryFactory
 			.selectFrom(article)
 			.join(article.user, user).fetchJoin()
-			.where(article.user.id.eq(userId))
+			.where(conditions)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.orderBy(article.createdAt.desc())
@@ -38,12 +42,12 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(article.user.id.eq(userId));
+			.where(conditions);
 
 		Long unReadCount = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(article.user.id.eq(userId).and(article.isRead.isFalse()))
+			.where(conditions.and(article.isRead.isFalse()))
 			.fetchOne();
 
 		return new ArticlesWithUnreadCount(unReadCount,
@@ -53,10 +57,12 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	@Override
 	public ArticlesWithUnreadCount findAllByCategory(UUID userId, long categoryId, Pageable pageable) {
 
+		BooleanExpression conditions = article.category.id.eq(categoryId);
+
 		List<Article> articles = queryFactory
 			.selectFrom(article)
 			.join(article.category, category).fetchJoin()
-			.where(article.category.id.eq(categoryId))
+			.where(conditions)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
 			.orderBy(article.createdAt.desc())
@@ -65,12 +71,12 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(article.category.id.eq(categoryId));
+			.where(conditions);
 
 		Long unReadCount = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(article.category.id.eq(categoryId).and(article.isRead.isFalse()))
+			.where(conditions.and(article.isRead.isFalse()))
 			.fetchOne();
 
 		return new ArticlesWithUnreadCount(unReadCount,
