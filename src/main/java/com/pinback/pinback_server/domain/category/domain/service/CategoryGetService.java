@@ -19,4 +19,12 @@ public class CategoryGetService {
 	public Category getCategoryAndUser(long categoryId, User user) {
 		return categoryRepository.findByIdAndUser(categoryId, user).orElseThrow(CategoryNotFoundException::new);
 	}
+
+	public boolean checkExistsByCategoryNameAndUser(String categoryName, User user) {
+		return categoryRepository.existsByNameAndUser(categoryName, user);
+	}
+
+	public long countCategoriesByUser(User user) {
+		return categoryRepository.countByUser(user);
+	}
 }

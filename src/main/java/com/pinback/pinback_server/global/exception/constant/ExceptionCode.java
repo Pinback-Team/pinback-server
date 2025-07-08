@@ -9,6 +9,9 @@ public enum ExceptionCode {
 
 	//400
 	INVALID_INPUT_VALUE(HttpStatus.BAD_REQUEST, "c40000", "잘못된 요청입니다."),
+	CATEGORY_LIMIT_OVER(HttpStatus.BAD_REQUEST, "c40001", "카테고리는 최대 10개까지 생성할 수 있습니다."),
+	TEXT_LENGTH_OVER(HttpStatus.BAD_REQUEST, "c40002", "글자 수 제한을 초과하였습니다."),
+	CATEGORY_NAME_INVALID(HttpStatus.BAD_REQUEST, "c40003", "카테고리 이름은 공백을 포함할 수 없습니다."),
 
 	//401
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "유효하지 않은 토큰입니다."),
@@ -28,6 +31,7 @@ public enum ExceptionCode {
 	DUPLICATE(HttpStatus.CONFLICT, "c40900", "이미 존재하는 리소스입니다."),
 	USER_ALREADY_EXIST(HttpStatus.CONFLICT, "c40901", "이미 존재하는 사용자입니다."),
 	ARTICLE_ALREADY_EXIST(HttpStatus.CONFLICT, "c40902", "이미 저장한 url 입니다."),
+	CATEGORY_ALREADY_EXIST(HttpStatus.CONFLICT, "c40903", "이미 존재하는 카테고리입니다."),
 
 	//500
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50000", "서버 내부 오류가 발생했습니다.");
