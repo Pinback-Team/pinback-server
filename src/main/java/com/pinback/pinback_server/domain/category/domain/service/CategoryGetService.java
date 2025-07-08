@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.CategoryRepository;
+import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForDashboard;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForExtension;
 import com.pinback.pinback_server.domain.category.exception.CategoryNotFoundException;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -33,5 +34,9 @@ public class CategoryGetService {
 
 	public CategoriesForExtension findAllForExtension(UUID userId) {
 		return categoryRepository.findAllForExtension(userId);
+	}
+
+	public CategoriesForDashboard findAllForDashboard(UUID userId) {
+		return categoryRepository.findAllForDashboard(userId);
 	}
 }

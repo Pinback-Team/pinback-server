@@ -10,12 +10,15 @@ import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.category.application.command.CategoryCreateCommand;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
+import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForDashboard;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForExtension;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
 import com.pinback.pinback_server.domain.category.exception.CategoryAlreadyExistException;
 import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverException;
+import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllDashboardResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllExtensionResponse;
+import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryDashboardResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryExtensionResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CreateCategoryResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -65,5 +68,16 @@ public class CategoryManagementUsecase {
 			.toList();
 
 		return CategoryAllExtensionResponse.of(recentSaved, response);
+	}
+
+	@Transactional(readOnly = true)
+	public CategoryAllDashboardResponse getAllCategoriesDashboard(User user) {
+		CategoriesForDashboard projection = categoryGetService.findAllForDashboard(user.getId());
+		List<CategoryDashboardResponse> response = projection.getCategories().stream()
+			.map(category -> new CategoryDashboardResponse(category.getId(), category.getName(),
+				category.getUnreadCount()))
+			.toList();
+
+		return CategoryAllDashboardResponse.of(response);
 	}
 }
