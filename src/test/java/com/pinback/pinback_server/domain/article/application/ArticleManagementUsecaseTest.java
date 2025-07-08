@@ -116,6 +116,7 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 
 		//then
 		assertThat(responses.articles()).hasSize(5);
+		assertThat(responses.articles().get(0).createdAt()).isNotNull();
 		assertThat(responses.totalArticle()).isEqualTo(12);
 
 	}
@@ -139,6 +140,34 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 			.hasSize(5)
 			.extracting(ArticlesResponse::articleId)
 			.isSortedAccordingTo(Comparator.reverseOrder());
+	}
+
+	@DisplayName("읽지 않은 게시글 수도 알려주어야 한다.")
+	@Test
+	void getAllWithUnReadArticles() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+
+		for (int i = 0; i < 5; i++) {
+			articleRepository.save(article(user, "article" + i, category));
+		}
+
+		for (int i = 0; i < 3; i++) {
+			articleRepository.save(readArticle(user, "article2" + i, category));
+		}
+
+		//when
+		ArticleAllResponse responses = articleManagementUsecase.getAllArticles(user, 0, 8);
+
+		//then
+		assertThat(responses.articles())
+			.hasSize(8)
+			.extracting(ArticlesResponse::articleId)
+			.isSortedAccordingTo(Comparator.reverseOrder());
+
+		assertThat(responses.totalUnreadArticle())
+			.isEqualTo(5);
 	}
 
 	@DisplayName("카테고리 별로 게시글을 조회할 수 있다.")
@@ -170,6 +199,39 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 
 		assertThat(responses.totalArticle())
 			.isEqualTo(5);
+
+	}
+
+	@DisplayName("카테고리 별로 게시글을 조회할 수 있다.")
+	@Test
+	void getByCategoryWithUnreadCount() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		Category category2 = categoryRepository.save(category(user));
+
+		for (int i = 0; i < 3; i++) {
+			articleRepository.save(article(user, "article" + i, category));
+		}
+
+		for (int i = 0; i < 5; i++) {
+			articleRepository.save(article(user, "article2" + i, category2));
+		}
+
+		for (int i = 0; i < 5; i++) {
+			articleRepository.save(readArticle(user, "article3" + i, category));
+		}
+
+		//when
+
+		ArticleAllResponse responses = articleManagementUsecase.getAllArticlesByCategory(user, category.getId(), 0, 5);
+
+		//then
+
+		assertThat(responses.totalUnreadArticle()).isEqualTo(3);
+		assertThat(responses.totalArticle())
+			.isEqualTo(8);
+		assertThat(responses.articles().get(0).createdAt()).isNotNull();
 
 	}
 

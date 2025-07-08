@@ -33,4 +33,10 @@ public class TestFixture {
 	public static Article article(User user, String url, Category category) {
 		return Article.create(url, "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));
 	}
+
+	public static Article readArticle(User user, String url, Category category) {
+		Article article = Article.create(url, "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));
+		article.toRead();
+		return article;
+	}
 }
