@@ -64,7 +64,7 @@ public class CategoryManagementUsecase {
 		}
 		CategoriesForExtension projection = categoryGetService.findAllForExtension(user.getId());
 		List<CategoryExtensionResponse> response = projection.getCategories().stream()
-			.map(c -> new CategoryExtensionResponse(c.getId(), c.getName()))
+			.map(category -> new CategoryExtensionResponse(category.getId(), category.getName()))
 			.toList();
 
 		return CategoryAllExtensionResponse.of(recentSaved, response);
