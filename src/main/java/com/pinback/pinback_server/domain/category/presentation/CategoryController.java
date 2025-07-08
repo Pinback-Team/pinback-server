@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.category.presentation;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.pinback_server.domain.category.application.CategoryManagementUsecase;
 import com.pinback.pinback_server.domain.category.presentation.dto.request.CategoryCreateRequest;
+import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllExtensionResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CreateCategoryResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.common.annotation.CurrentUser;
@@ -27,5 +29,11 @@ public class CategoryController {
 		CreateCategoryResponse response = categoryManagementUsecase.createCategory(user, request.toCommand());
 
 		return ResponseDto.created(response);
+	}
+
+	@GetMapping("/extension")
+	public ResponseDto<?> getAllExtension(@CurrentUser User user) {
+		CategoryAllExtensionResponse response = categoryManagementUsecase.getAllCategoriesExtension(user);
+		return ResponseDto.ok(response);
 	}
 }

@@ -1,10 +1,13 @@
 package com.pinback.pinback_server.domain.category.domain.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.CategoryRepository;
+import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForExtension;
 import com.pinback.pinback_server.domain.category.exception.CategoryNotFoundException;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
@@ -26,5 +29,9 @@ public class CategoryGetService {
 
 	public long countCategoriesByUser(User user) {
 		return categoryRepository.countByUser(user);
+	}
+
+	public CategoriesForExtension findAllForExtension(UUID userId) {
+		return categoryRepository.findAllForExtension(userId);
 	}
 }
