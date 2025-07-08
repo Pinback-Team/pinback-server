@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.ArticleRepository;
 import com.pinback.pinback_server.domain.article.exception.ArticleNotFoundException;
+import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -30,5 +31,9 @@ public class ArticleGetService {
 
 	public Page<Article> findAll(UUID userId, PageRequest pageRequest) {
 		return articleRepository.findAllCustom(userId, pageRequest);
+	}
+
+	public Page<Article> findAllByCategory(UUID userId, Category category, PageRequest pageRequest) {
+		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
 	}
 }

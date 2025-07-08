@@ -9,4 +9,6 @@ import com.pinback.pinback_server.domain.article.domain.entity.Article;
 
 public interface ArticleRepositoryCustom {
 	Page<Article> findAllCustom(UUID userId, Pageable pageable);
+
+	Page<Article> findAllByCategory(UUID userId, long articleId, Pageable pageable);
 }
