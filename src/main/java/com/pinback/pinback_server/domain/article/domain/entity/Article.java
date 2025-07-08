@@ -71,4 +71,12 @@ public class Article extends BaseEntity {
 	public boolean isRead() {
 		return isRead;
 	}
+
+	public void toRead() {
+		this.isRead = true;
+	}
+
+	public void toUnRead() {
+		this.isRead = false;
+	}
 }

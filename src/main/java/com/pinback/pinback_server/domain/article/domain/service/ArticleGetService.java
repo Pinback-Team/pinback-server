@@ -2,14 +2,15 @@ package com.pinback.pinback_server.domain.article.domain.service;
 
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.ArticleRepository;
+import com.pinback.pinback_server.domain.article.domain.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.pinback_server.domain.article.exception.ArticleNotFoundException;
+import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +29,11 @@ public class ArticleGetService {
 		return articleRepository.findById(articleId).orElseThrow(ArticleNotFoundException::new);
 	}
 
-	public Page<Article> findAll(UUID userId, PageRequest pageRequest) {
+	public ArticlesWithUnreadCount findAll(UUID userId, PageRequest pageRequest) {
 		return articleRepository.findAllCustom(userId, pageRequest);
+	}
+
+	public ArticlesWithUnreadCount findAllByCategory(UUID userId, Category category, PageRequest pageRequest) {
+		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
 	}
 }

@@ -4,11 +4,13 @@ import java.util.List;
 
 public record ArticleAllResponse(
 	long totalArticle,
+	long totalUnreadArticle,
 	List<ArticlesResponse> articles
 ) {
-	public static ArticleAllResponse of(long totalArticle, List<ArticlesResponse> articles) {
+	public static ArticleAllResponse of(long totalArticle, long totalUnreadArticle, List<ArticlesResponse> articles) {
 		return new ArticleAllResponse(
 			totalArticle,
+			totalUnreadArticle,
 			articles
 		);
 	}

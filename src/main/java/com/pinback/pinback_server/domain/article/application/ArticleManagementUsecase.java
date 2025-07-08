@@ -2,13 +2,13 @@ package com.pinback.pinback_server.domain.article.application;
 
 import java.util.List;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.article.application.command.ArticleCreateCommand;
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
+import com.pinback.pinback_server.domain.article.domain.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
@@ -47,15 +47,36 @@ public class ArticleManagementUsecase {
 	}
 
 	public ArticleAllResponse getAllArticles(User user, int pageNumber, int pageSize) {
-		Page<Article> articles = articleGetService.findAll(user.getId(), PageRequest.of(pageNumber, pageSize));
+		ArticlesWithUnreadCount projection = articleGetService.findAll(user.getId(),
+			PageRequest.of(pageNumber, pageSize));
 
-		List<ArticlesResponse> articlesResponses = articles.stream()
+		List<ArticlesResponse> articlesResponses = projection.getArticle().stream()
 			.map(ArticlesResponse::from)
 			.toList();
 
 		return ArticleAllResponse.of(
-			articles.getTotalElements(),
+			projection.getArticle().getTotalElements(),
+			projection.getUnReadCount(),
 			articlesResponses
 		);
 	}
+
+	public ArticleAllResponse getAllArticlesByCategory(User user, long categoryId, int pageNumber, int pageSize) {
+
+		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
+
+		ArticlesWithUnreadCount projection = articleGetService.findAllByCategory(user.getId(), category,
+			PageRequest.of(pageNumber, pageSize));
+
+		List<ArticlesResponse> articlesResponses = projection.getArticle().stream()
+			.map(ArticlesResponse::from)
+			.toList();
+
+		return ArticleAllResponse.of(
+			projection.getArticle().getTotalElements(),
+			projection.getUnReadCount(),
+			articlesResponses
+		);
+	}
+
 }
