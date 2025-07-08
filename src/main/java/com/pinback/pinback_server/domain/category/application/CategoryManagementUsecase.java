@@ -13,24 +13,27 @@ import com.pinback.pinback_server.domain.category.presentation.dto.response.Crea
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CategoryManagementUsecase {
-	private static final int MAX_CATEGORY_LIMIT = 10;
+	private static final int CATEGORY_LIMIT = 10;
 	private final CategorySaveService categorySaveService;
 	private final CategoryGetService categoryGetService;
 
 	@Transactional
 	public CreateCategoryResponse createCategory(User user, CategoryCreateCommand command) {
 		long existingCategoryCnt = categoryGetService.countCategoriesByUser(user);
-		if (existingCategoryCnt >= MAX_CATEGORY_LIMIT) {
+		if (existingCategoryCnt >= CATEGORY_LIMIT) {
 			throw new CategoryLimitOverException();
 		}
 
 		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
 			throw new CategoryAlreadyExistException();
 		}
+		
 		Category category = Category.create(command.categoryName(), user);
 		Category savedCategory = categorySaveService.save(category);
 		return CreateCategoryResponse.of(savedCategory.getId(), savedCategory.getName());
