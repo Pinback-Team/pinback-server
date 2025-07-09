@@ -1,7 +1,9 @@
 package com.pinback.pinback_server.domain.article.application;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +17,7 @@ import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistEx
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -75,6 +78,26 @@ public class ArticleManagementUsecase {
 		return ArticleAllResponse.of(
 			projection.getArticle().getTotalElements(),
 			projection.getUnReadCount(),
+			articlesResponses
+		);
+	}
+	
+	public RemindArticleResponse getRemindArticles(User user, LocalDateTime now, int pageNumber, int pageSize) {
+		LocalDateTime nextDate = now.plusDays(1L);
+		LocalDateTime nextRemindTime = LocalDateTime.of(nextDate.getYear(), nextDate.getMonth(),
+			nextDate.getDayOfMonth(),
+			user.getRemindDefault().getHour(), user.getRemindDefault().getMinute());
+
+		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), now,
+			PageRequest.of(pageNumber, pageSize));
+
+		List<ArticlesResponse> articlesResponses = articles.stream()
+			.map(ArticlesResponse::from)
+			.toList();
+
+		return new RemindArticleResponse(
+			articles.getTotalElements(),
+			nextRemindTime,
 			articlesResponses
 		);
 	}
