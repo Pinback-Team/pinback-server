@@ -44,4 +44,8 @@ public class Category extends BaseEntity {
 			.user(user)
 			.build();
 	}
+
+	public void updateName(String name) {
+		this.name = name;
+	}
 }
