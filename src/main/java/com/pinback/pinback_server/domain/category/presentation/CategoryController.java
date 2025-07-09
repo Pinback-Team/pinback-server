@@ -52,7 +52,7 @@ public class CategoryController {
 	public ResponseDto<UpdateCategoryResponse> updateCategory(
 		@CurrentUser User user,
 		@PathVariable Long categoryId,
-		@RequestBody CategoryUpdateRequest request
+		@Valid @RequestBody CategoryUpdateRequest request
 	) {
 		UpdateCategoryResponse response = categoryManagementUsecase.updateCategory(user, categoryId,
 			request.toCommand());
