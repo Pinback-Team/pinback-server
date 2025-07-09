@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.article.domain.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.PageRequest;
@@ -35,5 +36,9 @@ public class ArticleGetService {
 
 	public ArticlesWithUnreadCount findAllByCategory(UUID userId, Category category, PageRequest pageRequest) {
 		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
+	}
+
+	public Optional<Article> findRecentByUser(User user) {
+		return articleRepository.findRecentArticleByUser(user);
 	}
 }
