@@ -20,6 +20,7 @@ public enum ExceptionCode {
 
 	//403
 	NOT_ARTICLE_OWNER(HttpStatus.FORBIDDEN, "c40301", "아티클에 대한 소유권이 없습니다."),
+	NOT_CATEGORY_OWNER(HttpStatus.FORBIDDEN, "c40302", "카테고리에 대한 소유권이 없습니다."),
 
 	//404
 	NOT_FOUND(HttpStatus.NOT_FOUND, "c40400", "리소스가 존재하지 않습니다."),
