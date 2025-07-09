@@ -120,7 +120,7 @@ public class ArticleManagementUsecase {
 	}
 
 	public void checkOwner(Article article, User user) {
-		if (!(article.getUser() == user)) {
+		if (!(article.getUser().equals(user))) {
 			throw new ArticleNotOwnedException();
 		}
 	}
