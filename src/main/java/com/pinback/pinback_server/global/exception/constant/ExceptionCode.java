@@ -18,6 +18,9 @@ public enum ExceptionCode {
 	EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED, "c40102", "만료된 토큰입니다."),
 	EMPTY_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "토큰이 비어있습니다."),
 
+	//403
+	NOT_ARTICLE_OWNER(HttpStatus.FORBIDDEN, "c40301", "아티클에 대한 소유권이 없습니다."),
+
 	//404
 	NOT_FOUND(HttpStatus.NOT_FOUND, "c40400", "리소스가 존재하지 않습니다."),
 	USER_NOT_FOUND(HttpStatus.NOT_FOUND, "c40401", "사용자가 존재하지 않습니다."),

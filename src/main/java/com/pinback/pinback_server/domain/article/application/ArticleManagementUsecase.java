@@ -12,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.pinback_server.domain.article.application.command.ArticleCreateCommand;
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.dto.ArticlesWithUnreadCount;
+import com.pinback.pinback_server.domain.article.domain.service.ArticleDeleteService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
+import com.pinback.pinback_server.domain.article.exception.ArticleNotOwnedException;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
@@ -33,6 +35,7 @@ public class ArticleManagementUsecase {
 	private final CategoryGetService categoryGetService;
 	private final ArticleSaveService articleSaveService;
 	private final ArticleGetService articleGetService;
+	private final ArticleDeleteService articleDeleteService;
 
 	//TODO: 리마인드 로직 추가 필요
 	@Transactional
@@ -107,6 +110,19 @@ public class ArticleManagementUsecase {
 		Optional<Article> article = articleGetService.findByUrlAndUser(user, url);
 
 		return article.map(ArticleDetailResponse::from).orElse(null);
+	}
+
+	@Transactional
+	public void delete(User user, long articleId) {
+		Article article = articleGetService.findById(articleId);
+		checkOwner(article, user);
+		articleDeleteService.delete(article);
+	}
+
+	public void checkOwner(Article article, User user) {
+		if (!(article.getUser() == user)) {
+			throw new ArticleNotOwnedException();
+		}
 	}
 
 }
