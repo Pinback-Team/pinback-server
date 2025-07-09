@@ -23,7 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("api/v1/articles")
+@RequestMapping("/api/v1/articles")
 @RequiredArgsConstructor
 public class ArticleController {
 	private final ArticleManagementUsecase articleManagementUsecase;
