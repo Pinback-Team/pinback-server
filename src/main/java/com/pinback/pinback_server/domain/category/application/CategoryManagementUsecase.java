@@ -11,7 +11,6 @@ import com.pinback.pinback_server.domain.article.domain.service.ArticleGetServic
 import com.pinback.pinback_server.domain.category.application.command.CategoryCreateCommand;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForDashboard;
-import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForExtension;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
 import com.pinback.pinback_server.domain.category.exception.CategoryAlreadyExistException;
@@ -59,8 +58,8 @@ public class CategoryManagementUsecase {
 			Article article = articleOptional.get();
 			recentSaved = article.getCategory().getName();
 		}
-		CategoriesForExtension projection = categoryGetService.findAllForExtension(user.getId());
-		List<CategoryExtensionResponse> response = projection.getCategories().stream()
+		List<Category> categories = categoryGetService.findAllForExtension(user.getId());
+		List<CategoryExtensionResponse> response = categories.stream()
 			.map(category -> new CategoryExtensionResponse(category.getId(), category.getName()))
 			.toList();
 

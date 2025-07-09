@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForDashboard;
-import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForExtension;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoryForDashboard;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.QCategoryForDashboard;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -24,14 +23,14 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public CategoriesForExtension findAllForExtension(UUID userId) {
+	public List<Category> findAllForExtension(UUID userId) {
 		List<Category> categories = queryFactory
 			.selectFrom(category)
 			.where(category.user.id.eq(userId))
 			.orderBy(category.id.asc()) // 생성 오래된 순
 			.fetch();
 
-		return new CategoriesForExtension(categories);
+		return categories;
 	}
 
 	@Override
