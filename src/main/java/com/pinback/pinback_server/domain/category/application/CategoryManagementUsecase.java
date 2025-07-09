@@ -57,10 +57,7 @@ public class CategoryManagementUsecase {
 		String recentSaved = null;
 		if (articleOptional.isPresent()) {
 			Article article = articleOptional.get();
-
-			if (article.getCategory() != null) {
-				recentSaved = article.getCategory().getName();
-			}
+			recentSaved = article.getCategory().getName();
 		}
 		CategoriesForExtension projection = categoryGetService.findAllForExtension(user.getId());
 		List<CategoryExtensionResponse> response = projection.getCategories().stream()
