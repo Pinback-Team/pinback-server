@@ -37,7 +37,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
 	public CategoriesForDashboard findAllForDashboard(UUID userId) {
 		List<CategoryForDashboard> categories = queryFactory
 			.select(new QCategoryForDashboard(
-				category.id, category.name, category.id.count().as("unreadCount")))
+				category.id, category.name, article.id.count().as("unreadCount")))
 			.from(category)
 			.leftJoin(article)
 			.on(article.category.eq(category)
