@@ -42,14 +42,16 @@ public class ArticleGetService {
 		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
 	}
 
-	// feat/#23 브랜치에서 추가된 메서드
 	public Page<Article> findTodayRemind(UUID userId, LocalDateTime today, Pageable pageable) {
 		LocalDateTime startAt = today.minusDays(1L).plusMinutes(1L);
 		return articleRepository.findTodayRemind(userId, pageable, startAt, today);
 	}
 
-	// dev 브랜치에서 추가된 메서드
 	public Optional<Article> findRecentByUser(User user) {
 		return articleRepository.findRecentArticleByUser(user);
+	}
+
+	public Optional<Article> findByUrlAndUser(User user, String url) {
+		return articleRepository.findArticleByUserAndUrl(user, url);
 	}
 }
