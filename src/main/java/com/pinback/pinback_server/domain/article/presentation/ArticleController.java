@@ -1,5 +1,7 @@
 package com.pinback.pinback_server.domain.article.presentation;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,6 +14,7 @@ import com.pinback.pinback_server.domain.article.application.ArticleManagementUs
 import com.pinback.pinback_server.domain.article.presentation.dto.request.ArticleCreateRequest;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.common.annotation.CurrentUser;
 import com.pinback.pinback_server.global.common.dto.ResponseDto;
@@ -20,7 +23,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/articles")
+@RequestMapping("api/v1/articles")
 @RequiredArgsConstructor
 public class ArticleController {
 	private final ArticleManagementUsecase articleManagementUsecase;
@@ -51,6 +54,17 @@ public class ArticleController {
 		@RequestParam int pageSize) {
 
 		ArticleAllResponse response = articleManagementUsecase.getAllArticlesByCategory(user, categoryId, pageNumber,
+			pageSize);
+		return ResponseDto.ok(response);
+	}
+
+	@GetMapping("/remind")
+	public ResponseDto<RemindArticleResponse> getAllRemindArticles(@CurrentUser User user,
+		@RequestParam LocalDateTime now,
+		@RequestParam int pageNumber,
+		@RequestParam int pageSize) {
+
+		RemindArticleResponse response = articleManagementUsecase.getRemindArticles(user, now, pageNumber,
 			pageSize);
 		return ResponseDto.ok(response);
 	}
