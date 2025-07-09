@@ -35,7 +35,7 @@ public class ArticleRemindTest extends ApplicationTest {
 
 	@DisplayName("오늘 기준을 24시간 이내의 리마인드 아티클 들을 조회한다.")
 	@Test
-	void getByCategoryWithUnreadCount() {
+	void getRemindArticleInRange() {
 		//given
 		User user = userRepository.save(user());
 		Category category = categoryRepository.save(category(user));
@@ -58,6 +58,48 @@ public class ArticleRemindTest extends ApplicationTest {
 
 		assertThat(responses.nextRemind())
 			.isEqualTo(LocalDateTime.of(2025, 7, 9, 12, 0, 0));
+
+	}
+
+	@DisplayName("오늘 기준을 24시간 범위 외의 아티클들을 조회할 수 없다.")
+	@Test
+	void getRemindArticleOutRange() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+
+		//리마인드 시간이 7월 7일 9시 0분, 7월 8일 9시 이라고 가정
+		// 오늘이 7월 8일 9시라고 가정
+		articleRepository.save(
+			articleWithDate(user, "article" + "1", category, LocalDateTime.of(2025, 7, 7, 9, 0, 0)));
+
+		articleRepository.save(
+			articleWithDate(user, "article" + "2", category, LocalDateTime.of(2025, 7, 8, 9, 1, 0)));
+
+		//when
+		RemindArticleResponse responses = articleManagementUsecase.getRemindArticles(user,
+			LocalDateTime.of(2025, 7, 8, 9, 0, 0), 0, 5);
+
+		//then
+		assertThat(responses.totalArticle())
+			.isEqualTo(0);
+
+	}
+
+	@DisplayName("사용자는 다음날이 다음 달로 넘어가는 경우 다음 리마인드 날짜를 조회할 수 있다.")
+	@Test
+	void getRemindWhenMonthOver() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+
+		//when
+		RemindArticleResponse responses = articleManagementUsecase.getRemindArticles(user,
+			LocalDateTime.of(2025, 7, 31, 9, 0, 0), 0, 5);
+
+		//then
+		assertThat(responses.nextRemind())
+			.isEqualTo(LocalDateTime.of(2025, 8, 1, 12, 0, 0));
 
 	}
 }
