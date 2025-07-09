@@ -69,4 +69,12 @@ public class ArticleController {
 		return ResponseDto.ok(response);
 	}
 
+	@GetMapping("/saved")
+	public ResponseDto<ArticleDetailResponse> checkArticleExists(@CurrentUser User user,
+		@RequestParam String url) {
+
+		ArticleDetailResponse response = articleManagementUsecase.checkArticleExists(user, url);
+		return ResponseDto.ok(response);
+	}
+
 }
