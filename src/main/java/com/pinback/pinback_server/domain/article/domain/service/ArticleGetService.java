@@ -1,9 +1,12 @@
 package com.pinback.pinback_server.domain.article.domain.service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArticleGetService {
+
 	private final ArticleRepository articleRepository;
 
 	public boolean checkExistsByUserAndUrl(User user, String url) {
@@ -38,7 +42,16 @@ public class ArticleGetService {
 		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
 	}
 
+	public Page<Article> findTodayRemind(UUID userId, LocalDateTime today, Pageable pageable) {
+		LocalDateTime startAt = today.minusDays(1L).plusMinutes(1L);
+		return articleRepository.findTodayRemind(userId, pageable, startAt, today);
+	}
+
 	public Optional<Article> findRecentByUser(User user) {
 		return articleRepository.findRecentArticleByUser(user);
+	}
+
+	public Optional<Article> findByUrlAndUser(User user, String url) {
+		return articleRepository.findArticleByUserAndUrl(user, url);
 	}
 }

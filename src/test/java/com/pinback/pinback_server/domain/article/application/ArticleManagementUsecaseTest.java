@@ -235,4 +235,37 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 
 	}
 
+	@DisplayName("사용자는 url로 아티클의 존재여부를 확인할 수 있다.")
+	@Test
+	void checkArticleExists() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		Article article = articleRepository.save(articleWithCategory(user, category));
+		//when
+
+		ArticleDetailResponse response = articleManagementUsecase.checkArticleExists(user, article.getUrl());
+
+		//then
+
+		assertThat(response.url())
+			.isEqualTo(article.getUrl());
+
+	}
+
+	@DisplayName("url에 해당하는 아티클이 존재하지 않는 경우 null을 반환한다.")
+	@Test
+	void checkArticleNotExistsReturnNull() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		articleRepository.save(articleWithCategory(user, category));
+		//when
+
+		ArticleDetailResponse response = articleManagementUsecase.checkArticleExists(user, "존재하지 않는 url");
+
+		//then
+		assertThat(response).isNull();
+	}
+
 }
