@@ -12,10 +12,12 @@ import com.pinback.pinback_server.domain.category.application.command.CategoryCr
 import com.pinback.pinback_server.domain.category.application.command.CategoryUpdateCommand;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForDashboard;
+import com.pinback.pinback_server.domain.category.domain.service.CategoryDeleteService;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
 import com.pinback.pinback_server.domain.category.exception.CategoryAlreadyExistException;
 import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverException;
+import com.pinback.pinback_server.domain.category.exception.CategoryNotOwnedException;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllDashboardResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryAllExtensionResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryDashboardResponse;
@@ -35,6 +37,7 @@ public class CategoryManagementUsecase {
 	private final CategorySaveService categorySaveService;
 	private final CategoryGetService categoryGetService;
 	private final ArticleGetService articleGetService;
+	private final CategoryDeleteService categoryDeleteService;
 
 	@Transactional
 	public CreateCategoryResponse createCategory(User user, CategoryCreateCommand command) {
@@ -89,5 +92,18 @@ public class CategoryManagementUsecase {
 		category.updateName(command.categoryName());
 
 		return UpdateCategoryResponse.from(category);
+	}
+
+	@Transactional
+	public void deleteCategory(final User user, final long categoryId) {
+		Category category = categoryGetService.findById(categoryId);
+		checkOwner(category, user);
+		categoryDeleteService.delete(category);
+	}
+
+	public void checkOwner(Category category, User user) {
+		if (!(category.getUser().equals(user))) {
+			throw new CategoryNotOwnedException();
+		}
 	}
 }
