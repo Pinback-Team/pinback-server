@@ -84,15 +84,9 @@ public class CategoryManagementUsecase {
 		final CategoryUpdateCommand command) {
 		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
 		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
-			log.info("command name: {}", command.categoryName());
-			log.info("origin name: {}", category.getName());
-			log.info("alread exists: {}",
-				categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user));
 			throw new CategoryAlreadyExistException();
 		}
-		log.info("updating category: {}", category.getName());
 		category.updateName(command.categoryName());
-		log.info("update for new category: {}", category.getName());
 
 		return UpdateCategoryResponse.from(category);
 	}
