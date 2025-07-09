@@ -87,9 +87,9 @@ public class ArticleManagementUsecase {
 	}
 
 	public RemindArticleResponse getRemindArticles(User user, LocalDateTime now, int pageNumber, int pageSize) {
-		LocalDateTime nextDate = now.plusDays(1L);
-		LocalDateTime nextRemindTime = LocalDateTime.of(nextDate.getYear(), nextDate.getMonth(),
-			nextDate.getDayOfMonth(),
+		LocalDateTime remindDate = now.plusDays(1L);
+		LocalDateTime remindDateTime = LocalDateTime.of(remindDate.getYear(), remindDate.getMonth(),
+			remindDate.getDayOfMonth(),
 			user.getRemindDefault().getHour(), user.getRemindDefault().getMinute());
 
 		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), now,
@@ -101,7 +101,7 @@ public class ArticleManagementUsecase {
 
 		return new RemindArticleResponse(
 			articles.getTotalElements(),
-			nextRemindTime,
+			remindDateTime,
 			articlesResponses
 		);
 	}
