@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.category.application.command.CategoryCreateCommand;
+import com.pinback.pinback_server.domain.category.application.command.CategoryUpdateCommand;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.dto.CategoriesForDashboard;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
@@ -20,6 +21,7 @@ import com.pinback.pinback_server.domain.category.presentation.dto.response.Cate
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryDashboardResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CategoryExtensionResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CreateCategoryResponse;
+import com.pinback.pinback_server.domain.category.presentation.dto.response.UpdateCategoryResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -75,5 +77,23 @@ public class CategoryManagementUsecase {
 			.toList();
 
 		return CategoryAllDashboardResponse.of(response);
+	}
+
+	@Transactional
+	public UpdateCategoryResponse updateCategory(final User user, final Long categoryId,
+		final CategoryUpdateCommand command) {
+		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
+		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
+			log.info("command name: {}", command.categoryName());
+			log.info("origin name: {}", category.getName());
+			log.info("alread exists: {}",
+				categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user));
+			throw new CategoryAlreadyExistException();
+		}
+		log.info("updating category: {}", category.getName());
+		category.updateName(command.categoryName());
+		log.info("update for new category: {}", category.getName());
+
+		return UpdateCategoryResponse.from(category);
 	}
 }
