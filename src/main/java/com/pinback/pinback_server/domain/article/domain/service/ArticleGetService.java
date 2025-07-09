@@ -1,8 +1,11 @@
 package com.pinback.pinback_server.domain.article.domain.service;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,5 +38,10 @@ public class ArticleGetService {
 
 	public ArticlesWithUnreadCount findAllByCategory(UUID userId, Category category, PageRequest pageRequest) {
 		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
+	}
+
+	public Page<Article> findTodayRemind(UUID userId, LocalDateTime today, Pageable pageable) {
+		LocalDateTime startAt = today.minusDays(1L).plusMinutes(1L);
+		return articleRepository.findTodayRemind(userId, pageable, startAt, today);
 	}
 }
