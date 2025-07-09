@@ -2,6 +2,7 @@ package com.pinback.pinback_server.domain.article.application;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -81,7 +82,7 @@ public class ArticleManagementUsecase {
 			articlesResponses
 		);
 	}
-	
+
 	public RemindArticleResponse getRemindArticles(User user, LocalDateTime now, int pageNumber, int pageSize) {
 		LocalDateTime nextDate = now.plusDays(1L);
 		LocalDateTime nextRemindTime = LocalDateTime.of(nextDate.getYear(), nextDate.getMonth(),
@@ -100,6 +101,12 @@ public class ArticleManagementUsecase {
 			nextRemindTime,
 			articlesResponses
 		);
+	}
+
+	public ArticleDetailResponse checkArticleExists(User user, String url) {
+		Optional<Article> article = articleGetService.findByUrlAndUser(user, url);
+
+		return article.map(ArticleDetailResponse::from).orElse(null);
 	}
 
 }
