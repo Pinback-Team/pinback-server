@@ -59,6 +59,8 @@ public class ArticleRemindTest extends ApplicationTest {
 		assertThat(responses.nextRemind())
 			.isEqualTo(LocalDateTime.of(2025, 7, 9, 12, 0, 0));
 
+		assertThat(responses.articles().get(1).remindAt()).isEqualTo(LocalDateTime.of(2025, 7, 7, 9, 1, 0));
+
 	}
 
 	@DisplayName("오늘 기준을 24시간 범위 외의 아티클들을 조회할 수 없다.")
