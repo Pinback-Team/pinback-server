@@ -18,6 +18,7 @@ import com.pinback.pinback_server.domain.article.domain.service.ArticleGetServic
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
 import com.pinback.pinback_server.domain.article.exception.ArticleNotOwnedException;
+import com.pinback.pinback_server.domain.article.exception.MemoLengthLimitException;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
@@ -39,11 +40,17 @@ public class ArticleManagementUsecase {
 	private final ArticleGetService articleGetService;
 	private final ArticleDeleteService articleDeleteService;
 
+	private final long MEMO_LIMIT_LENGTH = 1000;
+
 	//TODO: 리마인드 로직 추가 필요
 	@Transactional
 	public void createArticle(User user, ArticleCreateCommand command) {
 		if (articleGetService.checkExistsByUserAndUrl(user, command.url())) {
 			throw new ArticleAlreadyExistException();
+		}
+
+		if (command.memo().length() >= MEMO_LIMIT_LENGTH) {
+			throw new MemoLengthLimitException();
 		}
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
