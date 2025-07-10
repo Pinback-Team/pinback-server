@@ -21,6 +21,7 @@ import com.pinback.pinback_server.domain.article.presentation.dto.response.Artic
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticles;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -95,8 +96,8 @@ public class ArticleManagementUsecase {
 		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), now,
 			PageRequest.of(pageNumber, pageSize));
 
-		List<ArticlesResponse> articlesResponses = articles.stream()
-			.map(ArticlesResponse::from)
+		List<RemindArticles> articlesResponses = articles.stream()
+			.map(RemindArticles::from)
 			.toList();
 
 		return new RemindArticleResponse(

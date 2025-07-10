@@ -6,6 +6,6 @@ import java.util.List;
 public record RemindArticleResponse(
 	long totalArticle,
 	LocalDateTime nextRemind,
-	List<ArticlesResponse> articles
+	List<RemindArticles> articles
 ) {
 }
