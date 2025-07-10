@@ -39,4 +39,8 @@ public class CategoryGetService {
 	public CategoriesForDashboard findAllForDashboard(UUID userId) {
 		return categoryRepository.findAllForDashboard(userId);
 	}
+
+	public Category findById(final long categoryId) {
+		return categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
+	}
 }

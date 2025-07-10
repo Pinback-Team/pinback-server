@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.category.presentation;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,6 +58,15 @@ public class CategoryController {
 		UpdateCategoryResponse response = categoryManagementUsecase.updateCategory(user, categoryId,
 			request.toCommand());
 		return ResponseDto.ok(response);
+	}
+
+	@DeleteMapping("/{categoryId}")
+	public ResponseDto<Void> deleteCategory(
+		@CurrentUser User user,
+		@PathVariable Long categoryId
+	) {
+		categoryManagementUsecase.deleteCategory(user, categoryId);
+		return ResponseDto.ok();
 	}
 }
 
