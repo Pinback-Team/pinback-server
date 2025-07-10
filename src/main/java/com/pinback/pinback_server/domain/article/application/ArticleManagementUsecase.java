@@ -1,6 +1,7 @@
 package com.pinback.pinback_server.domain.article.application;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -102,7 +103,7 @@ public class ArticleManagementUsecase {
 
 		return new RemindArticleResponse(
 			articles.getTotalElements(),
-			remindDateTime,
+			remindDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분")),
 			articlesResponses
 		);
 	}
