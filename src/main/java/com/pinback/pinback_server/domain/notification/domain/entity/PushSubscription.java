@@ -43,4 +43,14 @@ public class PushSubscription extends BaseEntity {
 
 	@Column(name = "auth", nullable = false)
 	private String auth;
+
+	public static PushSubscription from(User user, String endpoint, String p256dh, String auth) {
+		return PushSubscription.builder()
+			.user(user)
+			.endpoint(endpoint)
+			.p256dh(p256dh)
+			.auth(auth)
+			.build();
+	}
+
 }
