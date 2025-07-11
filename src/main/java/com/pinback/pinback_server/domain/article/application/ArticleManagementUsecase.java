@@ -28,6 +28,7 @@ import com.pinback.pinback_server.domain.article.presentation.dto.response.Remin
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
+import com.pinback.pinback_server.global.common.util.TextUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -50,7 +51,7 @@ public class ArticleManagementUsecase {
 			throw new ArticleAlreadyExistException();
 		}
 
-		if (command.memo().length() >= MEMO_LIMIT_LENGTH) {
+		if (TextUtil.countGraphemeClusters(command.memo()) >= MEMO_LIMIT_LENGTH) {
 			throw new MemoLengthLimitException();
 		}
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
