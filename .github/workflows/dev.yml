@@ -97,7 +97,7 @@ jobs:
           source: "docker-compose.yml"
           target: "${{ env.DEPLOY_DIR }}"
 
-      # 4. 배포
+      # 4. 배포 (docker composee(v2))
       - name: Deploy with Docker Compose to EC2
         uses: appleboy/ssh-action@master
         with:
