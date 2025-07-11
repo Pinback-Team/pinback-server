@@ -27,7 +27,6 @@ public class TextUtil {
 			}
 			currentBoundary = nextBoundary;
 		}
-		log.info("글자수: {}", count);
 		return count;
 	}
 }
