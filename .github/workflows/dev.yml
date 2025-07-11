@@ -117,6 +117,11 @@ jobs:
             fi
             export $(cat "${{ env.DEPLOY_DIR }}/pinback.env" | xargs)
             
+            # --- 디버깅 시작 ---
+            echo "DEBUG: REDIS_BINDING_PORT 값: '${REDIS_BINDING_PORT}'"
+            echo "DEBUG: REDIS_PORT 값: '${REDIS_PORT}'"
+            # --- 디버깅 끝 ---
+            
             # 3) 기존 Docker Compose 스택 중지 및 삭제 (있다면)
              docker compose -f "${{ env.DEPLOY_DIR }}/docker-compose.yml" down || true
             
