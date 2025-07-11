@@ -79,30 +79,52 @@ jobs:
     runs-on: ubuntu-latest
     if: success() && github.event_name == 'push'
     steps:
-      - name: Deploy to EC2
+      # 1. 리포지토리 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. EC2의 배포 디렉토리를 환경 변수로 정의
+      - name: Set Deploy Directory
+        run: echo "DEPLOY_DIR=/home/ubuntu/pinback" >> $GITHUB_ENV
+
+      # 3. docker-compose.yml 파일을 EC2로 복사
+      - name: Copy docker-compose.yml to EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.EC2_SSH_HOST }}
+          username: ${{ secrets.EC2_SSH_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.yml"
+          target: "${{ env.DEPLOY_DIR }}"
+
+      # 4. 배포
+      - name: Deploy with Docker Compose to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_SSH_HOST }}
           username: ${{ secrets.EC2_SSH_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # 1) Docker Hub에서 최신 이미지 pull
-            docker pull ${{ secrets.DOCKER_USERNAME }}/pinback:latest
+            # 1) 배포 디렉터리로 이동
+            mkdir -p "${{ env.DEPLOY_DIR }}" # 디렉토리가 없으면 생성 (최초 배포 시)
+            cd "${{ env.DEPLOY_DIR }}"
             
-            # 2) 기존 컨테이너 중지 및 삭제
-            docker stop pinback-server-container || true
-            docker rm pinback-server-container || true
+            # 2) EC2에 미리 만들어둔 pinback.env 파일의 환경 변수 로드
+            if [ ! -f "${{ env.DEPLOY_DIR }}/pinback.env" ]; then
+                echo "ERROR: pinback.env file not found at ${{ env.DEPLOY_DIR }}/pinback.env"
+                echo "Please create this file manually on EC2 (e.g., /home/ubuntu/pinback/pinback.env) with your sensitive environment variables."
+                exit 1
+            fi
+            export $(cat "${{ env.DEPLOY_DIR }}/pinback.env" | xargs)
             
-            # 3) 환경 변수 경로
-            ENV_FILE_PATH="${HOME}/pinback/pinback.env"
+            # 3) 기존 Docker Compose 스택 중지 및 삭제 (있다면)
+             docker compose -f "${{ env.DEPLOY_DIR }}/docker-compose.yml" down || true
             
-            # 4) 새로운 컨테이너 실행
-            docker run -d \
-              --name pinback-server-container \
-              -p 8080:8080 \
-              --env-file "$ENV_FILE_PATH" \
-              ${{ secrets.DOCKER_USERNAME }}/pinback:latest
+            # Docker Hub에서 최신 이미지 pull
+            docker compose -f "${{ env.DEPLOY_DIR }}/docker-compose.yml" pull
             
-            # 5) 필요 시 사용 안 하는 이미지 정리
+            # 5) Docker Compose로 서비스 시작
+            docker compose -f "${{ env.DEPLOY_DIR }}/docker-compose.yml" up -d --remove-orphans
+            
+            # 6) 사용하지 않는 Docker 이미지 정리
             docker image prune -f
-

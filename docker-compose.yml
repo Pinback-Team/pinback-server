@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7.2.9
+    container_name: redis
+    ports:
+      - ${REDIS_BINDING_PORT}:${REDIS_PORT:6379}
+    volumes:
+      - redis_data:/data
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    restart: always # 컨테이너 비정상 종료 또는 호스트 재부팅 시 자동 재시작
+
+  pinback:
+    image: ${DOCKER_USERNAME}/pinback:latest
+    container_name: pinback-server-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      DATABASE_URL: ${DATABASE_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DRIVER: ${DB_DRIVER}
+      DDL_AUTO: ${DDL_AUTO}
+      SHOW_SQL: ${SHOW_SQL}
+      SECRET_KEY: ${SECRET_KEY}
+      EXPIRATION_PERIOD: ${EXPIRATION_PERIOD}
+      ISSUER: ${ISSUER}
+    restart: always
+
+volumes:
+  redis_data:
