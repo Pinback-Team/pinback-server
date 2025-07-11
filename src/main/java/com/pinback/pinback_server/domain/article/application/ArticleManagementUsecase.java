@@ -1,7 +1,9 @@
 package com.pinback.pinback_server.domain.article.application;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -17,13 +19,16 @@ import com.pinback.pinback_server.domain.article.domain.service.ArticleGetServic
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.article.exception.ArticleAlreadyExistException;
 import com.pinback.pinback_server.domain.article.exception.ArticleNotOwnedException;
+import com.pinback.pinback_server.domain.article.exception.MemoLengthLimitException;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticles;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
+import com.pinback.pinback_server.global.common.util.TextUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -32,6 +37,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class ArticleManagementUsecase {
 
+	private static final long MEMO_LIMIT_LENGTH = 1000;
+	
 	private final CategoryGetService categoryGetService;
 	private final ArticleSaveService articleSaveService;
 	private final ArticleGetService articleGetService;
@@ -42,6 +49,10 @@ public class ArticleManagementUsecase {
 	public void createArticle(User user, ArticleCreateCommand command) {
 		if (articleGetService.checkExistsByUserAndUrl(user, command.url())) {
 			throw new ArticleAlreadyExistException();
+		}
+
+		if (TextUtil.countGraphemeClusters(command.memo()) >= MEMO_LIMIT_LENGTH) {
+			throw new MemoLengthLimitException();
 		}
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
@@ -95,13 +106,13 @@ public class ArticleManagementUsecase {
 		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), now,
 			PageRequest.of(pageNumber, pageSize));
 
-		List<ArticlesResponse> articlesResponses = articles.stream()
-			.map(ArticlesResponse::from)
+		List<RemindArticles> articlesResponses = articles.stream()
+			.map(RemindArticles::from)
 			.toList();
 
 		return new RemindArticleResponse(
 			articles.getTotalElements(),
-			remindDateTime,
+			remindDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN)),
 			articlesResponses
 		);
 	}
