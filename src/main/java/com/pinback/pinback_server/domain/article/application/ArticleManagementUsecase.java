@@ -37,12 +37,12 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class ArticleManagementUsecase {
 
+	private static final long MEMO_LIMIT_LENGTH = 1000;
+	
 	private final CategoryGetService categoryGetService;
 	private final ArticleSaveService articleSaveService;
 	private final ArticleGetService articleGetService;
 	private final ArticleDeleteService articleDeleteService;
-
-	private final long MEMO_LIMIT_LENGTH = 1000;
 
 	//TODO: 리마인드 로직 추가 필요
 	@Transactional
