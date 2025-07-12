@@ -28,3 +28,5 @@ jwt:
   secret-key: ${SECRET_KEY}
   accessExpirationPeriod: ${EXPIRATION_PERIOD}
   issuer: ${ISSUER}
+
+fcm: ${FCM_JSON}
