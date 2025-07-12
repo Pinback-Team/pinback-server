@@ -40,22 +40,22 @@ public class AcornService {
 		String key = REDIS_KEY_PREFIX + user.getId();
 		int currentAcorns = getCurrentAcorns(user.getId());
 		int finalAcorns;
-		boolean isCollected;
 
 		if (currentAcorns < MAX_ACORNS_PER_DAY) {
 			finalAcorns = currentAcorns + 1;
 			long ttlSeconds = calculateTtlSeconds(user);
 			redisTemplate.opsForValue().set(key, String.valueOf(finalAcorns), ttlSeconds, TimeUnit.SECONDS);
-			isCollected = true;
 			log.info("사용자 {}가 도토리 1개를 획득했습니다. 최종 도토리: {}, TTL: {} 초", user.getId(), finalAcorns, ttlSeconds);
-		} else {
-			finalAcorns = currentAcorns;
-			isCollected = false;
-			log.info("사용자 {}는 일일 도토리 한도({})에 도달하였습니다. 최종 도토리: {}", user.getId(), MAX_ACORNS_PER_DAY, finalAcorns);
+			return AcornCollectResponse.builder()
+				.finalAcornCount(finalAcorns)
+				.isCollected(true)
+				.build();
 		}
+		finalAcorns = currentAcorns;
+		log.info("사용자 {}는 일일 도토리 한도({})에 도달하였습니다. 최종 도토리: {}", user.getId(), MAX_ACORNS_PER_DAY, finalAcorns);
 		return AcornCollectResponse.builder()
 			.finalAcornCount(finalAcorns)
-			.isCollected(isCollected)
+			.isCollected(false)
 			.build();
 	}
 
