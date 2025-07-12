@@ -138,6 +138,7 @@ public class ArticleManagementUsecase {
 			AcornCollectResponse response = acornService.tryCollectAcorns(user);
 			finalAcornCount = response.finalAcornCount();
 			acornCollected = response.isCollected();
+			return ReadArticleResponse.of(finalAcornCount, acornCollected);
 
 		}
 		return ReadArticleResponse.of(finalAcornCount, acornCollected);
