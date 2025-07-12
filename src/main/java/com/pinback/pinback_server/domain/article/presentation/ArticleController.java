@@ -94,7 +94,7 @@ public class ArticleController {
 		@CurrentUser User user,
 		@PathVariable Long articleId
 	) {
-		ReadArticleResponse response = articleManagementUsecase.updateStatusArticle(user, articleId);
+		ReadArticleResponse response = articleManagementUsecase.updateArticleStatus(user, articleId);
 		return ResponseDto.ok(response);
 	}
 

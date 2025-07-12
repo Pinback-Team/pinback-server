@@ -124,7 +124,7 @@ public class ArticleManagementUsecase {
 	}
 
 	@Transactional
-	public ReadArticleResponse updateStatusArticle(User user, long articleId) {
+	public ReadArticleResponse updateArticleStatus(User user, long articleId) {
 		Article article = articleGetService.findByUserAndId(user, articleId);
 
 		// acornService.resetAcornsForTest(user.getId()); //테스트용 redis 키 삭제 메서드
