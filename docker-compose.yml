@@ -10,6 +10,7 @@ services:
       - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      TZ: Asia/Seoul
     command: redis-server /usr/local/etc/redis/redis.conf --requirepass ${REDIS_PASSWORD:-}
     restart: always # 컨테이너 비정상 종료 또는 호스트 재부팅 시 자동 재시작
 
@@ -21,6 +22,7 @@ services:
     depends_on:
       - redis
     environment:
+      TZ: Asia/Seoul
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}

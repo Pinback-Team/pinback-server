@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +16,7 @@ import com.pinback.pinback_server.domain.article.application.ArticleManagementUs
 import com.pinback.pinback_server.domain.article.presentation.dto.request.ArticleCreateRequest;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ReadArticleResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.common.annotation.CurrentUser;
@@ -84,6 +86,15 @@ public class ArticleController {
 		@RequestParam String url) {
 
 		ArticleDetailResponse response = articleManagementUsecase.checkArticleExists(user, url);
+		return ResponseDto.ok(response);
+	}
+
+	@PatchMapping("{articleId}/readStatus")
+	public ResponseDto<?> updateArticleReadStatus(
+		@CurrentUser User user,
+		@PathVariable Long articleId
+	) {
+		ReadArticleResponse response = articleManagementUsecase.updateArticleStatus(user, articleId);
 		return ResponseDto.ok(response);
 	}
 
