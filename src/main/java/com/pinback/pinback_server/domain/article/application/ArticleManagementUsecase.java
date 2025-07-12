@@ -23,26 +23,32 @@ import com.pinback.pinback_server.domain.article.exception.MemoLengthLimitExcept
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ReadArticleResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticles;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.common.util.TextUtil;
+import com.pinback.pinback_server.infra.redis.AcornService;
+import com.pinback.pinback_server.infra.redis.dto.response.AcornCollectResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArticleManagementUsecase {
 
 	private static final long MEMO_LIMIT_LENGTH = 1000;
-	
+
 	private final CategoryGetService categoryGetService;
 	private final ArticleSaveService articleSaveService;
 	private final ArticleGetService articleGetService;
 	private final ArticleDeleteService articleDeleteService;
+	private final AcornService acornService;
 
 	//TODO: 리마인드 로직 추가 필요
 	@Transactional
@@ -115,6 +121,26 @@ public class ArticleManagementUsecase {
 			remindDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN)),
 			articlesResponses
 		);
+	}
+
+	@Transactional
+	public ReadArticleResponse updateStatusArticle(User user, long articleId) {
+		Article article = articleGetService.findByUserAndId(user, articleId);
+
+		// acornService.resetAcornsForTest(user.getId()); //테스트용 redis 키 삭제 메서드
+		int finalAcornCount = acornService.getCurrentAcorns(user.getId());
+		log.info("수집하기 전 도토리 수: {}", finalAcornCount);
+		boolean acornCollected = false; // 해당 요청으로 도토리가 수집되었는지 여부
+
+		if (!article.isRead()) {
+			article.toRead();
+
+			AcornCollectResponse response = acornService.tryCollectAcorns(user);
+			finalAcornCount = response.finalAcornCount();
+			acornCollected = response.isCollected();
+
+		}
+		return ReadArticleResponse.of(finalAcornCount, acornCollected);
 	}
 
 	public ArticleDetailResponse checkArticleExists(User user, String url) {
