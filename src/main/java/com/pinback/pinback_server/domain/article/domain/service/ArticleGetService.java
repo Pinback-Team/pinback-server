@@ -54,4 +54,8 @@ public class ArticleGetService {
 	public Optional<Article> findByUrlAndUser(User user, String url) {
 		return articleRepository.findArticleByUserAndUrl(user, url);
 	}
+
+	public Article findByUserAndId(User user, long articleId) {
+		return articleRepository.findArticleByUserAndId(user, articleId).orElseThrow(ArticleNotFoundException::new);
+	}
 }
