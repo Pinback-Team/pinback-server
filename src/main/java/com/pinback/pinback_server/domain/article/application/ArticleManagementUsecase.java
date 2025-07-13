@@ -27,24 +27,30 @@ import com.pinback.pinback_server.domain.article.presentation.dto.response.Remin
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticles;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
+import com.pinback.pinback_server.domain.notification.domain.entity.PushSubscription;
+import com.pinback.pinback_server.domain.notification.domain.service.PushSubscriptionGetService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.common.util.TextUtil;
+import com.pinback.pinback_server.infra.redis.service.RedisNotificationService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class ArticleManagementUsecase {
 
 	private static final long MEMO_LIMIT_LENGTH = 1000;
-	
+
 	private final CategoryGetService categoryGetService;
 	private final ArticleSaveService articleSaveService;
 	private final ArticleGetService articleGetService;
 	private final ArticleDeleteService articleDeleteService;
+	private final RedisNotificationService redisNotificationService;
+	private final PushSubscriptionGetService pushSubscriptionGetService;
 
-	//TODO: 리마인드 로직 추가 필요
 	@Transactional
 	public void createArticle(User user, ArticleCreateCommand command) {
 		if (articleGetService.checkExistsByUserAndUrl(user, command.url())) {
@@ -56,7 +62,14 @@ public class ArticleManagementUsecase {
 		}
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
-		articleSaveService.save(article);
+		Article savedArticle = articleSaveService.save(article);
+
+		PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
+
+		if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now())) {
+			redisNotificationService.scheduleArticleReminder(savedArticle, user, subscriptionInfo.getToken());
+		}
+
 	}
 
 	public ArticleDetailResponse getArticleDetail(long articleId) {
