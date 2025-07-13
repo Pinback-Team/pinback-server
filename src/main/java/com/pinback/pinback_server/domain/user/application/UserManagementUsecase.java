@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.service.UserGetService;
@@ -22,6 +23,7 @@ public class UserManagementUsecase {
 	private final UserGetService userGetService;
 	private final AcornService acornService;
 
+	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(User user) {
 		User getUser = userGetService.getUser(user.getId());
 		LocalTime userRemindDefault = getUser.getRemindDefault();
