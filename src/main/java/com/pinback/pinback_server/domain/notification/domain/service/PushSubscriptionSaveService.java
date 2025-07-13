@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class NotificationSaveService {
+public class PushSubscriptionSaveService {
 	private final PushSubscriptionRepository repository;
 
 	public void save(PushSubscription pushSubscription) {
