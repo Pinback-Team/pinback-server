@@ -16,9 +16,12 @@ public record SignUpRequest(
 	@Schema(description = "기본 알림 시간", example = "08:30", pattern = "HH:mm")
 	@JsonFormat(pattern = "HH:mm")
 	@NotNull(message = "리마인드 시간은 비어있을 수 없습니다.")
-	LocalTime remindDefault
+	LocalTime remindDefault,
+
+	@NotNull(message = "알림 정보는 비어있을 수 없습니다.")
+	String token
 ) {
 	public SignUpCommand toCommand() {
-		return SignUpCommand.of(email, remindDefault);
+		return SignUpCommand.of(email, remindDefault, token);
 	}
 }

@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 public class ArticleSaveService {
 	private final ArticleRepository articleRepository;
 
-	public void save(Article article) {
-		articleRepository.save(article);
+	public Article save(Article article) {
+		return articleRepository.save(article);
 	}
 }

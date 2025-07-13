@@ -35,12 +35,14 @@ public class PushSubscription extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(name = "endpoint", nullable = false, unique = true, length = 512)
-	private String endpoint;
+	@Column(name = "endpoint", nullable = false, unique = true)
+	private String token;
 
-	@Column(name = "p256dh", nullable = false)
-	private String p256dh;
+	public static PushSubscription from(User user, String token) {
+		return PushSubscription.builder()
+			.user(user)
+			.token(token)
+			.build();
+	}
 
-	@Column(name = "auth", nullable = false)
-	private String auth;
 }

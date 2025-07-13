@@ -36,7 +36,7 @@ class AuthUsecaseTest {
 	@Test
 	void signupTest() {
 		//given
-		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0));
+		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0), "token");
 		//when
 		SignUpResponse response = authUsecase.signUp(command);
 
@@ -52,7 +52,7 @@ class AuthUsecaseTest {
 	@Test
 	void getValidToken() {
 		//given
-		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0));
+		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0), "token");
 		//when
 		SignUpResponse response = authUsecase.signUp(command);
 
