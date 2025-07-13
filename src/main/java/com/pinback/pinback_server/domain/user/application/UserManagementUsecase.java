@@ -1,6 +1,7 @@
 package com.pinback.pinback_server.domain.user.application;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -23,13 +24,10 @@ public class UserManagementUsecase {
 
 	public UserInfoResponse getUserInfo(User user) {
 		User getUser = userGetService.getUser(user.getId());
+		LocalTime userRemindDefault = getUser.getRemindDefault();
 
 		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime remindDate = now.plusDays(1L);
-		LocalDateTime remindDateTime = LocalDateTime.of(remindDate.getYear(), remindDate.getMonth(),
-			remindDate.getDayOfMonth(),
-			getUser.getRemindDefault().getHour(), getUser.getRemindDefault().getMinute());
-
+		LocalDateTime remindDateTime = getRemindDateTime(now, userRemindDefault);
 		String formattedRemindTime = formatRemindDateTime(remindDateTime);
 
 		int finalAcornCount = acornService.getCurrentAcorns(getUser.getId());
@@ -40,5 +38,13 @@ public class UserManagementUsecase {
 	private String formatRemindDateTime(LocalDateTime remindDateTime) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN);
 		return remindDateTime.format(formatter);
+	}
+
+	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
+		LocalDateTime remindDate = now.plusDays(1L);
+
+		return LocalDateTime.of(remindDate.getYear(), remindDate.getMonth(),
+			remindDate.getDayOfMonth(),
+			remindDefault.getHour(), remindDefault.getMinute());
 	}
 }
