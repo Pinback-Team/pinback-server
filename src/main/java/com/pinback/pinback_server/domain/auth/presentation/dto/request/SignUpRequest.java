@@ -4,7 +4,6 @@ import java.time.LocalTime;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.pinback.pinback_server.domain.auth.application.command.SignUpCommand;
-import com.pinback.pinback_server.domain.notification.presentation.dto.request.NotificationOnboardingRequest;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -20,9 +19,9 @@ public record SignUpRequest(
 	LocalTime remindDefault,
 
 	@NotNull(message = "알림 정보는 비어있을 수 없습니다.")
-	NotificationOnboardingRequest fcm
+	String token
 ) {
 	public SignUpCommand toCommand() {
-		return SignUpCommand.of(email, remindDefault, fcm.toCommand());
+		return SignUpCommand.of(email, remindDefault, token);
 	}
 }

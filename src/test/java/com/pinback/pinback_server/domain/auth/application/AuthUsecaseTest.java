@@ -13,8 +13,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.auth.application.command.SignUpCommand;
-import com.pinback.pinback_server.domain.auth.presentation.dto.request.KeyCommand;
-import com.pinback.pinback_server.domain.auth.presentation.dto.request.NotificationInfoCommand;
 import com.pinback.pinback_server.domain.auth.presentation.dto.response.SignUpResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.repository.UserRepository;
@@ -38,13 +36,7 @@ class AuthUsecaseTest {
 	@Test
 	void signupTest() {
 		//given
-		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0), NotificationInfoCommand.from(
-			"testEndPoint",
-			new KeyCommand(
-				"p256dh",
-				"auth"
-			)
-		));
+		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0), "token");
 		//when
 		SignUpResponse response = authUsecase.signUp(command);
 
@@ -60,13 +52,7 @@ class AuthUsecaseTest {
 	@Test
 	void getValidToken() {
 		//given
-		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0), NotificationInfoCommand.from(
-			"testEndPoint",
-			new KeyCommand(
-				"p256dh",
-				"auth"
-			)
-		));
+		SignUpCommand command = SignUpCommand.of("testEmail", LocalTime.of(10, 0, 0), "token");
 		//when
 		SignUpResponse response = authUsecase.signUp(command);
 
