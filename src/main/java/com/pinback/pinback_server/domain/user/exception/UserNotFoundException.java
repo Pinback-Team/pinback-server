@@ -5,6 +5,6 @@ import com.pinback.pinback_server.global.exception.constant.ExceptionCode;
 
 public class UserNotFoundException extends ApplicationException {
 	public UserNotFoundException() {
-		super(ExceptionCode.NOT_FOUND);
+		super(ExceptionCode.USER_NOT_FOUND);
 	}
 }
