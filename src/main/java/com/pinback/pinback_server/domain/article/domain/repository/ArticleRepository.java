@@ -19,4 +19,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Article
 	Optional<Article> findRecentArticleByUser(@Param("user") User user);
 
 	Optional<Article> findArticleByUserAndUrl(User user, String url);
+
+	Optional<Article> findArticleByUserAndId(User user, Long id);
 }
