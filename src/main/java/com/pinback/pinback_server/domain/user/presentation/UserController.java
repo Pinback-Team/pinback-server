@@ -1,7 +1,10 @@
 package com.pinback.pinback_server.domain.user.presentation;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.pinback_server.domain.user.application.UserManagementUsecase;
@@ -20,9 +23,10 @@ public class UserController {
 
 	@GetMapping("/acorns")
 	public ResponseDto<UserInfoResponse> getUserAcorns(
-		@CurrentUser User user
+		@CurrentUser User user,
+		@RequestParam("time") LocalDateTime now
 	) {
-		UserInfoResponse userInfoResponse = userManagementUsecase.getUserInfo(user);
+		UserInfoResponse userInfoResponse = userManagementUsecase.getUserInfo(user, now);
 		return ResponseDto.ok(userInfoResponse);
 	}
 }

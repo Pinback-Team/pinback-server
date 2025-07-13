@@ -24,11 +24,10 @@ public class UserManagementUsecase {
 	private final AcornService acornService;
 
 	@Transactional(readOnly = true)
-	public UserInfoResponse getUserInfo(User user) {
+	public UserInfoResponse getUserInfo(User user, LocalDateTime now) {
 		User getUser = userGetService.getUser(user.getId());
-		LocalTime userRemindDefault = getUser.getRemindDefault();
 
-		LocalDateTime now = LocalDateTime.now();
+		LocalTime userRemindDefault = getUser.getRemindDefault();
 		LocalDateTime remindDateTime = getRemindDateTime(now, userRemindDefault);
 		String formattedRemindTime = formatRemindDateTime(remindDateTime);
 
