@@ -1,6 +1,6 @@
 package com.pinback.pinback_server.global.config.firebase;
 
-import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -21,7 +21,8 @@ public class FirebaseConfig {
 	@PostConstruct
 	public void init() {
 		try {
-			InputStream serviceAccount = new ByteArrayInputStream(fcm.getBytes());
+			InputStream serviceAccount = new FileInputStream(fcm);
+
 			FirebaseOptions options = new FirebaseOptions.Builder()
 				.setCredentials(GoogleCredentials.fromStream(serviceAccount))
 				.build();
@@ -29,6 +30,8 @@ public class FirebaseConfig {
 			if (FirebaseApp.getApps().isEmpty()) {
 				FirebaseApp.initializeApp(options);
 			}
+			serviceAccount.close();
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
