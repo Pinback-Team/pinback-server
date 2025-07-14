@@ -21,21 +21,13 @@ services:
       - "8080:8080"
     depends_on:
       - redis
+    env_file:
+      - pinback.env
+    volumes:
+      - /home/ubuntu/pinback/firebase-service-account.json:/app/firebase-service-account.json:ro
     environment:
       TZ: Asia/Seoul
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-      DATABASE_URL: ${DATABASE_URL}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_DRIVER: ${DB_DRIVER}
-      DDL_AUTO: ${DDL_AUTO}
-      SHOW_SQL: ${SHOW_SQL}
-      SECRET_KEY: ${SECRET_KEY}
-      EXPIRATION_PERIOD: ${EXPIRATION_PERIOD}
-      ISSUER: ${ISSUER}
-      FCM_JSON: ${FCM_JSON}
+      FCM_JSON: /app/firebase-service-account.json
     restart: always
 
 volumes:
