@@ -35,6 +35,7 @@ services:
       SECRET_KEY: ${SECRET_KEY}
       EXPIRATION_PERIOD: ${EXPIRATION_PERIOD}
       ISSUER: ${ISSUER}
+      FCM_JSON: ${FCM_JSON}
     restart: always
 
 volumes:
