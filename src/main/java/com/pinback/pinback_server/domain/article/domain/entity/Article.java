@@ -79,4 +79,10 @@ public class Article extends BaseEntity {
 	public void toUnRead() {
 		this.isRead = false;
 	}
+
+	public void update(String memo, Category category, LocalDateTime remindAt) {
+		this.memo = memo;
+		this.category = category;
+		this.remindAt = remindAt;
+	}
 }
