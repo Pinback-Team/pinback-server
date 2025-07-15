@@ -1,10 +1,10 @@
 package com.pinback.pinback_server.domain.category.presentation.dto.response;
 
 public record CreateCategoryResponse(
-	long id,
+	long categoryId,
 	String categoryName
 ) {
-	public static CreateCategoryResponse of(long id, String categoryName) {
-		return new CreateCategoryResponse(id, categoryName);
+	public static CreateCategoryResponse of(long categoryId, String categoryName) {
+		return new CreateCategoryResponse(categoryId, categoryName);
 	}
 }
