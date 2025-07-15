@@ -5,9 +5,9 @@ import java.time.LocalTime;
 
 public record UserRemindInfoResponse(
 	LocalDate remindDate,
-	LocalTime remindDateTime
+	LocalTime remindTime
 ) {
-	public static UserRemindInfoResponse of(LocalDate remindDate, LocalTime remindDateTime) {
-		return new UserRemindInfoResponse(remindDate, remindDateTime);
+	public static UserRemindInfoResponse of(LocalDate remindDate, LocalTime remindTime) {
+		return new UserRemindInfoResponse(remindDate, remindTime);
 	}
 }
