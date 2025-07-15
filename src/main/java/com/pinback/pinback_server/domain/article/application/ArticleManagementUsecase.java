@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.article.application.command.ArticleCreateCommand;
+import com.pinback.pinback_server.domain.article.application.command.ArticleUpdateCommand;
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleDeleteService;
@@ -68,9 +69,8 @@ public class ArticleManagementUsecase {
 		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
 		Article savedArticle = articleSaveService.save(article);
 
-		PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
-
 		if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now())) {
+			PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
 			redisNotificationService.scheduleArticleReminder(savedArticle, user, subscriptionInfo.getToken());
 		}
 
@@ -171,6 +171,31 @@ public class ArticleManagementUsecase {
 	public void checkOwner(Article article, User user) {
 		if (!(article.getUser().equals(user))) {
 			throw new ArticleNotOwnedException();
+		}
+	}
+
+	@Transactional
+	public void update(User user, long articleId, ArticleUpdateCommand command) {
+		if (TextUtil.countGraphemeClusters(command.memo()) >= MEMO_LIMIT_LENGTH) {
+			throw new MemoLengthLimitException();
+		}
+
+		boolean remindAtIsChanged = false;
+
+		Article article = articleGetService.findByUserAndId(user, articleId);
+		if (!article.getRemindAt().equals(command.remindTime())) {
+			remindAtIsChanged = true;
+		}
+		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
+		article.update(command.memo(), category, command.remindTime());
+
+		if (remindAtIsChanged) {
+			redisNotificationService.cancelArticleReminder(articleId, user.getId());
+			
+			if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now())) {
+				PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
+				redisNotificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
+			}
 		}
 	}
 
