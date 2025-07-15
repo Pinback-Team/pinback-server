@@ -182,7 +182,7 @@ public class ArticleManagementUsecase {
 
 		boolean remindAtIsChanged = false;
 
-		Article article = articleGetService.findById(articleId);
+		Article article = articleGetService.findByUserAndId(user, articleId);
 		if (!article.getRemindAt().equals(command.remindTime())) {
 			remindAtIsChanged = true;
 		}
