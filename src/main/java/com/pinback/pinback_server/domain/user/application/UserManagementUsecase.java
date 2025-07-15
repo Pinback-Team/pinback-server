@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.user.application;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.service.UserGetService;
 import com.pinback.pinback_server.domain.user.presentation.dto.response.UserInfoResponse;
+import com.pinback.pinback_server.domain.user.presentation.dto.response.UserRemindInfoResponse;
 import com.pinback.pinback_server.infra.redis.AcornService;
 
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,15 @@ public class UserManagementUsecase {
 		int finalAcornCount = acornService.getCurrentAcorns(getUser.getId());
 
 		return UserInfoResponse.of(finalAcornCount, formattedRemindTime);
+	}
+
+	@Transactional(readOnly = true)
+	public UserRemindInfoResponse getUserRemindInfo(User user, LocalDateTime now) {
+		User getUser = userGetService.getUser(user.getId());
+		LocalTime userRemindTime = getUser.getRemindDefault();
+		LocalDate userRemindDate = now.toLocalDate().plusDays(1L);
+
+		return UserRemindInfoResponse.of(userRemindDate, userRemindTime);
 	}
 
 	private String formatRemindDateTime(LocalDateTime remindDateTime) {
