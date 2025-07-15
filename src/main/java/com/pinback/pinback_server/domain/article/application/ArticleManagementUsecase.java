@@ -115,12 +115,14 @@ public class ArticleManagementUsecase {
 	}
 
 	public RemindArticleResponse getRemindArticles(User user, LocalDateTime now, int pageNumber, int pageSize) {
-		LocalDateTime remindDate = now.plusDays(1L);
-		LocalDateTime remindDateTime = LocalDateTime.of(remindDate.getYear(), remindDate.getMonth(),
-			remindDate.getDayOfMonth(),
-			user.getRemindDefault().getHour(), user.getRemindDefault().getMinute());
+		LocalDateTime remindDateTime = LocalDateTime.of(
+			now.getYear(),
+			now.getMonth(),
+			now.getDayOfMonth(),
+			user.getRemindDefault().getHour(),
+			user.getRemindDefault().getMinute());
 
-		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), now,
+		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), remindDateTime,
 			PageRequest.of(pageNumber, pageSize));
 
 		List<RemindArticles> articlesResponses = articles.stream()
@@ -129,7 +131,8 @@ public class ArticleManagementUsecase {
 
 		return new RemindArticleResponse(
 			articles.getTotalElements(),
-			remindDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN)),
+			remindDateTime.plusDays(1)
+				.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN)),
 			articlesResponses
 		);
 	}
@@ -191,7 +194,7 @@ public class ArticleManagementUsecase {
 
 		if (remindAtIsChanged) {
 			redisNotificationService.cancelArticleReminder(articleId, user.getId());
-			
+
 			if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now())) {
 				PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
 				redisNotificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
