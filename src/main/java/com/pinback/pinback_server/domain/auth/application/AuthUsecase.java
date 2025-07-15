@@ -6,9 +6,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.pinback_server.domain.auth.application.command.SignUpCommand;
 import com.pinback.pinback_server.domain.auth.exception.UserDuplicateException;
 import com.pinback.pinback_server.domain.auth.presentation.dto.response.SignUpResponse;
+import com.pinback.pinback_server.domain.auth.presentation.dto.response.TokenResponse;
 import com.pinback.pinback_server.domain.notification.domain.entity.PushSubscription;
 import com.pinback.pinback_server.domain.notification.domain.service.PushSubscriptionSaveService;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
+import com.pinback.pinback_server.domain.user.domain.service.UserGetService;
 import com.pinback.pinback_server.domain.user.domain.service.UserSaveService;
 import com.pinback.pinback_server.domain.user.domain.service.UserValidateService;
 import com.pinback.pinback_server.global.common.jwt.JwtProvider;
@@ -23,6 +25,7 @@ public class AuthUsecase {
 	private final UserSaveService userSaveService;
 	private final JwtProvider jwtProvider;
 	private final PushSubscriptionSaveService pushSubscriptionSaveService;
+	private final UserGetService userGetService;
 
 	@Transactional
 	public SignUpResponse signUp(SignUpCommand signUpCommand) {
@@ -40,5 +43,14 @@ public class AuthUsecase {
 		pushSubscriptionSaveService.save(pushSubscription);
 
 		return SignUpResponse.from(accessToken);
+	}
+
+	@Transactional(readOnly = true)
+	public TokenResponse getToken(String email) {
+		User user = userGetService.findByEmail(email);
+
+		String accessToken = jwtProvider.createAccessToken(user.getId());
+
+		return new TokenResponse(accessToken);
 	}
 }

@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.user.domain.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +12,6 @@ import com.pinback.pinback_server.domain.user.domain.entity.User;
 public interface UserRepository extends JpaRepository<User, UUID> {
 
 	boolean existsUserByEmail(String email);
+
+	Optional<User> findByEmail(String email);
 }
