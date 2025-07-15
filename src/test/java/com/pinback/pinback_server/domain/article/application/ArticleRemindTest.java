@@ -59,7 +59,7 @@ public class ArticleRemindTest extends ApplicationTest {
 			.isEqualTo(2);
 
 		assertThat(responses.nextRemind())
-			.isEqualTo("2025년 07월 09일 오후 12시 00분");
+			.isEqualTo(LocalDateTime.of(2025, 7, 9, 12, 0, 0));
 
 		assertThat(responses.articles().get(1).remindAt()).isEqualTo(LocalDateTime.of(2025, 7, 7, 12, 1, 0));
 
