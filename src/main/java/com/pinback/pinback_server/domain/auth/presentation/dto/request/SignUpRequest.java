@@ -19,9 +19,9 @@ public record SignUpRequest(
 	LocalTime remindDefault,
 
 	@NotNull(message = "알림 정보는 비어있을 수 없습니다.")
-	String token
+	String fcmToken
 ) {
 	public SignUpCommand toCommand() {
-		return SignUpCommand.of(email, remindDefault, token);
+		return SignUpCommand.of(email, remindDefault, fcmToken);
 	}
 }
