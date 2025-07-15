@@ -32,10 +32,7 @@ public class TestUsecase {
 	}
 
 	public CategoriesTestResponse categoriesTest(User user) {
-		// 유저 확인
 		User getUser = userGetService.getUser(user.getId());
-
-		// 카테고리 10개 생성 + 리스트에 추가
 		List<String> defaultCategoryNames = Arrays.asList(
 			"집",
 			"취업",
