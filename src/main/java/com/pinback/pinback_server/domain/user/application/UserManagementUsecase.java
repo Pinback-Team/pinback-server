@@ -3,8 +3,6 @@ package com.pinback.pinback_server.domain.user.application;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,11 +29,10 @@ public class UserManagementUsecase {
 
 		LocalTime userRemindDefault = getUser.getRemindDefault();
 		LocalDateTime remindDateTime = getRemindDateTime(now, userRemindDefault);
-		String formattedRemindTime = formatRemindDateTime(remindDateTime);
 
 		int finalAcornCount = acornService.getCurrentAcorns(getUser.getId());
 
-		return UserInfoResponse.of(finalAcornCount, formattedRemindTime);
+		return UserInfoResponse.of(finalAcornCount, remindDateTime);
 	}
 
 	@Transactional(readOnly = true)
@@ -45,11 +42,6 @@ public class UserManagementUsecase {
 		LocalDate userRemindDate = now.toLocalDate().plusDays(1L);
 
 		return UserRemindInfoResponse.of(userRemindDate, userRemindTime);
-	}
-
-	private String formatRemindDateTime(LocalDateTime remindDateTime) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN);
-		return remindDateTime.format(formatter);
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
