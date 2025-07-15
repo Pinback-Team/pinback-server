@@ -13,9 +13,7 @@ import com.pinback.pinback_server.global.common.annotation.CurrentUser;
 import com.pinback.pinback_server.global.common.dto.ResponseDto;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
@@ -34,7 +32,6 @@ public class TestController {
 		@CurrentUser User user
 	) {
 		CategoriesTestResponse response = testUsecase.categoriesTest(user);
-		log.info("categoriesTest: {}", response);
 		return ResponseDto.ok(response);
 	}
 }
