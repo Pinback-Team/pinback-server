@@ -17,6 +17,7 @@ import com.pinback.pinback_server.domain.article.presentation.dto.request.Articl
 import com.pinback.pinback_server.domain.article.presentation.dto.request.ArticleUpdateRequest;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleUnreadResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ReadArticleResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
@@ -87,6 +88,16 @@ public class ArticleController {
 		@RequestParam String url) {
 
 		ArticleDetailResponse response = articleManagementUsecase.checkArticleExists(user, url);
+		return ResponseDto.ok(response);
+	}
+
+	@GetMapping("/unread")
+	public ResponseDto<ArticleUnreadResponse> getAllUnreadArticles(
+		@CurrentUser User user,
+		@RequestParam int pageNumber,
+		@RequestParam int pageSize) {
+
+		ArticleUnreadResponse response = articleManagementUsecase.getUnreadArticles(user, pageNumber, pageSize);
 		return ResponseDto.ok(response);
 	}
 
