@@ -45,7 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ArticleManagementUsecase {
 
-	private static final long MEMO_LIMIT_LENGTH = 1000;
+	private static final long MEMO_LIMIT_LENGTH = 500;
 
 	private final CategoryGetService categoryGetService;
 	private final ArticleSaveService articleSaveService;

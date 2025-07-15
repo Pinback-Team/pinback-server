@@ -40,7 +40,7 @@ public class ArticleController {
 		return ResponseDto.created();
 	}
 
-	@GetMapping("/details/{articleId}")
+	@GetMapping("/{articleId}")
 	public ResponseDto<ArticleDetailResponse> getArticleDetails(
 		@PathVariable Long articleId) {
 		ArticleDetailResponse response = articleManagementUsecase.getArticleDetail(articleId);
@@ -57,7 +57,7 @@ public class ArticleController {
 		return ResponseDto.ok(response);
 	}
 
-	@GetMapping("/{categoryId}")
+	@GetMapping("/category")
 	public ResponseDto<ArticleAllResponse> getAllByCategory(
 		@CurrentUser User user,
 		@RequestParam Long categoryId,
@@ -107,7 +107,7 @@ public class ArticleController {
 		articleManagementUsecase.delete(user, articleId);
 		return ResponseDto.ok();
 	}
-
+	
 	@PatchMapping("/{articleId}")
 	public ResponseDto<Void> updateArticle(
 		@CurrentUser User user,

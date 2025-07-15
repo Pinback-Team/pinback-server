@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 
 public record UserInfoResponse(
 	int acornCount,
-	LocalDateTime remindDateTime
+	LocalDateTime nextRemind
 ) {
-	public static UserInfoResponse of(int acornCount, LocalDateTime remindDateTime) {
-		return new UserInfoResponse(acornCount, remindDateTime);
+	public static UserInfoResponse of(int acornCount, LocalDateTime nextRemind) {
+		return new UserInfoResponse(acornCount, nextRemind);
 	}
 }
