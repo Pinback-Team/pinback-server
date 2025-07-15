@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
@@ -28,6 +29,9 @@ class CategoryGetServiceTest {
 
 	@Autowired
 	private CategoryGetService categoryGetService;
+
+	@MockitoBean
+	private org.springframework.data.redis.listener.RedisMessageListenerContainer RedisMessageListenerContainer;
 
 	@DisplayName("카테고리 소유자가 아닐경우 예외가 발생한다.")
 	@Test

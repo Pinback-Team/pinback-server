@@ -1,9 +1,8 @@
 package com.pinback.pinback_server.domain.article.application;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -115,12 +114,9 @@ public class ArticleManagementUsecase {
 	}
 
 	public RemindArticleResponse getRemindArticles(User user, LocalDateTime now, int pageNumber, int pageSize) {
-		LocalDateTime remindDate = now.plusDays(1L);
-		LocalDateTime remindDateTime = LocalDateTime.of(remindDate.getYear(), remindDate.getMonth(),
-			remindDate.getDayOfMonth(),
-			user.getRemindDefault().getHour(), user.getRemindDefault().getMinute());
+		LocalDateTime remindDateTime = getRemindDateTime(now, user.getRemindDefault());
 
-		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), now,
+		Page<Article> articles = articleGetService.findTodayRemind(user.getId(), remindDateTime,
 			PageRequest.of(pageNumber, pageSize));
 
 		List<RemindArticles> articlesResponses = articles.stream()
@@ -129,9 +125,19 @@ public class ArticleManagementUsecase {
 
 		return new RemindArticleResponse(
 			articles.getTotalElements(),
-			remindDateTime.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 a HH시 mm분", Locale.KOREAN)),
+			remindDateTime.plusDays(1),
 			articlesResponses
 		);
+	}
+
+	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
+
+		return LocalDateTime.of(
+			now.getYear(),
+			now.getMonth(),
+			now.getDayOfMonth(),
+			remindDefault.getHour(),
+			remindDefault.getMinute());
 	}
 
 	@Transactional
@@ -191,7 +197,7 @@ public class ArticleManagementUsecase {
 
 		if (remindAtIsChanged) {
 			redisNotificationService.cancelArticleReminder(articleId, user.getId());
-			
+
 			if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now())) {
 				PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
 				redisNotificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());

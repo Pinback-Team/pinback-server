@@ -9,7 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.ApplicationTest;
@@ -32,34 +34,34 @@ public class ArticleRemindTest extends ApplicationTest {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private ArticleRepository articleRepository;
+	@MockitoBean
+	private RedisMessageListenerContainer RedisMessageListenerContainer;
 
-	@DisplayName("오늘 기준을 24시간 이내의 리마인드 아티클 들을 조회한다.")
+	@DisplayName("오늘 리마인드 시간에서 부터 24시간 이내의 리마인드 아티클들을 조회한다.")
 	@Test
 	void getRemindArticleInRange() {
 		//given
 		User user = userRepository.save(user());
 		Category category = categoryRepository.save(category(user));
 
-		//리마인드 시간이 7월 7일 9시 1분, 7월 8일 9시 이라고 가정
-		// 오늘이 7월 8일 9시라고 가정
 		articleRepository.save(
-			articleWithDate(user, "article" + "1", category, LocalDateTime.of(2025, 7, 7, 9, 1, 0)));
+			articleWithDate(user, "article" + "1", category, LocalDateTime.of(2025, 7, 7, 12, 1, 0)));
 
 		articleRepository.save(
-			articleWithDate(user, "article" + "2", category, LocalDateTime.of(2025, 7, 8, 9, 0, 0)));
+			articleWithDate(user, "article" + "2", category, LocalDateTime.of(2025, 7, 8, 12, 0, 0)));
 
 		//when
 		RemindArticleResponse responses = articleManagementUsecase.getRemindArticles(user,
-			LocalDateTime.of(2025, 7, 8, 9, 0, 0), 0, 5);
+			LocalDateTime.of(2025, 7, 8, 17, 0, 0), 0, 5);
 
 		//then
 		assertThat(responses.totalArticle())
 			.isEqualTo(2);
 
 		assertThat(responses.nextRemind())
-			.isEqualTo("2025년 07월 09일 오후 12시 00분");
+			.isEqualTo(LocalDateTime.of(2025, 7, 9, 12, 0, 0));
 
-		assertThat(responses.articles().get(1).remindAt()).isEqualTo(LocalDateTime.of(2025, 7, 7, 9, 1, 0));
+		assertThat(responses.articles().get(1).remindAt()).isEqualTo(LocalDateTime.of(2025, 7, 7, 12, 1, 0));
 
 	}
 
@@ -76,7 +78,10 @@ public class ArticleRemindTest extends ApplicationTest {
 			articleWithDate(user, "article" + "1", category, LocalDateTime.of(2025, 7, 7, 9, 0, 0)));
 
 		articleRepository.save(
-			articleWithDate(user, "article" + "2", category, LocalDateTime.of(2025, 7, 8, 9, 1, 0)));
+			articleWithDate(user, "article" + "2", category, LocalDateTime.of(2025, 7, 8, 12, 1, 0)));
+
+		articleRepository.save(
+			articleWithDate(user, "article" + "3", category, LocalDateTime.of(2025, 7, 8, 15, 0, 0)));
 
 		//when
 		RemindArticleResponse responses = articleManagementUsecase.getRemindArticles(user,
@@ -101,7 +106,8 @@ public class ArticleRemindTest extends ApplicationTest {
 
 		//then
 		assertThat(responses.nextRemind())
-			.isEqualTo("2025년 08월 01일 오후 12시 00분");
+			.isEqualTo(LocalDateTime.of(2025, 8, 1, 12, 0, 0));
+
 		//2025년 8월 1일 오후 12시 00분
 
 	}
