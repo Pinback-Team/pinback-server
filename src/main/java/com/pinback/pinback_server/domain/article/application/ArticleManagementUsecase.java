@@ -22,6 +22,7 @@ import com.pinback.pinback_server.domain.article.exception.ArticleNotOwnedExcept
 import com.pinback.pinback_server.domain.article.exception.MemoLengthLimitException;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
+import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleUnreadResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticlesResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ReadArticleResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.RemindArticleResponse;
@@ -203,6 +204,21 @@ public class ArticleManagementUsecase {
 				redisNotificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
 			}
 		}
+	}
+
+	@Transactional(readOnly = true)
+	public ArticleUnreadResponse getUnreadArticles(User user, int pageNumber, int pageSize) {
+		ArticlesWithUnreadCount projection = articleGetService.findAllByIsRead(user.getId(),
+			PageRequest.of(pageNumber, pageSize));
+
+		List<ArticlesResponse> articlesResponses = projection.getArticle().stream()
+			.map(ArticlesResponse::from)
+			.toList();
+
+		return ArticleUnreadResponse.of(
+			projection.getUnReadCount(),
+			articlesResponses
+		);
 	}
 
 }

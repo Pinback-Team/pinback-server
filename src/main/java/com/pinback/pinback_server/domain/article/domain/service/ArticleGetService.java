@@ -58,4 +58,8 @@ public class ArticleGetService {
 	public Article findByUserAndId(User user, long articleId) {
 		return articleRepository.findArticleByUserAndId(user, articleId).orElseThrow(ArticleNotFoundException::new);
 	}
+
+	public ArticlesWithUnreadCount findAllByIsRead(UUID userId, PageRequest pageRequest) {
+		return articleRepository.findAllByIsReadFalse(userId, pageRequest);
+	}
 }
