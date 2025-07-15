@@ -7,10 +7,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.pinback_server.domain.test.application.TestUsecase;
 import com.pinback.pinback_server.domain.test.presentation.dto.request.PushTestRequest;
+import com.pinback.pinback_server.domain.test.presentation.dto.response.CategoriesTestResponse;
+import com.pinback.pinback_server.domain.user.domain.entity.User;
+import com.pinback.pinback_server.global.common.annotation.CurrentUser;
 import com.pinback.pinback_server.global.common.dto.ResponseDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/test")
 @RequiredArgsConstructor
@@ -22,5 +27,14 @@ public class TestController {
 		testUsecase.pushTest(pushTestRequest);
 
 		return ResponseDto.ok();
+	}
+
+	@PostMapping("/categories")
+	public ResponseDto<CategoriesTestResponse> categoriesTest(
+		@CurrentUser User user
+	) {
+		CategoriesTestResponse response = testUsecase.categoriesTest(user);
+		log.info("categoriesTest: {}", response);
+		return ResponseDto.ok(response);
 	}
 }
