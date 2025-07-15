@@ -93,6 +93,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		return
 			path.startsWith("/api/v1/auth/signup") ||
+				path.startsWith("/api/v1/auth/token") ||
 				path.startsWith("/api/public/") ||
 				path.equals("/health") ||
 				path.startsWith("/swagger") ||
