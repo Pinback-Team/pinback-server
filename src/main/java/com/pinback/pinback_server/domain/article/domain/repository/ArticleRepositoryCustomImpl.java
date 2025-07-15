@@ -107,4 +107,32 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 		return PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne);
 	}
+
+	@Override
+	public ArticlesWithUnreadCount findAllByIsReadFalse(UUID userId, Pageable pageable) {
+		BooleanExpression conditions = article.user.id.eq(userId).and(article.isRead.isFalse());
+
+		List<Article> articles = queryFactory
+			.selectFrom(article)
+			.join(article.user, user).fetchJoin()
+			.where(conditions)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.orderBy(article.createdAt.desc())
+			.fetch();
+
+		JPAQuery<Long> countQuery = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(conditions);
+
+		Long unReadCount = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(conditions)
+			.fetchOne();
+
+		return new ArticlesWithUnreadCount(unReadCount,
+			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne));
+	}
 }
