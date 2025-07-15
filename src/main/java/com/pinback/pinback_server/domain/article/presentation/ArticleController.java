@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.pinback_server.domain.article.application.ArticleManagementUsecase;
 import com.pinback.pinback_server.domain.article.presentation.dto.request.ArticleCreateRequest;
+import com.pinback.pinback_server.domain.article.presentation.dto.request.ArticleUpdateRequest;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleAllResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ArticleDetailResponse;
 import com.pinback.pinback_server.domain.article.presentation.dto.response.ReadArticleResponse;
@@ -104,6 +105,15 @@ public class ArticleController {
 		@PathVariable Long articleId
 	) {
 		articleManagementUsecase.delete(user, articleId);
+		return ResponseDto.ok();
+	}
+
+	@PatchMapping("/{articleId}")
+	public ResponseDto<Void> updateArticle(
+		@CurrentUser User user,
+		@PathVariable Long articleId,
+		@Valid @RequestBody ArticleUpdateRequest request) {
+		articleManagementUsecase.update(user, articleId, request.toCommand());
 		return ResponseDto.ok();
 	}
 
