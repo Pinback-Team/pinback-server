@@ -55,6 +55,10 @@ public class SecurityConfig {
 					"/api/v1/auth/token"
 				).permitAll()
 
+				.requestMatchers(
+					"/api/v1/test/*"
+				).permitAll()
+
 				.anyRequest().authenticated()
 			)
 			.formLogin(AbstractHttpConfigurer::disable)
