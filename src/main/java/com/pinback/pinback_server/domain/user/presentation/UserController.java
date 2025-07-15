@@ -25,7 +25,7 @@ public class UserController {
 	@GetMapping("/acorns")
 	public ResponseDto<UserInfoResponse> getUserAcorns(
 		@CurrentUser User user,
-		@RequestParam("time") LocalDateTime now
+		@RequestParam LocalDateTime now
 	) {
 		UserInfoResponse userInfoResponse = userManagementUsecase.getUserInfo(user, now);
 		return ResponseDto.ok(userInfoResponse);
