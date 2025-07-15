@@ -31,11 +31,10 @@ public class UserManagementUsecase {
 
 		LocalTime userRemindDefault = getUser.getRemindDefault();
 		LocalDateTime remindDateTime = getRemindDateTime(now, userRemindDefault);
-		String formattedRemindTime = formatRemindDateTime(remindDateTime);
 
 		int finalAcornCount = acornService.getCurrentAcorns(getUser.getId());
 
-		return UserInfoResponse.of(finalAcornCount, formattedRemindTime);
+		return UserInfoResponse.of(finalAcornCount, remindDateTime);
 	}
 
 	@Transactional(readOnly = true)
