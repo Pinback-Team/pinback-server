@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.ApplicationTest;
@@ -39,6 +40,8 @@ class ArticleManagementUsecaseTest extends ApplicationTest {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private ArticleRepository articleRepository;
+	@MockitoBean
+	private org.springframework.data.redis.listener.RedisMessageListenerContainer RedisMessageListenerContainer;
 
 	//TODO: 나중에 firebase mocking 처리해서 주석 해제 할 것
 

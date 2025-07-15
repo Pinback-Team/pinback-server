@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
@@ -21,6 +22,9 @@ class JwtUtilTest {
 
 	@Autowired
 	private JwtProvider jwtProvider;
+
+	@MockitoBean
+	private org.springframework.data.redis.listener.RedisMessageListenerContainer RedisMessageListenerContainer;
 
 	@DisplayName("토큰에서 올바르게 유저 ID를 추출한다.")
 	@Test

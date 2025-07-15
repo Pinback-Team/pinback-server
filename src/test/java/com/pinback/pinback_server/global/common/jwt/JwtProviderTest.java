@@ -9,12 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class JwtProviderTest {
 	@Autowired
 	private JwtProvider jwtProvider;
+	@MockitoBean
+	private org.springframework.data.redis.listener.RedisMessageListenerContainer RedisMessageListenerContainer;
 
 	@DisplayName("jwt 토큰을 생성할 수 있다.")
 	@Test
