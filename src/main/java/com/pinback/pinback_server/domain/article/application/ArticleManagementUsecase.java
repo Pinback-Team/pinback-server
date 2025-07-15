@@ -189,11 +189,13 @@ public class ArticleManagementUsecase {
 		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		article.update(command.memo(), category, command.remindTime());
 
-		PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
-
-		if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now()) && remindAtIsChanged) {
+		if (remindAtIsChanged) {
 			redisNotificationService.cancelArticleReminder(articleId, user.getId());
-			redisNotificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
+			
+			if (command.remindTime() != null && !command.remindTime().isBefore(LocalDateTime.now())) {
+				PushSubscription subscriptionInfo = pushSubscriptionGetService.find(user);
+				redisNotificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
+			}
 		}
 	}
 
