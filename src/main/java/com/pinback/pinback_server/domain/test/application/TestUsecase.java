@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
-import com.pinback.pinback_server.domain.category.exception.CategoryAlreadyExistException;
 import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverException;
 import com.pinback.pinback_server.domain.test.presentation.dto.request.PushTestRequest;
 import com.pinback.pinback_server.domain.test.presentation.dto.response.CategoriesTestResponse;
@@ -53,9 +52,6 @@ public class TestUsecase {
 
 		List<Category> createdCategories = defaultCategoryNames.stream()
 			.map(categoryName -> {
-				if (categoryGetService.checkExistsByCategoryNameAndUser(categoryName, getUser)) {
-					throw new CategoryAlreadyExistException();
-				}
 				Category category = Category.create(categoryName, getUser);
 				return categorySaveService.save(category);
 			})
