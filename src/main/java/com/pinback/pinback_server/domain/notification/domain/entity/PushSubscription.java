@@ -35,7 +35,7 @@ public class PushSubscription extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(name = "endpoint", nullable = false, unique = true)
+	@Column(name = "token", nullable = false, unique = true)
 	private String token;
 
 	public static PushSubscription from(User user, String token) {

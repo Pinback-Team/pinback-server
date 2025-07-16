@@ -1,15 +1,22 @@
 package com.pinback.pinback_server.domain.test.application;
 
+import java.util.UUID;
+
 import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.pinback.pinback_server.domain.article.domain.entity.Article;
+import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
+import com.pinback.pinback_server.domain.category.domain.entity.Category;
+import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
 import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverException;
 import com.pinback.pinback_server.domain.test.presentation.dto.request.PushTestRequest;
+import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.test.presentation.dto.response.CategoriesTestResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.service.UserGetService;
@@ -22,6 +29,8 @@ import lombok.RequiredArgsConstructor;
 public class TestUsecase {
 	private static final int CATEGORY_LIMIT = 10;
 	private final FcmService fcmService;
+	private final CategoryGetService categoryGetService;
+	private final ArticleSaveService articleSaveService;
 	private final UserGetService userGetService;
 	private final CategorySaveService categorySaveService;
 	private final CategoryGetService categoryGetService;
@@ -29,6 +38,18 @@ public class TestUsecase {
 	public void pushTest(PushTestRequest request) {
 		fcmService.sendNotification(request.fcmToken(), request.message());
 	}
+
+	public void createByCategory(User user, long categoryId) {
+		String format = "%s:%s";
+		Category category = categoryGetService.findById(categoryId);
+
+		for (int i = 0; i < 5; i++) {
+			articleSaveService.save(Article.create(
+				String.format(format, user.getEmail(), UUID.randomUUID()), "testMemo", user, category, null
+			));
+		}
+	}
+
 
 	public CategoriesTestResponse categoriesTest(User user) {
 		User getUser = userGetService.getUser(user.getId());
