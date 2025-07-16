@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
+import com.pinback.pinback_server.domain.article.domain.service.ArticleDeleteService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
@@ -29,6 +30,7 @@ public class TestUsecase {
 	private final ArticleSaveService articleSaveService;
 	private final UserGetService userGetService;
 	private final CategorySaveService categorySaveService;
+	private final ArticleDeleteService articleDeleteService;
 
 	public void pushTest(PushTestRequest request) {
 		fcmService.sendNotification(request.fcmToken(), request.message());
@@ -77,5 +79,10 @@ public class TestUsecase {
 			.toList();
 
 		return CategoriesTestResponse.of(savedCategoryNames);
+	}
+
+	public void deleteByCategory(User user, long categoryId) {
+		Category category = categoryGetService.findById(categoryId);
+		articleDeleteService.deleteByCategory(user, category);
 	}
 }
