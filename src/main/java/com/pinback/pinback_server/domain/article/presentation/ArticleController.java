@@ -51,8 +51,8 @@ public class ArticleController {
 	@GetMapping
 	public ResponseDto<ArticleAllResponse> getAll(
 		@CurrentUser User user,
-		@RequestParam int pageNumber,
-		@RequestParam int pageSize) {
+		@RequestParam("page") int pageNumber,
+		@RequestParam("size") int pageSize) {
 
 		ArticleAllResponse response = articleManagementUsecase.getAllArticles(user, pageNumber, pageSize);
 		return ResponseDto.ok(response);
@@ -62,8 +62,8 @@ public class ArticleController {
 	public ResponseDto<ArticleAllResponse> getAllByCategory(
 		@CurrentUser User user,
 		@RequestParam Long categoryId,
-		@RequestParam int pageNumber,
-		@RequestParam int pageSize) {
+		@RequestParam("page") int pageNumber,
+		@RequestParam("size") int pageSize) {
 
 		ArticleAllResponse response = articleManagementUsecase.getAllArticlesByCategory(user, categoryId, pageNumber,
 			pageSize);
@@ -74,8 +74,8 @@ public class ArticleController {
 	public ResponseDto<RemindArticleResponse> getAllRemindArticles(
 		@CurrentUser User user,
 		@RequestParam LocalDateTime now,
-		@RequestParam int pageNumber,
-		@RequestParam int pageSize) {
+		@RequestParam("page") int pageNumber,
+		@RequestParam("size") int pageSize) {
 
 		RemindArticleResponse response = articleManagementUsecase.getRemindArticles(user, now, pageNumber,
 			pageSize);
