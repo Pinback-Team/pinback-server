@@ -135,4 +135,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		return new ArticlesWithUnreadCount(unReadCount,
 			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne));
 	}
+
+	@Override
+	public void deleteByUserAndCategory(UUID userId, long categoryId) {
+		BooleanExpression conditions = article.user.id.eq(userId).and(article.category.id.eq(categoryId));
+
+		queryFactory
+			.delete(article)
+			.where(conditions)
+			.execute();
+	}
 }

@@ -17,4 +17,6 @@ public interface ArticleRepositoryCustom {
 	Page<Article> findTodayRemind(UUID userId, Pageable pageable, LocalDateTime startAt, LocalDateTime endAt);
 
 	ArticlesWithUnreadCount findAllByIsReadFalse(UUID userId, Pageable pageable);
+
+	void deleteByUserAndCategory(UUID userId, long categoryId);
 }

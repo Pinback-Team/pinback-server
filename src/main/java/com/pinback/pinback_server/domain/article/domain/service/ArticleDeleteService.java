@@ -1,12 +1,12 @@
 package com.pinback.pinback_server.domain.article.domain.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.ArticleRepository;
-import com.pinback.pinback_server.domain.category.domain.entity.Category;
-import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +20,8 @@ public class ArticleDeleteService {
 		articleRepository.delete(article);
 	}
 
-	public void deleteByCategory(User user, Category category) {
-		articleRepository.deleteByUserAndCategory(user, category);
+	public void deleteByCategory(UUID userId, long categoryId) {
+		articleRepository.deleteByUserAndCategory(userId, categoryId);
 	}
 
 }
