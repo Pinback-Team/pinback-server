@@ -26,11 +26,12 @@ public class TestUsecase {
 	}
 
 	public void createByCategory(User user, long categoryId) {
+		String format = "%s:%s";
 		Category category = categoryGetService.findById(categoryId);
 
 		for (int i = 0; i < 5; i++) {
 			articleSaveService.save(Article.create(
-				UUID.randomUUID().toString(), "testMemo", user, category, null
+				String.format(format, user.getEmail(), UUID.randomUUID()), "testMemo", user, category, null
 			));
 		}
 	}
