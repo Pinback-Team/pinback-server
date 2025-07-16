@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
+import com.pinback.pinback_server.domain.article.domain.service.ArticleDeleteService;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleGetService;
 import com.pinback.pinback_server.domain.category.application.command.CategoryCreateCommand;
 import com.pinback.pinback_server.domain.category.application.command.CategoryUpdateCommand;
@@ -25,6 +26,7 @@ import com.pinback.pinback_server.domain.category.presentation.dto.response.Cate
 import com.pinback.pinback_server.domain.category.presentation.dto.response.CreateCategoryResponse;
 import com.pinback.pinback_server.domain.category.presentation.dto.response.UpdateCategoryResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
+import com.pinback.pinback_server.domain.user.domain.service.UserGetService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +40,8 @@ public class CategoryManagementUsecase {
 	private final CategoryGetService categoryGetService;
 	private final ArticleGetService articleGetService;
 	private final CategoryDeleteService categoryDeleteService;
+	private final ArticleDeleteService articleDeleteService;
+	private final UserGetService userGetService;
 
 	@Transactional
 	public CreateCategoryResponse createCategory(User user, CategoryCreateCommand command) {
@@ -98,6 +102,8 @@ public class CategoryManagementUsecase {
 	public void deleteCategory(final User user, final long categoryId) {
 		Category category = categoryGetService.findById(categoryId);
 		checkOwner(category, user);
+		User getUser = userGetService.getUser(user.getId());
+		articleDeleteService.deleteByCategory(getUser.getId(), category);
 		categoryDeleteService.delete(category);
 	}
 
