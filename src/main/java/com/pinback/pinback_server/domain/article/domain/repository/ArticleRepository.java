@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
-import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 @Repository
@@ -22,6 +21,4 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Article
 	Optional<Article> findArticleByUserAndUrl(User user, String url);
 
 	Optional<Article> findArticleByUserAndId(User user, Long id);
-
-	void deleteByUserAndCategory(User user, Category category);
 }
