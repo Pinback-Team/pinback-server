@@ -84,6 +84,6 @@ public class TestUsecase {
 	public void deleteByCategory(User user, long categoryId) {
 		Category category = categoryGetService.findById(categoryId);
 		User getUser = userGetService.getUser(user.getId());
-		articleDeleteService.deleteByCategory(getUser.getId(), category);
+		articleDeleteService.deleteByCategory(getUser.getId(), category.getId());
 	}
 }

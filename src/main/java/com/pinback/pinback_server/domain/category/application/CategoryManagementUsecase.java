@@ -103,7 +103,7 @@ public class CategoryManagementUsecase {
 		Category category = categoryGetService.findById(categoryId);
 		checkOwner(category, user);
 		User getUser = userGetService.getUser(user.getId());
-		articleDeleteService.deleteByCategory(getUser.getId(), category);
+		articleDeleteService.deleteByCategory(getUser.getId(), category.getId());
 		categoryDeleteService.delete(category);
 	}
 

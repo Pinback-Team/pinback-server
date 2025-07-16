@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.repository.dto.ArticlesWithUnreadCount;
-import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -138,8 +137,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public void deleteByUserAndCategory(UUID userId, Category category) {
-		BooleanExpression conditions = article.user.id.eq(userId).and(article.category.eq(category));
+	public void deleteByUserAndCategory(UUID userId, long categoryId) {
+		BooleanExpression conditions = article.user.id.eq(userId).and(article.category.id.eq(categoryId));
 
 		queryFactory
 			.delete(article)
