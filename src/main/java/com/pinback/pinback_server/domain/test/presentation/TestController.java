@@ -1,6 +1,7 @@
 package com.pinback.pinback_server.domain.test.presentation;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,10 +48,10 @@ public class TestController {
 		return ResponseDto.ok(response);
 	}
 
-	@DeleteMapping("/categories")
+	@DeleteMapping("/categories/{categoryId}")
 	public ResponseDto<Void> deleteTest(
 		@CurrentUser User user,
-		@RequestParam Long categoryId
+		@PathVariable Long categoryId
 	) {
 		testUsecase.deleteByCategory(user, categoryId);
 		return ResponseDto.ok();
