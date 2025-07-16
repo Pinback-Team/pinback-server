@@ -1,5 +1,6 @@
 package com.pinback.pinback_server.domain.test.presentation;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pinback.pinback_server.domain.test.application.TestUsecase;
 import com.pinback.pinback_server.domain.test.presentation.dto.request.PushTestRequest;
 import com.pinback.pinback_server.domain.test.presentation.dto.response.CategoriesTestResponse;
-import com.pinback.pinback_server.domain.user.domain.entity.User;
-import com.pinback.pinback_server.global.common.annotation.CurrentUser;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.global.common.annotation.CurrentUser;
 import com.pinback.pinback_server.global.common.dto.ResponseDto;
@@ -46,5 +45,14 @@ public class TestController {
 	) {
 		CategoriesTestResponse response = testUsecase.categoriesTest(user);
 		return ResponseDto.ok(response);
+	}
+
+	@DeleteMapping("/categories")
+	public ResponseDto<Void> deleteTest(
+		@CurrentUser User user,
+		@RequestParam Long categoryId
+	) {
+		testUsecase.deleteByCategory(user, categoryId);
+		return ResponseDto.ok();
 	}
 }
