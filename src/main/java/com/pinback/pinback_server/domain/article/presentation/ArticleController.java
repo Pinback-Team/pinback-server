@@ -94,8 +94,8 @@ public class ArticleController {
 	@GetMapping("/unread")
 	public ResponseDto<ArticleUnreadResponse> getAllUnreadArticles(
 		@CurrentUser User user,
-		@RequestParam int pageNumber,
-		@RequestParam int pageSize) {
+		@RequestParam("page") int pageNumber,
+		@RequestParam("size") int pageSize) {
 
 		ArticleUnreadResponse response = articleManagementUsecase.getUnreadArticles(user, pageNumber, pageSize);
 		return ResponseDto.ok(response);
@@ -118,7 +118,7 @@ public class ArticleController {
 		articleManagementUsecase.delete(user, articleId);
 		return ResponseDto.ok();
 	}
-	
+
 	@PatchMapping("/{articleId}")
 	public ResponseDto<Void> updateArticle(
 		@CurrentUser User user,
