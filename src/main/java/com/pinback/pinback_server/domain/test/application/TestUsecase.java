@@ -1,9 +1,8 @@
 package com.pinback.pinback_server.domain.test.application;
 
-import java.util.UUID;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -11,12 +10,9 @@ import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.article.domain.service.ArticleSaveService;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
-import com.pinback.pinback_server.domain.category.domain.entity.Category;
-import com.pinback.pinback_server.domain.category.domain.service.CategoryGetService;
 import com.pinback.pinback_server.domain.category.domain.service.CategorySaveService;
 import com.pinback.pinback_server.domain.category.exception.CategoryLimitOverException;
 import com.pinback.pinback_server.domain.test.presentation.dto.request.PushTestRequest;
-import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.test.presentation.dto.response.CategoriesTestResponse;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.service.UserGetService;
@@ -33,7 +29,6 @@ public class TestUsecase {
 	private final ArticleSaveService articleSaveService;
 	private final UserGetService userGetService;
 	private final CategorySaveService categorySaveService;
-	private final CategoryGetService categoryGetService;
 
 	public void pushTest(PushTestRequest request) {
 		fcmService.sendNotification(request.fcmToken(), request.message());
@@ -49,7 +44,6 @@ public class TestUsecase {
 			));
 		}
 	}
-
 
 	public CategoriesTestResponse categoriesTest(User user) {
 		User getUser = userGetService.getUser(user.getId());
