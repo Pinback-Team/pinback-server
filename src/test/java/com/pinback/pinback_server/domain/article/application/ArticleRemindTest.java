@@ -9,9 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.pinback_server.domain.ApplicationTest;
@@ -34,8 +32,6 @@ public class ArticleRemindTest extends ApplicationTest {
 	private CategoryRepository categoryRepository;
 	@Autowired
 	private ArticleRepository articleRepository;
-	@MockitoBean
-	private RedisMessageListenerContainer RedisMessageListenerContainer;
 
 	@DisplayName("오늘 리마인드 시간에서 부터 24시간 이내의 리마인드 아티클들을 조회한다.")
 	@Test
