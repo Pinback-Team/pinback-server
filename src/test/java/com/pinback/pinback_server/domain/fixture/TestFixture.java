@@ -5,6 +5,7 @@ import java.time.LocalTime;
 
 import com.pinback.pinback_server.domain.article.domain.entity.Article;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
+import com.pinback.pinback_server.domain.notification.domain.entity.PushSubscription;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 
 public class TestFixture {
@@ -42,5 +43,11 @@ public class TestFixture {
 		Article article = Article.create(url, "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));
 		article.toRead();
 		return article;
+	}
+
+	public static PushSubscription pushSubscription(User user) {
+		return PushSubscription.from(
+			user, "testToken"
+		);
 	}
 }
