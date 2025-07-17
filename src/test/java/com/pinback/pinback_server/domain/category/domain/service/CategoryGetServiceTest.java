@@ -6,21 +6,19 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pinback.pinback_server.domain.ServiceTest;
 import com.pinback.pinback_server.domain.category.domain.entity.Category;
 import com.pinback.pinback_server.domain.category.domain.repository.CategoryRepository;
 import com.pinback.pinback_server.domain.category.exception.CategoryNotFoundException;
 import com.pinback.pinback_server.domain.user.domain.entity.User;
 import com.pinback.pinback_server.domain.user.domain.repository.UserRepository;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@Import({CategoryGetService.class})
 @Transactional
-class CategoryGetServiceTest {
+class CategoryGetServiceTest extends ServiceTest {
 	@Autowired
 	private UserRepository userRepository;
 
@@ -29,9 +27,6 @@ class CategoryGetServiceTest {
 
 	@Autowired
 	private CategoryGetService categoryGetService;
-
-	@MockitoBean
-	private org.springframework.data.redis.listener.RedisMessageListenerContainer RedisMessageListenerContainer;
 
 	@DisplayName("카테고리 소유자가 아닐경우 예외가 발생한다.")
 	@Test
