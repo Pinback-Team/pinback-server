@@ -22,7 +22,10 @@ public class CorsConfig {
 			"chrome-extension://*",
 			"http://localhost:5173",
 			"http://localhost:5174",
-			"https://pinback-client.vercel.app/*"
+			"https://pinback-client.vercel.app",
+			"https://pinback.today",
+			"https://landing.pinback.today",
+			"https://www.pinback.today"
 		));
 
 		configuration.setAllowedMethods(Arrays.asList(
