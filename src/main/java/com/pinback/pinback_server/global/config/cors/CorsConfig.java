@@ -21,7 +21,8 @@ public class CorsConfig {
 			"http://localhost:3001",
 			"chrome-extension://*",
 			"http://localhost:5173",
-			"http://localhost:5174"
+			"http://localhost:5174",
+			"https://pinback-client.vercel.app/*"
 		));
 
 		configuration.setAllowedMethods(Arrays.asList(
