@@ -1,8 +1,13 @@
 rootProject.name = 'pinback-server'
 
 include 'core'
-include 'infrastructure'  
+include 'infrastructure'
 include 'shared'
 include 'shared:src:test:com'
 findProject(':shared:src:test:com')?.name = 'com'
 
+buildCache {
+    local {
+        enabled = true
+    }
+}
