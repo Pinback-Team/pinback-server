@@ -19,6 +19,7 @@ apply from: 'querydsl.gradle'
 
 dependencies {
     implementation project(':shared')
+    implementation project(':domain')
     implementation project(':core')
     implementation project(':infrastructure')
 
