@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.pinback.domain.fixture.CustomRepository;
-import com.pinback.global.QueryDslConfig;
+import com.pinback.domain.config.QueryDslConfig;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
