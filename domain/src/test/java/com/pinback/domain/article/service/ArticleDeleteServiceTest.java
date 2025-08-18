@@ -1,8 +1,8 @@
 package com.pinback.domain.article.service;
 
 import static com.pinback.domain.fixture.TestFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,24 +40,30 @@ class ArticleDeleteServiceTest extends ServiceTest {
 		User user = userRepository.save(user());
 		Category category = categoryRepository.save(category(user));
 		Article article = articleRepository.save(article(user, "test-url", category));
-		Long articleId = article.getId();
 
 		//when
-		articleDeleteService.deleteById(articleId);
+		articleDeleteService.delete(article);
 
 		//then
-		boolean exists = articleRepository.existsById(articleId);
-		Assertions.assertThat(exists).isFalse();
+		boolean exists = articleRepository.existsById(article.getId());
+		assertThat(exists).isFalse();
 	}
 
-	@DisplayName("존재하지 않는 아티클 ID로 삭제해도 예외가 발생하지 않는다.")
+	@DisplayName("유저ID와 카테고리ID로 해당 카테고리의 모든 아티클을 삭제할 수 있다.")
 	@Test
-	void deleteNonExistentArticleTest() {
+	void deleteAllByCategory() {
 		//given
-		Long nonExistentId = 999L;
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		articleRepository.save(article(user, "test-url", category));
+		articleRepository.save(article(user, "test-url2", category));
+		articleRepository.save(article(user, "test-url3", category));
 
-		//when & then
-		Assertions.assertThatCode(() -> articleDeleteService.deleteById(nonExistentId))
-			.doesNotThrowAnyException();
+		//when
+		articleDeleteService.deleteAllByCategory(user.getId(), category.getId());
+
+		//then
+		assertThat(articleRepository.findAll().size()).isEqualTo(0);
 	}
+
 }
