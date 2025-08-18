@@ -1,4 +1,4 @@
-package com.pinback.domain.config;
+package com.pinback.infrastructure.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

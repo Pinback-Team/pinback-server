@@ -29,10 +29,6 @@ dependencies {
     // JPA 의존성
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
-    // QueryDSL 의존성
-    implementation 'io.github.openfeign.querydsl:querydsl-core:6.11'
-    implementation 'io.github.openfeign.querydsl:querydsl-jpa:6.11'
-    annotationProcessor 'io.github.openfeign.querydsl:querydsl-apt:6.11:jpa'
 
     // h2 데이터베이스 의존성
     runtimeOnly 'com.h2database:h2'
@@ -45,21 +41,6 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
-def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile
-
-sourceSets {
-    main.java.srcDirs += generated
-}
-
-tasks.withType(JavaCompile).configureEach {
-    inputs.files(fileTree(dir: 'src', include: '**/*.java'))
-    outputs.cacheIf { true }
-    options.annotationProcessorGeneratedSourcesDirectory = generated
-}
-
-clean {
-    delete generated
-}
 
 tasks.named('test') {
     useJUnitPlatform()

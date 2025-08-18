@@ -1,7 +1,7 @@
-package com.pinback.domain.article.repository;
+package com.pinback.infrastructure.article.repository;
 
 import static com.pinback.domain.article.entity.QArticle.*;
-import static com.pinback.domain.category.entity.QCategory.*;
+import static com.pinback.domain.category.entity.QCategory.*;  
 import static com.pinback.domain.user.entity.QUser.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.pinback.domain.article.entity.Article;
+import com.pinback.domain.article.repository.ArticleRepositoryCustom;
 import com.pinback.domain.article.repository.dto.ArticlesWithUnreadCount;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
