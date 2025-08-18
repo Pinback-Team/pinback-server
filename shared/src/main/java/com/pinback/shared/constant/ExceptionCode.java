@@ -10,6 +10,7 @@ public enum ExceptionCode {
 	CATEGORY_LIMIT_OVER("c40001", "카테고리는 최대 10개까지 생성할 수 있습니다."),
 	TEXT_LENGTH_OVER("c40002", "글자 수 제한을 초과하였습니다."),
 	CATEGORY_NAME_INVALID("c40003", "카테고리 이름은 공백을 포함할 수 없습니다."),
+	INVALID_FCM_TOKEN("c40004", "유효하지 않은 FCM 토큰입니다."),
 
 	//401
 	INVALID_TOKEN("c40101", "유효하지 않은 토큰입니다."),
