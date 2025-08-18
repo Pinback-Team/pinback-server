@@ -1,22 +1,33 @@
 package com.pinback.domain.article.entity;
 
+import java.time.LocalDateTime;
+
+import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.common.BaseEntity;
+import com.pinback.domain.user.entity.User;
 import com.pinback.shared.exception.TextLengthOverException;
 import com.pinback.shared.util.TextUtil;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 @Getter
 @Entity
-@Table(name = "article_migration", uniqueConstraints = 
-	@UniqueConstraint(columnNames = {"user_id", "url"}))
+@Table(name = "article_migration", uniqueConstraints =
+@UniqueConstraint(columnNames = {"user_id", "url"}))
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,38 +37,41 @@ public class Article extends BaseEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "article_id")
 	private Long id;
-	
+
 	@Column(name = "url", nullable = false)
 	private String url;
-	
+
 	@Column(name = "memo")
 	private String memo;
-	
-	@Column(name = "user_id")
-	private UUID userId;
-	
-	@Column(name = "category_id")
-	private Long categoryId;
-	
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "user_id")
+	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id")
+	private Category category;
+
 	@Column(name = "remind_at")
 	private LocalDateTime remindAt;
-	
+
 	@Column(name = "is_read", nullable = false)
 	private Boolean isRead;
 
-	public static Article create(String url, String memo, UUID userId, Long categoryId, LocalDateTime remindAt) {
+	public static Article create(String url, String memo, User user, Category category, LocalDateTime remindAt) {
 		validateMemo(memo);
 
 		return Article.builder()
 			.url(url)
 			.memo(memo)
-			.userId(userId)
-			.categoryId(categoryId)
+			.user(user)
+			.category(category)
 			.isRead(false)
 			.remindAt(remindAt)
 			.build();
 	}
 
+	// 아티클 자체의 비즈니스 로직을 보호하기 위한 유효성 검사
 	private static void validateMemo(String memo) {
 		if (memo != null && TextUtil.countGraphemeClusters(memo) > 500) {
 			throw new TextLengthOverException();
@@ -72,19 +86,15 @@ public class Article extends BaseEntity {
 		this.isRead = true;
 	}
 
-	public void markAsUnread() {
-		this.isRead = false;
-	}
-
-	public void update(String memo, Long categoryId, LocalDateTime remindAt) {
+	public void update(String memo, Category category, LocalDateTime remindAt) {
 		validateMemo(memo);
 		this.memo = memo;
-		this.categoryId = categoryId;
+		this.category = category;
 		this.remindAt = remindAt;
 	}
 
-	public boolean isOwnedBy(UUID userId) {
-		return this.userId.equals(userId);
+	public boolean isOwnedBy(User user) {
+		return this.user.equals(user);
 	}
 
 	public boolean hasReminder() {
