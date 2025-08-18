@@ -65,5 +65,4 @@ class ArticleDeleteServiceTest extends ServiceTest {
 		//then
 		assertThat(articleRepository.findAll().size()).isEqualTo(0);
 	}
-
 }
