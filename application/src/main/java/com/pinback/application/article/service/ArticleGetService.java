@@ -2,64 +2,32 @@ package com.pinback.application.article.service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.domain.article.entity.Article;
-import com.pinback.domain.article.exception.ArticleNotFoundException;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
-import com.pinback.infrastructure.article.repository.ArticleRepository;
-import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 
-import lombok.RequiredArgsConstructor;
+public interface ArticleGetService {
+	Optional<Article> findRecentByUser(User user);
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class ArticleGetService {
+	boolean checkExistsByUserAndUrl(User user, String url);
 
-	private final ArticleRepository articleRepository;
+	Article findById(long articleId);
 
-	public boolean checkExistsByUserAndUrl(User user, String url) {
-		return articleRepository.existsByUserAndUrl(user, url);
-	}
+	Optional<Article> findByUrlAndUser(User user, String url);
 
-	public Article findById(long articleId) {
-		return articleRepository.findById(articleId).orElseThrow(ArticleNotFoundException::new);
-	}
+	Article findByUserAndId(User user, long articleId);
 
-	public ArticlesWithUnreadCount findAll(UUID userId, PageRequest pageRequest) {
-		return articleRepository.findAllCustom(userId, pageRequest);
-	}
+	ArticlesWithUnreadCountDto findAll(User user, PageRequest pageRequest);
 
-	public ArticlesWithUnreadCount findAllByCategory(UUID userId, Category category, PageRequest pageRequest) {
-		return articleRepository.findAllByCategory(userId, category.getId(), pageRequest);
-	}
+	ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, PageRequest pageRequest);
 
-	public Page<Article> findTodayRemind(UUID userId, LocalDateTime today, Pageable pageable) {
-		LocalDateTime startAt = today.minusDays(1L).plusMinutes(1L);
-		return articleRepository.findTodayRemind(userId, pageable, startAt, today);
-	}
+	ArticlesWithUnreadCountDto findUnreadArticles(User user, PageRequest pageRequest);
 
-	public Optional<Article> findRecentByUser(User user) {
-		return articleRepository.findTopByUserOrderByCreatedAtDesc(user);
-	}
-
-	public Optional<Article> findByUrlAndUser(User user, String url) {
-		return articleRepository.findArticleByUserAndUrl(user, url);
-	}
-
-	public Article findByUserAndId(User user, long articleId) {
-		return articleRepository.findArticleByUserAndId(user, articleId).orElseThrow(ArticleNotFoundException::new);
-	}
-
-	public ArticlesWithUnreadCount findAllByIsRead(UUID userId, PageRequest pageRequest) {
-		return articleRepository.findAllByIsReadFalse(userId, pageRequest);
-	}
+	Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable);
 }
