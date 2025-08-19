@@ -7,6 +7,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
@@ -20,8 +21,11 @@ import com.pinback.infrastructure.redis.NotificationExpirationListener;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.context.annotation.Profile;
+
 @Configuration
 @RequiredArgsConstructor
+@Profile("!test")
 public class RedisConfig {
 	@Value("${spring.data.redis.host}")
 	private String host;
@@ -50,6 +54,11 @@ public class RedisConfig {
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
 		redisTemplate.setValueSerializer(new StringRedisSerializer());
 		return redisTemplate;
+	}
+
+	@Bean
+	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
+		return new StringRedisTemplate(connectionFactory);
 	}
 
 	@Bean

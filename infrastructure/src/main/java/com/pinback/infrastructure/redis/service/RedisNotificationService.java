@@ -14,7 +14,10 @@ import com.pinback.infrastructure.redis.dto.NotificationData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.context.annotation.Profile;
+
 @Service
+@Profile("!test")
 @Slf4j
 @RequiredArgsConstructor
 public class RedisNotificationService {
