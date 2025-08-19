@@ -1,4 +1,4 @@
-package com.pinback.domain.fixture;
+package com.pinback.application.fixture;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;

@@ -1,4 +1,4 @@
-package com.pinback.domain.fixture;
+package com.pinback.application.fixture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;

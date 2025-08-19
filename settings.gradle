@@ -10,3 +10,5 @@ buildCache {
         enabled = true
     }
 }
+include 'application'
+
