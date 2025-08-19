@@ -13,7 +13,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.pinback.domain.user.entity.User;
 import com.pinback.domain.user.exception.UserNotFoundException;
-import com.pinback.domain.user.service.UserGetService;
+import com.pinback.infrastructure.user.repository.UserRepository;
 import com.pinback.shared.annotation.CurrentUser;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolver {
-	private final UserGetService userGetService;
+	private final UserRepository userRepository;
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -40,6 +40,6 @@ public class CurrentUserArgumentResolver implements HandlerMethodArgumentResolve
 		}
 
 		UUID userId = (UUID)authentication.getPrincipal();
-		return userGetService.getUser(userId);
+		return userRepository.findById(userId).orElseThrow(UserNotFoundException::new);
 	}
 }
