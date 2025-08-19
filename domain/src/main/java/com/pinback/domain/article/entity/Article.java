@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 @UniqueConstraint(columnNames = {"user_id", "url"}))
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Article extends BaseEntity {
 
 	@Id

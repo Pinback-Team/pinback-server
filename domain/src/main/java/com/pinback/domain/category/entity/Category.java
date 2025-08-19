@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "category_migration")
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class Category extends BaseEntity {
 
 	@Id

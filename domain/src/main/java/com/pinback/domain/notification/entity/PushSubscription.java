@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "push_subscription_migration")
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class PushSubscription extends BaseEntity {
 
 	@Id
