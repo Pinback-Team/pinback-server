@@ -26,6 +26,7 @@ dependencies {
     // shared
     implementation project(':shared')
     implementation project(':domain')
+    implementation project(':application')
 
     // Spring Boot 웹 의존성
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -57,7 +58,10 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
 
+    // Test dependencies
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'com.h2database:h2'
+    testRuntimeOnly 'com.h2database:h2'
 }
 
 def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile

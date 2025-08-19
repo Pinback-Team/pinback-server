@@ -4,11 +4,11 @@ include 'domain'
 include 'core'
 include 'infrastructure'
 include 'shared'
+include 'application'
 
 buildCache {
     local {
         enabled = true
     }
 }
-include 'application'
 
