@@ -16,6 +16,11 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
 	Optional<Category> findByIdAndUser(Long id, User user);
 
 	boolean existsByNameAndUserId(String name, UUID userId);
+	
+	// Service 구현체에서 사용하는 메서드들
+	long countByUser(User user);
+	boolean existsByNameAndUser(String categoryName, User user);
+	List<Category> findAllByUserIdOrderByCreatedAtAsc(UUID userId);
 
 	long countByUserId(UUID userId);
 }

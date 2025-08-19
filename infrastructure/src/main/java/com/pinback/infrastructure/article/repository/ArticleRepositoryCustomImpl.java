@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
+	// Application DTO로 변환하는 헬퍼 메서드
 	private final JPAQueryFactory queryFactory;
 
 	@Override

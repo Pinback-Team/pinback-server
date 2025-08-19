@@ -10,6 +10,7 @@ import com.pinback.domain.article.entity.Article;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 
 public interface ArticleRepositoryCustom {
+	// 기존 infrastructure 메서드들
 	ArticlesWithUnreadCount findAllCustom(UUID userId, Pageable pageable);
 
 	ArticlesWithUnreadCount findAllByCategory(UUID userId, long articleId, Pageable pageable);
