@@ -7,11 +7,10 @@ import com.pinback.application.auth.dto.SignUpCommand;
 import com.pinback.application.auth.dto.SignUpResponse;
 import com.pinback.application.auth.dto.TokenResponse;
 import com.pinback.application.auth.service.JwtProvider;
-import com.pinback.application.notification.service.PushSubscriptionSaveService;
+import com.pinback.application.notification.port.in.SavePushSubscriptionPort;
 import com.pinback.application.user.port.out.UserGetServicePort;
 import com.pinback.application.user.port.out.UserSaveServicePort;
 import com.pinback.application.user.port.out.UserValidateServicePort;
-import com.pinback.domain.notification.entity.PushSubscription;
 import com.pinback.domain.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,8 @@ public class AuthUsecase {
 	private final UserValidateServicePort userValidateServicePort;
 	private final UserSaveServicePort userSaveServicePort;
 	private final JwtProvider jwtProvider;
-	private final PushSubscriptionSaveService pushSubscriptionSaveService;
+
+	private final SavePushSubscriptionPort savePushSubscriptionPort;
 	private final UserGetServicePort userGetServicePort;
 
 	@Transactional
@@ -32,12 +32,7 @@ public class AuthUsecase {
 		User user = userSaveServicePort.save(User.create(signUpCommand.email(), signUpCommand.remindDefault()));
 		String accessToken = jwtProvider.createAccessToken(user.getId());
 
-		PushSubscription pushSubscription = PushSubscription.create(
-			user,
-			signUpCommand.fcmToken()
-		);
-
-		pushSubscriptionSaveService.save(pushSubscription);
+		savePushSubscriptionPort.savePushSubscription(user, signUpCommand.fcmToken());
 
 		return SignUpResponse.from(accessToken);
 	}
@@ -50,5 +45,4 @@ public class AuthUsecase {
 
 		return new TokenResponse(accessToken);
 	}
-
 }
