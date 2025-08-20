@@ -24,7 +24,7 @@ import com.pinback.infrastructure.article.repository.ArticleRepository;
 import com.pinback.infrastructure.category.repository.CategoryRepository;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
-@Import(ArticleGetServiceImpl.class)
+@Import(ArticleGetService.class)
 @Transactional
 class ArticleGetServiceTest extends ServiceTest {
 
@@ -38,7 +38,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	private CategoryRepository categoryRepository;
 
 	@Autowired
-	private ArticleGetServiceImpl articleGetService;
+	private ArticleGetService articleGetService;
 
 	@DisplayName("유저가 같은 URL을 가진 아티클이 존재하는 경우 참을 반환한다.")
 	@Test

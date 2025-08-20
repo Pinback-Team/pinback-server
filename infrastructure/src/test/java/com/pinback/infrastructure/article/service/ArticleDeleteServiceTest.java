@@ -17,7 +17,7 @@ import com.pinback.infrastructure.article.repository.ArticleRepository;
 import com.pinback.infrastructure.category.repository.CategoryRepository;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
-@Import(ArticleDeleteServiceImpl.class)
+@Import(ArticleDeleteService.class)
 @Transactional
 class ArticleDeleteServiceTest extends ServiceTest {
 
@@ -31,7 +31,7 @@ class ArticleDeleteServiceTest extends ServiceTest {
 	private ArticleRepository articleRepository;
 
 	@Autowired
-	private ArticleDeleteServiceImpl articleDeleteService;
+	private ArticleDeleteService articleDeleteService;
 
 	@DisplayName("아티클 ID로 삭제하면 데이터베이스에서 제거된다.")
 	@Test

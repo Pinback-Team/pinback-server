@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pinback.application.article.service.ArticleGetService;
+import com.pinback.application.article.service.ArticleGetServicePort;
 import com.pinback.application.category.dto.CategoriesForDashboardDto;
 import com.pinback.application.category.dto.response.CategoriesForDashboardResponse;
 import com.pinback.application.category.dto.response.CategoriesForExtensionResponse;
@@ -26,11 +26,11 @@ import lombok.RequiredArgsConstructor;
 public class GetCategoryUsecase implements GetCategoryPort {
 
 	private final CategoryGetServicePort categoryGetServicePort;
-	private final ArticleGetService articleGetService;
+	private final ArticleGetServicePort articleGetServicePort;
 
 	@Override
 	public CategoriesForExtensionResponse getAllCategoriesForExtension(User user) {
-		Optional<Article> articleOptional = articleGetService.findRecentByUser(user);
+		Optional<Article> articleOptional = articleGetServicePort.findRecentByUser(user);
 		String recentSaved = articleOptional
 			.map(article -> article.getCategory().getName())
 			.orElse(null);

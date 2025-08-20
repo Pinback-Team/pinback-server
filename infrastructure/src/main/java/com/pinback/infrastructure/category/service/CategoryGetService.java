@@ -8,19 +8,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.category.dto.CategoriesForDashboardDto;
 import com.pinback.application.category.dto.CategoryForDashboardDto;
-import com.pinback.application.category.service.CategoryGetService;
+import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.application.common.exception.CategoryNotFoundException;
-import com.pinback.application.common.exception.CategoryNotOwnedException;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.category.repository.CategoryRepository;
+import com.pinback.infrastructure.category.repository.dto.CategoriesForDashboard;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class CategoryGetServiceImpl implements CategoryGetService {
+public class CategoryGetService implements CategoryGetServicePort {
 
 	private final CategoryRepository categoryRepository;
 
@@ -31,11 +31,7 @@ public class CategoryGetServiceImpl implements CategoryGetService {
 
 	@Override
 	public Category getCategoryAndUser(long categoryId, User user) {
-		Category category = findById(categoryId);
-		if (!category.getUser().equals(user)) {
-			throw new CategoryNotOwnedException();
-		}
-		return category;
+		return categoryRepository.findByIdAndUser(categoryId, user).orElseThrow(CategoryNotFoundException::new);
 	}
 
 	@Override
@@ -50,21 +46,25 @@ public class CategoryGetServiceImpl implements CategoryGetService {
 
 	@Override
 	public List<Category> findAllForExtension(UUID userId) {
-		return categoryRepository.findAllByUserIdOrderByCreatedAtAsc(userId);
+		return categoryRepository.findAllForExtension(userId);
 	}
 
 	@Override
 	public CategoriesForDashboardDto findAllForDashboard(UUID userId) {
-		// TODO: 복잡한 쿼리 구현 필요 - 일단 기본 카테고리 목록만 반환
-		List<Category> categories = categoryRepository.findAllByUserIdOrderByCreatedAtAsc(userId);
-		List<CategoryForDashboardDto> categoryDtos = categories.stream()
-			.map(category -> new CategoryForDashboardDto(
-				category.getId(), 
-				category.getName(), 
-				0L // 임시로 0으로 설정
-			))
-			.toList();
-		
-		return new CategoriesForDashboardDto(categoryDtos);
+		CategoriesForDashboard result = categoryRepository.findAllForDashboard(userId);
+		return convertToDto(result);
+	}
+
+	private CategoriesForDashboardDto convertToDto(CategoriesForDashboard categories) {
+		List<CategoryForDashboardDto> categoryForDashboards = categories.getCategories().stream().map(category ->
+		{
+			return new CategoryForDashboardDto(
+				category.getId(),
+				category.getName(),
+				category.getUnreadCount()
+			);
+		}).toList();
+
+		return new CategoriesForDashboardDto(categoryForDashboards);
 	}
 }

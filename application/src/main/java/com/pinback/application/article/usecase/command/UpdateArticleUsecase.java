@@ -7,8 +7,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.command.ArticleUpdateCommand;
 import com.pinback.application.article.port.in.UpdateArticlePort;
-import com.pinback.application.article.service.ArticleGetService;
-import com.pinback.application.category.service.CategoryGetService;
+import com.pinback.application.article.service.ArticleGetServicePort;
+import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.application.common.exception.MemoLengthLimitException;
 import com.pinback.application.notification.service.NotificationService;
 import com.pinback.domain.article.entity.Article;
@@ -26,18 +26,18 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 
 	private static final long MEMO_LIMIT_LENGTH = 500;
 
-	private final ArticleGetService articleGetService;
-	private final CategoryGetService categoryGetService;
+	private final ArticleGetServicePort articleGetServicePort;
+	private final CategoryGetServicePort categoryGetServicePort;
 	private final NotificationService notificationService;
 
 	@Override
 	public void updateArticle(User user, long articleId, ArticleUpdateCommand command) {
 		validateMemoLength(command.memo());
 
-		Article article = articleGetService.findByUserAndId(user, articleId);
+		Article article = articleGetServicePort.findByUserAndId(user, articleId);
 		boolean remindTimeChanged = !article.getRemindAt().equals(command.remindTime());
 
-		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
+		Category category = categoryGetServicePort.getCategoryAndUser(command.categoryId(), user);
 		article.update(command.memo(), category, command.remindTime());
 
 		handleReminderUpdate(article, user, command.remindTime(), remindTimeChanged, articleId);

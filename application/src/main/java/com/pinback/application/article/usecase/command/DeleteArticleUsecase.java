@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.port.in.DeleteArticlePort;
-import com.pinback.application.article.service.ArticleDeleteService;
-import com.pinback.application.article.service.ArticleGetService;
+import com.pinback.application.article.service.ArticleDeleteServicePort;
+import com.pinback.application.article.service.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotOwnedException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.user.entity.User;
@@ -17,14 +17,14 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class DeleteArticleUsecase implements DeleteArticlePort {
 
-	private final ArticleGetService articleGetService;
-	private final ArticleDeleteService articleDeleteService;
+	private final ArticleGetServicePort articleGetServicePort;
+	private final ArticleDeleteServicePort articleDeleteServicePort;
 
 	@Override
 	public void deleteArticle(User user, long articleId) {
-		Article article = articleGetService.findById(articleId);
+		Article article = articleGetServicePort.findById(articleId);
 		validateOwnership(article, user);
-		articleDeleteService.delete(article);
+		articleDeleteServicePort.delete(article);
 	}
 
 	private void validateOwnership(Article article, User user) {

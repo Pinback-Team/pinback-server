@@ -17,8 +17,8 @@ import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.RemindArticlesResponse;
 import com.pinback.application.article.port.in.GetArticlePort;
-import com.pinback.application.article.service.ArticleGetService;
-import com.pinback.application.category.service.CategoryGetService;
+import com.pinback.application.article.service.ArticleGetServicePort;
+import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -30,24 +30,24 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class GetArticleUsecase implements GetArticlePort {
 
-	private final ArticleGetService articleGetService;
-	private final CategoryGetService categoryGetService;
+	private final ArticleGetServicePort articleGetServicePort;
+	private final CategoryGetServicePort categoryGetServicePort;
 
 	@Override
 	public ArticleDetailResponse getArticleDetail(long articleId) {
-		Article article = articleGetService.findById(articleId);
+		Article article = articleGetServicePort.findById(articleId);
 		return ArticleDetailResponse.from(article);
 	}
 
 	@Override
 	public ArticleDetailResponse checkArticleExists(User user, String url) {
-		Optional<Article> article = articleGetService.findByUrlAndUser(user, url);
+		Optional<Article> article = articleGetServicePort.findByUrlAndUser(user, url);
 		return article.map(ArticleDetailResponse::from).orElse(null);
 	}
 
 	@Override
 	public ArticlesPageResponse getAllArticles(User user, PageQuery query) {
-		ArticlesWithUnreadCountDto result = articleGetService.findAll(
+		ArticlesWithUnreadCountDto result = articleGetServicePort.findAll(
 			user, PageRequest.of(query.pageNumber(), query.pageSize()));
 
 		List<ArticleResponse> articleResponses = result.article().stream()
@@ -56,16 +56,16 @@ public class GetArticleUsecase implements GetArticlePort {
 
 		return ArticlesPageResponse.of(
 			result.article().getTotalElements(),
-				result.unReadCount(),
+			result.unReadCount(),
 			articleResponses
 		);
 	}
 
 	@Override
 	public ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, PageQuery query) {
-		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
+		Category category = categoryGetServicePort.getCategoryAndUser(categoryId, user);
 
-		ArticlesWithUnreadCountDto result = articleGetService.findAllByCategory(
+		ArticlesWithUnreadCountDto result = articleGetServicePort.findAllByCategory(
 			user, category, PageRequest.of(query.pageNumber(), query.pageSize()));
 
 		List<ArticleResponse> articleResponses = result.article().stream()
@@ -74,14 +74,14 @@ public class GetArticleUsecase implements GetArticlePort {
 
 		return ArticlesPageResponse.of(
 			result.article().getTotalElements(),
-				result.unReadCount(),
+			result.unReadCount(),
 			articleResponses
 		);
 	}
 
 	@Override
 	public ArticlesPageResponse getUnreadArticles(User user, PageQuery query) {
-		ArticlesWithUnreadCountDto result = articleGetService.findUnreadArticles(
+		ArticlesWithUnreadCountDto result = articleGetServicePort.findUnreadArticles(
 			user, PageRequest.of(query.pageNumber(), query.pageSize()));
 
 		List<ArticleResponse> articleResponses = result.article().stream()
@@ -90,7 +90,7 @@ public class GetArticleUsecase implements GetArticlePort {
 
 		return ArticlesPageResponse.of(
 			result.article().getTotalElements(),
-				result.unReadCount(),
+			result.unReadCount(),
 			articleResponses
 		);
 	}
@@ -99,7 +99,7 @@ public class GetArticleUsecase implements GetArticlePort {
 	public RemindArticlesResponse getRemindArticles(User user, LocalDateTime now, PageQuery query) {
 		LocalDateTime remindDateTime = getRemindDateTime(now, user.getRemindDefault());
 
-		Page<Article> articles = articleGetService.findTodayRemind(
+		Page<Article> articles = articleGetServicePort.findTodayRemind(
 			user, remindDateTime, PageRequest.of(query.pageNumber(), query.pageSize()));
 
 		List<ArticleResponse> articleResponses = articles.stream()

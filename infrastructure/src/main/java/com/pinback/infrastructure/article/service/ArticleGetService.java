@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
-import com.pinback.application.article.service.ArticleGetService;
+import com.pinback.application.article.service.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotFoundException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
@@ -21,13 +21,13 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class ArticleGetServiceImpl implements ArticleGetService {
+public class ArticleGetService implements ArticleGetServicePort {
 
 	private final ArticleRepository articleRepository;
 
 	@Override
 	public Optional<Article> findRecentByUser(User user) {
-		return articleRepository.findTopByUserOrderByCreatedAtDesc(user);
+		return articleRepository.findRecentArticleByUser(user);
 	}
 
 	@Override

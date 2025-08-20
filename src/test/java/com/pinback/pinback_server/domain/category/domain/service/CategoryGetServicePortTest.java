@@ -18,7 +18,7 @@ import com.pinback.pinback_server.domain.user.domain.repository.UserRepository;
 
 @Import({CategoryGetService.class})
 @Transactional
-class CategoryGetServiceTest extends ServiceTest {
+class CategoryGetServicePortTest extends ServiceTest {
 	@Autowired
 	private UserRepository userRepository;
 

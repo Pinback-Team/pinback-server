@@ -3,7 +3,7 @@ package com.pinback.infrastructure.article.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pinback.application.article.service.ArticleDeleteService;
+import com.pinback.application.article.service.ArticleDeleteServicePort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ArticleDeleteServiceImpl implements ArticleDeleteService {
+public class ArticleDeleteService implements ArticleDeleteServicePort {
 
 	private final ArticleRepository articleRepository;
 

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.application.article.dto.AcornCollectResult;
 import com.pinback.application.article.dto.response.ReadArticleResponse;
 import com.pinback.application.article.port.in.UpdateArticleStatusPort;
-import com.pinback.application.article.service.ArticleUpdateService;
+import com.pinback.application.article.service.ArticleGetServicePort;
 import com.pinback.application.user.service.AcornService;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.user.entity.User;
@@ -20,12 +20,12 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class UpdateArticleStatusUsecase implements UpdateArticleStatusPort {
 
-	private final ArticleUpdateService articleUpdateService;
+	private final ArticleGetServicePort articleGetServicePort;
 	private final AcornService acornService;
 
 	@Override
 	public ReadArticleResponse updateArticleStatus(User user, long articleId) {
-		Article article = articleUpdateService.findByUserAndId(user, articleId);
+		Article article = articleGetServicePort.findByUserAndId(user, articleId);
 
 		int currentAcorns = acornService.getCurrentAcorns(user.getId());
 		log.info("수집하기 전 도토리 수: {}", currentAcorns);

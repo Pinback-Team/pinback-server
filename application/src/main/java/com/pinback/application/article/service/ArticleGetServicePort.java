@@ -12,7 +12,7 @@ import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
 
-public interface ArticleGetService {
+public interface ArticleGetServicePort {
 	Optional<Article> findRecentByUser(User user);
 
 	boolean checkExistsByUserAndUrl(User user, String url);

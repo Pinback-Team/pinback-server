@@ -17,7 +17,7 @@ import com.pinback.infrastructure.article.repository.ArticleRepository;
 import com.pinback.infrastructure.category.repository.CategoryRepository;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
-@Import(ArticleSaveServiceImpl.class)
+@Import(ArticleSaveService.class)
 @Transactional
 class ArticleSaveServiceTest extends ServiceTest {
 
@@ -31,7 +31,7 @@ class ArticleSaveServiceTest extends ServiceTest {
 	private ArticleRepository articleRepository;
 
 	@Autowired
-	private ArticleSaveServiceImpl articleSaveService;
+	private ArticleSaveService articleSaveService;
 
 	@DisplayName("아티클을 저장하면 ID가 생성되어 반환된다.")
 	@Test
