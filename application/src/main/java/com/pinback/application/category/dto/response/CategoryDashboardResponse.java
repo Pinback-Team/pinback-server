@@ -1,7 +1,8 @@
 package com.pinback.application.category.dto.response;
 
 public record CategoryDashboardResponse(
-	Long id,
+	long id,
 	String name,
 	long unreadCount
-) {}
+) {
+}
