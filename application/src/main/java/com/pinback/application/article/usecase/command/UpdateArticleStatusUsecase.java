@@ -20,19 +20,19 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional
 public class UpdateArticleStatusUsecase implements UpdateArticleStatusPort {
 
-	private final ArticleGetServicePort articleGetServicePort;
-	private final AcornServicePort acornServicePort;
+	private final ArticleGetServicePort articleGetService;
+	private final AcornServicePort acornService;
 
 	@Override
 	public ReadArticleResponse updateArticleStatus(User user, long articleId) {
-		Article article = articleGetServicePort.findByUserAndId(user, articleId);
+		Article article = articleGetService.findByUserAndId(user, articleId);
 
-		int currentAcorns = acornServicePort.getCurrentAcorns(user.getId());
+		int currentAcorns = acornService.getCurrentAcorns(user.getId());
 		log.info("수집하기 전 도토리 수: {}", currentAcorns);
 
 		if (!article.isRead()) {
 			article.markAsRead();
-			AcornCollectResult result = acornServicePort.tryCollectAcorns(user);
+			AcornCollectResult result = acornService.tryCollectAcorns(user);
 			return ReadArticleResponse.of(result.finalAcornCount(), result.isCollected());
 		}
 

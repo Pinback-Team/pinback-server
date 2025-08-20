@@ -17,14 +17,14 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class DeleteArticleUsecase implements DeleteArticlePort {
 
-	private final ArticleGetServicePort articleGetServicePort;
-	private final ArticleDeleteServicePort articleDeleteServicePort;
+	private final ArticleGetServicePort articleGetService;
+	private final ArticleDeleteServicePort articleDeleteService;
 
 	@Override
 	public void deleteArticle(User user, long articleId) {
-		Article article = articleGetServicePort.findById(articleId);
+		Article article = articleGetService.findById(articleId);
 		validateOwnership(article, user);
-		articleDeleteServicePort.delete(article);
+		articleDeleteService.delete(article);
 	}
 
 	private void validateOwnership(Article article, User user) {

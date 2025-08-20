@@ -26,18 +26,18 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 
 	private static final long MEMO_LIMIT_LENGTH = 500;
 
-	private final ArticleGetServicePort articleGetServicePort;
-	private final CategoryGetServicePort categoryGetServicePort;
+	private final ArticleGetServicePort articleGetService;
+	private final CategoryGetServicePort categoryGetService;
 	private final NotificationService notificationService;
 
 	@Override
 	public void updateArticle(User user, long articleId, ArticleUpdateCommand command) {
 		validateMemoLength(command.memo());
 
-		Article article = articleGetServicePort.findByUserAndId(user, articleId);
+		Article article = articleGetService.findByUserAndId(user, articleId);
 		boolean remindTimeChanged = !article.getRemindAt().equals(command.remindTime());
 
-		Category category = categoryGetServicePort.getCategoryAndUser(command.categoryId(), user);
+		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		article.update(command.memo(), category, command.remindTime());
 
 		handleReminderUpdate(article, user, command.remindTime(), remindTimeChanged, articleId);

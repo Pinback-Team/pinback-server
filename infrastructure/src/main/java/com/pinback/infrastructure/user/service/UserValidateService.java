@@ -27,13 +27,11 @@ public class UserValidateService implements UserValidateServicePort {
 
 	@Override
 	public boolean validateLogin(String email, String password) {
-		// 현재 프로젝트에서는 패스워드 없이 이메일만으로 인증하는 것으로 보임
 		return userRepository.existsByEmail(email);
 	}
 
 	@Override
 	public User authenticate(String email, String password) {
-		// 이메일로 사용자 찾기 (패스워드 검증은 현재 구현되지 않음)
 		return userRepository.findByEmail(email)
 			.orElseThrow(UserNotFoundException::new);
 	}

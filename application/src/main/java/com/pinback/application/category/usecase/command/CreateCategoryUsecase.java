@@ -22,26 +22,26 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 
 	private static final int CATEGORY_LIMIT = 10;
 
-	private final CategorySaveServicePort categorySaveServicePort;
-	private final CategoryGetServicePort categoryGetServicePort;
+	private final CategorySaveServicePort categorySaveService;
+	private final CategoryGetServicePort categoryGetService;
 
 	@Override
 	public CreateCategoryResponse createCategory(User user, CreateCategoryCommand command) {
 		validateCategoryCreation(user, command);
 
 		Category category = Category.create(command.categoryName(), user);
-		Category savedCategory = categorySaveServicePort.save(category);
+		Category savedCategory = categorySaveService.save(category);
 
 		return CreateCategoryResponse.of(savedCategory.getId(), savedCategory.getName());
 	}
 
 	private void validateCategoryCreation(User user, CreateCategoryCommand command) {
-		long existingCategoryCnt = categoryGetServicePort.countCategoriesByUser(user);
+		long existingCategoryCnt = categoryGetService.countCategoriesByUser(user);
 		if (existingCategoryCnt >= CATEGORY_LIMIT) {
 			throw new CategoryLimitOverException();
 		}
 
-		if (categoryGetServicePort.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
+		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
 			throw new CategoryAlreadyExistException();
 		}
 	}

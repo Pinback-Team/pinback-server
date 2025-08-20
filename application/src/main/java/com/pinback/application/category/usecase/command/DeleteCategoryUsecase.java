@@ -18,18 +18,18 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class DeleteCategoryUsecase implements DeleteCategoryPort {
 
-	private final CategoryGetServicePort categoryGetServicePort;
-	private final CategoryDeleteServicePort categoryDeleteServicePort;
+	private final CategoryGetServicePort categoryGetService;
+	private final CategoryDeleteServicePort categoryDeleteService;
 
-	private final ArticleDeleteServicePort articleDeleteServicePort;
+	private final ArticleDeleteServicePort articleDeleteService;
 
 	@Override
 	public void deleteCategory(User user, long categoryId) {
-		Category category = categoryGetServicePort.findById(categoryId);
+		Category category = categoryGetService.findById(categoryId);
 		checkOwner(category, user);
 
-		articleDeleteServicePort.deleteByCategory(user, categoryId);
-		categoryDeleteServicePort.delete(category);
+		articleDeleteService.deleteByCategory(user, categoryId);
+		categoryDeleteService.delete(category);
 	}
 
 	private void checkOwner(Category category, User user) {

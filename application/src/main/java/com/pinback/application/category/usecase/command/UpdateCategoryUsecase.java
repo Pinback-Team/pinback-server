@@ -18,13 +18,13 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class UpdateCategoryUsecase implements UpdateCategoryPort {
 
-	private final CategoryGetServicePort categoryGetServicePort;
+	private final CategoryGetServicePort categoryGetService;
 
 	@Override
 	public UpdateCategoryResponse updateCategory(User user, Long categoryId, UpdateCategoryCommand command) {
-		Category category = categoryGetServicePort.getCategoryAndUser(categoryId, user);
+		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
 
-		if (categoryGetServicePort.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
+		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
 			throw new CategoryAlreadyExistException();
 		}
 

@@ -28,24 +28,24 @@ public class CreateArticleUsecase implements CreateArticlePort {
 
 	private static final long MEMO_LIMIT_LENGTH = 500;
 
-	private final ArticleGetServicePort articleGetServicePort;
-	private final ArticleSaveServicePort articleSaveServicePort;
-	private final CategoryGetServicePort categoryGetServicePort;
+	private final ArticleGetServicePort articleGetService;
+	private final ArticleSaveServicePort articleSaveService;
+	private final CategoryGetServicePort categoryGetService;
 	private final NotificationService notificationService;
 
 	@Override
 	public void createArticle(User user, ArticleCreateCommand command) {
 		validateArticleCreation(user, command);
 
-		Category category = categoryGetServicePort.getCategoryAndUser(command.categoryId(), user);
+		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
-		Article savedArticle = articleSaveServicePort.save(article);
+		Article savedArticle = articleSaveService.save(article);
 
 		scheduleReminderIfNeeded(savedArticle, user, command.remindTime());
 	}
 
 	private void validateArticleCreation(User user, ArticleCreateCommand command) {
-		if (articleGetServicePort.checkExistsByUserAndUrl(user, command.url())) {
+		if (articleGetService.checkExistsByUserAndUrl(user, command.url())) {
 			throw new ArticleAlreadyExistException();
 		}
 

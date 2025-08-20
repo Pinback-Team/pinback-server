@@ -21,14 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserManagementUsecase implements UserManagementPort {
-	private final AcornServicePort acornServicePort;
+	private final AcornServicePort acornService;
 
 	@Override
 	public UserInfoResponse getUserInfo(User user, LocalDateTime now) {
 		LocalTime userRemindDefault = user.getRemindDefault();
 		LocalDateTime remindDateTime = getRemindDateTime(now, userRemindDefault);
 
-		int finalAcornCount = acornServicePort.getCurrentAcorns(user.getId());
+		int finalAcornCount = acornService.getCurrentAcorns(user.getId());
 
 		return UserInfoResponse.of(finalAcornCount, remindDateTime);
 	}
