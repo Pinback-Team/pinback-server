@@ -14,7 +14,7 @@ import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.ServiceTest;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
-@Import(UserGetServiceImpl.class)
+@Import(UserGetService.class)
 @Transactional
 class UserGetServiceTest extends ServiceTest {
 
@@ -22,7 +22,7 @@ class UserGetServiceTest extends ServiceTest {
 	private UserRepository userRepository;
 
 	@Autowired
-	private UserGetServiceImpl userGetService;
+	private UserGetService userGetService;
 
 	@DisplayName("이메일로 사용자를 조회할 수 있다.")
 	@Test

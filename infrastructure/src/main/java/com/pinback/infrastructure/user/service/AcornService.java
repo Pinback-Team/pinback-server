@@ -1,4 +1,4 @@
-package com.pinback.infrastructure.redis;
+package com.pinback.infrastructure.user.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -8,38 +8,40 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import com.pinback.application.article.dto.AcornCollectResult;
+import com.pinback.application.user.port.out.AcornServicePort;
 import com.pinback.domain.user.entity.User;
-import com.pinback.infrastructure.redis.dto.response.AcornCollectResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.context.annotation.Profile;
 
 @Service
 @Profile("!test")
 @Slf4j
 @RequiredArgsConstructor
-public class AcornService {
+public class AcornService implements AcornServicePort {
 
 	private static final long MAX_ACORNS_PER_DAY = 7;
 	private static final String REDIS_KEY_PREFIX = "daily_acorns:";
 	private static final ZoneId SEOUL_ZONE_ID = ZoneId.of("Asia/Seoul");
 	private final StringRedisTemplate redisTemplate;
 
+	@Override
 	public int getCurrentAcorns(UUID userId) {
 		String key = REDIS_KEY_PREFIX + userId.toString();
 		String acornsStr = redisTemplate.opsForValue().get(key);
 
 		return Optional.ofNullable(acornsStr)
-			.map(Integer::parseInt) // String -> int 변환
-			.orElse(0); // null -> 0 반환
+			.map(Integer::parseInt)
+			.orElse(0);
 	}
 
-	public AcornCollectResponse tryCollectAcorns(User user) {
+	@Override
+	public AcornCollectResult tryCollectAcorns(User user) {
 		String key = REDIS_KEY_PREFIX + user.getId();
 		int currentAcorns = getCurrentAcorns(user.getId());
 		int finalAcorns;
@@ -49,19 +51,14 @@ public class AcornService {
 			long ttlSeconds = calculateTtlSeconds(user);
 			redisTemplate.opsForValue().set(key, String.valueOf(finalAcorns), ttlSeconds, TimeUnit.SECONDS);
 			log.info("사용자 {}가 도토리 1개를 획득했습니다. 최종 도토리: {}, TTL: {} 초", user.getId(), finalAcorns, ttlSeconds);
-			return AcornCollectResponse.builder()
-				.finalAcornCount(finalAcorns)
-				.isCollected(true)
-				.build();
+			return new AcornCollectResult(finalAcorns, true);
 		}
 		finalAcorns = currentAcorns;
 		log.info("사용자 {}는 일일 도토리 한도({})에 도달하였습니다. 최종 도토리: {}", user.getId(), MAX_ACORNS_PER_DAY, finalAcorns);
-		return AcornCollectResponse.builder()
-			.finalAcornCount(finalAcorns)
-			.isCollected(false)
-			.build();
+		return new AcornCollectResult(finalAcorns, false);
 	}
 
+	@Override
 	public void resetAcornsForTest(UUID userId) {
 		String key = REDIS_KEY_PREFIX + userId.toString();
 		Boolean deleted = redisTemplate.delete(key);

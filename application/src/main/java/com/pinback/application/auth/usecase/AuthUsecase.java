@@ -3,13 +3,16 @@ package com.pinback.application.auth.usecase;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pinback.application.auth.dto.SignUpCommand;
+import com.pinback.application.auth.dto.SignUpResponse;
+import com.pinback.application.auth.dto.TokenResponse;
+import com.pinback.application.auth.service.JwtProvider;
 import com.pinback.application.notification.service.PushSubscriptionSaveService;
-import com.pinback.application.user.service.UserGetService;
-import com.pinback.application.user.service.UserSaveService;
-import com.pinback.application.user.service.UserValidateService;
+import com.pinback.application.user.port.out.UserGetServicePort;
+import com.pinback.application.user.port.out.UserSaveServicePort;
+import com.pinback.application.user.port.out.UserValidateServicePort;
 import com.pinback.domain.notification.entity.PushSubscription;
 import com.pinback.domain.user.entity.User;
-import com.pinback.application.auth.service.JwtProvider;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,21 +20,21 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthUsecase {
 
-	private final UserValidateService userValidateService;
-	private final UserSaveService userSaveService;
+	private final UserValidateServicePort userValidateServicePort;
+	private final UserSaveServicePort userSaveServicePort;
 	private final JwtProvider jwtProvider;
 	private final PushSubscriptionSaveService pushSubscriptionSaveService;
-	private final UserGetService userGetService;
+	private final UserGetServicePort userGetServicePort;
 
 	@Transactional
 	public SignUpResponse signUp(SignUpCommand signUpCommand) {
-		userValidateService.validateDuplicate(signUpCommand.email());
-		User user = userSaveService.save(User.create(signUpCommand.email(), signUpCommand.remindDefault()));
+		userValidateServicePort.validateDuplicate(signUpCommand.email());
+		User user = userSaveServicePort.save(User.create(signUpCommand.email(), signUpCommand.remindDefault()));
 		String accessToken = jwtProvider.createAccessToken(user.getId());
 
 		PushSubscription pushSubscription = PushSubscription.create(
 			user,
-			signUpCommand.token()
+			signUpCommand.fcmToken()
 		);
 
 		pushSubscriptionSaveService.save(pushSubscription);
@@ -41,28 +44,11 @@ public class AuthUsecase {
 
 	@Transactional(readOnly = true)
 	public TokenResponse getToken(String email) {
-		//TODO: GetService 마이그레이션 이후 수정
-		User user = userGetService.findByEmail(email)
-			.orElseThrow(() -> new RuntimeException("User not found"));
+		User user = userGetServicePort.findByEmail(email);
 
 		String accessToken = jwtProvider.createAccessToken(user.getId());
 
 		return new TokenResponse(accessToken);
 	}
 
-	public record SignUpCommand(String email, java.time.LocalTime remindDefault, String token) {
-	}
-
-	public static class SignUpResponse {
-		public static SignUpResponse from(String accessToken) {
-			// Implementation
-			return null;
-		}
-	}
-
-	public static class TokenResponse {
-		public TokenResponse(String accessToken) {
-			// Implementation
-		}
-	}
 }

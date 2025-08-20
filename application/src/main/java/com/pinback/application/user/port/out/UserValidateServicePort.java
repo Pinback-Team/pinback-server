@@ -1,8 +1,8 @@
-package com.pinback.application.user.service;
+package com.pinback.application.user.port.out;
 
 import com.pinback.domain.user.entity.User;
 
-public interface UserValidateService {
+public interface UserValidateServicePort {
 	void validateDuplicate(String email);
 
 	boolean validateLogin(String email, String password);

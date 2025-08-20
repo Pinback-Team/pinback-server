@@ -13,7 +13,7 @@ import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.ServiceTest;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
-@Import(UserSaveServiceImpl.class)
+@Import(UserSaveService.class)
 @Transactional
 class UserSaveServiceTest extends ServiceTest {
 
@@ -21,7 +21,7 @@ class UserSaveServiceTest extends ServiceTest {
 	private UserRepository userRepository;
 
 	@Autowired
-	private UserSaveServiceImpl userSaveService;
+	private UserSaveService userSaveService;
 
 	@DisplayName("사용자를 저장하면 ID가 생성되어 반환된다.")
 	@Test

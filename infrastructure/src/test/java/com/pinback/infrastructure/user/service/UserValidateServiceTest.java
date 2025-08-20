@@ -15,7 +15,7 @@ import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.ServiceTest;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
-@Import(UserValidateServiceImpl.class)
+@Import(UserValidateService.class)
 @Transactional
 class UserValidateServiceTest extends ServiceTest {
 
@@ -23,7 +23,7 @@ class UserValidateServiceTest extends ServiceTest {
 	private UserRepository userRepository;
 
 	@Autowired
-	private UserValidateServiceImpl userValidateService;
+	private UserValidateService userValidateService;
 
 	@DisplayName("중복되지 않은 이메일은 검증을 통과한다.")
 	@Test

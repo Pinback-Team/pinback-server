@@ -51,13 +51,7 @@ public class User extends BaseEntity {
 		this.acornCount += count;
 	}
 
-	public void decreaseAcornCount(Long count) {
-		if (this.acornCount >= count) {
-			this.acornCount -= count;
-		}
-	}
-
-	public boolean canRemindAt(LocalTime time) {
-		return this.remindDefault != null;
+	public void updateRemindDefault(LocalTime newRemindDefault) {
+		this.remindDefault = newRemindDefault;
 	}
 }
