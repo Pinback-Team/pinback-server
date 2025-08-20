@@ -1,14 +1,11 @@
-package com.pinback.application.notification.service;
+package com.pinback.application.notification.port.out;
 
 import java.util.UUID;
 
 import com.pinback.domain.article.entity.Article;
-import com.pinback.domain.notification.entity.PushSubscription;
 import com.pinback.domain.user.entity.User;
 
-public interface NotificationService {
-
-	PushSubscription findPushSubscription(User user);
+public interface NotificationServicePort {
 
 	void scheduleArticleReminder(Article article, User user, String fcmToken);
 

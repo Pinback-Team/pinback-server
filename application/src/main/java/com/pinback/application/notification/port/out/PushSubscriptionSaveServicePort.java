@@ -1,7 +1,8 @@
-package com.pinback.application.notification.service;
+package com.pinback.application.notification.port.out;
 
 import com.pinback.domain.notification.entity.PushSubscription;
 
-public interface PushSubscriptionSaveService {
+public interface PushSubscriptionSaveServicePort {
+
 	PushSubscription save(PushSubscription pushSubscription);
 }

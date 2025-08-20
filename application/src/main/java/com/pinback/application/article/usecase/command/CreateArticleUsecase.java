@@ -12,7 +12,8 @@ import com.pinback.application.article.service.ArticleSaveServicePort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.application.common.exception.ArticleAlreadyExistException;
 import com.pinback.application.common.exception.MemoLengthLimitException;
-import com.pinback.application.notification.service.NotificationService;
+import com.pinback.application.notification.port.in.GetPushSubscriptionPort;
+import com.pinback.application.notification.port.in.ScheduleArticleReminderPort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.notification.entity.PushSubscription;
@@ -30,8 +31,11 @@ public class CreateArticleUsecase implements CreateArticlePort {
 
 	private final ArticleGetServicePort articleGetService;
 	private final ArticleSaveServicePort articleSaveService;
+
 	private final CategoryGetServicePort categoryGetService;
-	private final NotificationService notificationService;
+
+	private final GetPushSubscriptionPort getPushSubscription;
+	private final ScheduleArticleReminderPort scheduleArticleReminder;
 
 	@Override
 	public void createArticle(User user, ArticleCreateCommand command) {
@@ -56,8 +60,8 @@ public class CreateArticleUsecase implements CreateArticlePort {
 
 	private void scheduleReminderIfNeeded(Article article, User user, LocalDateTime remindTime) {
 		if (remindTime != null && !remindTime.isBefore(LocalDateTime.now())) {
-			PushSubscription subscriptionInfo = notificationService.findPushSubscription(user);
-			notificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
+			PushSubscription subscriptionInfo = getPushSubscription.findPushSubscription(user);
+			scheduleArticleReminder.schedule(article, user, subscriptionInfo.getToken());
 		}
 	}
 }

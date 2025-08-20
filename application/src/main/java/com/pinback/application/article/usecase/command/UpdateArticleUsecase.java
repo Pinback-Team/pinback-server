@@ -10,7 +10,8 @@ import com.pinback.application.article.port.in.UpdateArticlePort;
 import com.pinback.application.article.service.ArticleGetServicePort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.application.common.exception.MemoLengthLimitException;
-import com.pinback.application.notification.service.NotificationService;
+import com.pinback.application.notification.port.in.GetPushSubscriptionPort;
+import com.pinback.application.notification.port.out.NotificationServicePort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.notification.entity.PushSubscription;
@@ -28,7 +29,9 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 
 	private final ArticleGetServicePort articleGetService;
 	private final CategoryGetServicePort categoryGetService;
-	private final NotificationService notificationService;
+	private final NotificationServicePort notificationService;
+
+	private final GetPushSubscriptionPort getPushSubscription;
 
 	@Override
 	public void updateArticle(User user, long articleId, ArticleUpdateCommand command) {
@@ -55,7 +58,7 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 			notificationService.cancelArticleReminder(articleId, user.getId());
 
 			if (remindTime != null && !remindTime.isBefore(LocalDateTime.now())) {
-				PushSubscription subscriptionInfo = notificationService.findPushSubscription(user);
+				PushSubscription subscriptionInfo = getPushSubscription.findPushSubscription(user);
 				notificationService.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
 			}
 		}
