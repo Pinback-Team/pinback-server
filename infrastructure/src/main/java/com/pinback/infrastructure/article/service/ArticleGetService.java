@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
-import com.pinback.application.article.service.ArticleGetServicePort;
+import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotFoundException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;

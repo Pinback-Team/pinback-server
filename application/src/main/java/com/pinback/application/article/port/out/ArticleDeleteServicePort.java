@@ -1,4 +1,4 @@
-package com.pinback.application.article.service;
+package com.pinback.application.article.port.out;
 
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.user.entity.User;

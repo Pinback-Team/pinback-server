@@ -14,9 +14,7 @@ import com.pinback.application.user.port.out.AcornServicePort;
 import com.pinback.domain.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)

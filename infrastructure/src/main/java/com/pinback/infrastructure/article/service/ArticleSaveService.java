@@ -3,7 +3,7 @@ package com.pinback.infrastructure.article.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pinback.application.article.service.ArticleSaveServicePort;
+import com.pinback.application.article.port.out.ArticleSaveServicePort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
 

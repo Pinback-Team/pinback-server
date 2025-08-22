@@ -17,8 +17,8 @@ import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.RemindArticlesResponse;
 import com.pinback.application.article.port.in.GetArticlePort;
-import com.pinback.application.article.service.ArticleGetServicePort;
-import com.pinback.application.category.port.out.CategoryGetServicePort;
+import com.pinback.application.article.port.out.ArticleGetServicePort;
+import com.pinback.application.category.port.in.GetCategoryPort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -31,7 +31,7 @@ import lombok.RequiredArgsConstructor;
 public class GetArticleUsecase implements GetArticlePort {
 
 	private final ArticleGetServicePort articleGetServicePort;
-	private final CategoryGetServicePort categoryGetServicePort;
+	private final GetCategoryPort getCategoryPort;
 
 	@Override
 	public ArticleDetailResponse getArticleDetail(long articleId) {
@@ -63,7 +63,7 @@ public class GetArticleUsecase implements GetArticlePort {
 
 	@Override
 	public ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, PageQuery query) {
-		Category category = categoryGetServicePort.getCategoryAndUser(categoryId, user);
+		Category category = getCategoryPort.getCategoryAndUser(categoryId, user);
 
 		ArticlesWithUnreadCountDto result = articleGetServicePort.findAllByCategory(
 			user, category, PageRequest.of(query.pageNumber(), query.pageSize()));

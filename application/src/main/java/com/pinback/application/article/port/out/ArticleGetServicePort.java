@@ -1,4 +1,4 @@
-package com.pinback.application.article.service;
+package com.pinback.application.article.port.out;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

@@ -4,8 +4,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.port.in.DeleteArticlePort;
-import com.pinback.application.article.service.ArticleDeleteServicePort;
-import com.pinback.application.article.service.ArticleGetServicePort;
+import com.pinback.application.article.port.out.ArticleDeleteServicePort;
+import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotOwnedException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.user.entity.User;

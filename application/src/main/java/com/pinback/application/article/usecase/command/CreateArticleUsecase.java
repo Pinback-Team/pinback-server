@@ -7,9 +7,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.command.ArticleCreateCommand;
 import com.pinback.application.article.port.in.CreateArticlePort;
-import com.pinback.application.article.service.ArticleGetServicePort;
-import com.pinback.application.article.service.ArticleSaveServicePort;
-import com.pinback.application.category.port.out.CategoryGetServicePort;
+import com.pinback.application.article.port.out.ArticleGetServicePort;
+import com.pinback.application.article.port.out.ArticleSaveServicePort;
+import com.pinback.application.category.port.in.GetCategoryPort;
 import com.pinback.application.common.exception.ArticleAlreadyExistException;
 import com.pinback.application.common.exception.MemoLengthLimitException;
 import com.pinback.application.notification.port.in.GetPushSubscriptionPort;
@@ -32,7 +32,7 @@ public class CreateArticleUsecase implements CreateArticlePort {
 	private final ArticleGetServicePort articleGetService;
 	private final ArticleSaveServicePort articleSaveService;
 
-	private final CategoryGetServicePort categoryGetService;
+	private final GetCategoryPort getCategoryPort;
 
 	private final GetPushSubscriptionPort getPushSubscription;
 	private final ScheduleArticleReminderPort scheduleArticleReminder;
@@ -41,7 +41,7 @@ public class CreateArticleUsecase implements CreateArticlePort {
 	public void createArticle(User user, ArticleCreateCommand command) {
 		validateArticleCreation(user, command);
 
-		Category category = categoryGetService.getCategoryAndUser(command.categoryId(), user);
+		Category category = getCategoryPort.getCategoryAndUser(command.categoryId(), user);
 		Article article = Article.create(command.url(), command.memo(), user, category, command.remindTime());
 		Article savedArticle = articleSaveService.save(article);
 

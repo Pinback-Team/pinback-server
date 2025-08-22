@@ -3,7 +3,7 @@ package com.pinback.application.category.usecase.command;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pinback.application.article.service.ArticleDeleteServicePort;
+import com.pinback.application.article.port.out.ArticleDeleteServicePort;
 import com.pinback.application.category.port.in.DeleteCategoryPort;
 import com.pinback.application.category.port.out.CategoryDeleteServicePort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;

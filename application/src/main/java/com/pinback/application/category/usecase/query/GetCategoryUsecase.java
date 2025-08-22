@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pinback.application.article.service.ArticleGetServicePort;
+import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.dto.CategoriesForDashboardDto;
 import com.pinback.application.category.dto.response.CategoriesForDashboardResponse;
 import com.pinback.application.category.dto.response.CategoriesForExtensionResponse;
@@ -56,5 +56,10 @@ public class GetCategoryUsecase implements GetCategoryPort {
 			.toList();
 
 		return CategoriesForDashboardResponse.of(categoryResponses);
+	}
+
+	@Override
+	public Category getCategoryAndUser(long categoryId, User user) {
+		return categoryGetServicePort.getCategoryAndUser(categoryId, user);
 	}
 }
