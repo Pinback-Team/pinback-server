@@ -13,53 +13,15 @@ allprojects {
     }
 }
 
-def queryDslVersion = "6.11"
-
-apply from: 'querydsl.gradle'
-
-dependencies {
-    implementation project(':shared')
-    implementation project(':domain')
-    implementation project(':core')
-    implementation project(':infrastructure')
-
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-    //swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-
-    //querydsl
-    implementation("io.github.openfeign.querydsl:querydsl-core:${queryDslVersion}")
-    implementation("io.github.openfeign.querydsl:querydsl-jpa:$queryDslVersion")
-    annotationProcessor("io.github.openfeign.querydsl:querydsl-apt:$queryDslVersion:jpa")
-
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    implementation 'com.auth0:java-jwt:4.5.0'
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-
-    runtimeOnly 'com.h2database:h2'
-    testImplementation 'com.h2database:h2'
-
-    // Redis
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-
-    //firebase
-    implementation 'com.google.firebase:firebase-admin:9.2.0'
-}
-
 subprojects {
-    apply plugin: 'java'
+    apply plugin: 'java-library'
+    apply plugin: 'io.spring.dependency-management'
+
+    dependencyManagement {
+        imports {
+            mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.3"
+        }
+    }
 
     java {
         toolchain {
@@ -73,21 +35,49 @@ subprojects {
         }
     }
 
+    // 공통 의존성
+    dependencies {
+        // Lombok
+        compileOnly 'org.projectlombok:lombok:1.18.30'
+        annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+        // Test
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
     tasks.withType(JavaCompile).configureEach {
         options.incremental = true
         options.compilerArgs += ['-Xlint:deprecation']
     }
 
     tasks.withType(Test).configureEach {
+        useJUnitPlatform()
         inputs.property("java.vendor", System.getProperty("java.vendor"))
         inputs.property("java.version", System.getProperty("java.version"))
-
-        outputs.upToDateWhen {
-            !project.hasProperty('forceTests')
-        }
     }
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+project(':api') {
+    apply plugin: 'org.springframework.boot'
+
+    bootJar {
+        enabled = true
+        archiveClassifier = ''
+    }
+
+    jar {
+        enabled = false
+    }
+}
+
+configure(subprojects.findAll { it.name != 'api' }) {
+    bootJar {
+        enabled = false
+    }
+
+    jar {
+        enabled = true
+        archiveClassifier = ''
+    }
 }
