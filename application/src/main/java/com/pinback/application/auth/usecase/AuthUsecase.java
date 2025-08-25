@@ -28,7 +28,8 @@ public class AuthUsecase {
 
 	@Transactional
 	public SignUpResponse signUp(SignUpCommand signUpCommand) {
-		userValidateServicePort.validateDuplicate(signUpCommand.email());
+		userValidateServicePort.validateDuplicateEmail(signUpCommand.email());
+
 		User user = userSaveServicePort.save(User.create(signUpCommand.email(), signUpCommand.remindDefault()));
 		String accessToken = jwtProvider.createAccessToken(user.getId());
 
