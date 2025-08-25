@@ -13,14 +13,14 @@ public class CustomRepository {
 
 	@Transactional
 	public void clearAndReset() {
-		entityManager.createNativeQuery("DELETE FROM article_migration").executeUpdate();
-		entityManager.createNativeQuery("DELETE FROM push_subscription_migration").executeUpdate();
-		entityManager.createNativeQuery("DELETE FROM category_migration").executeUpdate();
-		entityManager.createNativeQuery("DELETE FROM users_migration").executeUpdate();
+		entityManager.createNativeQuery("DELETE FROM article").executeUpdate();
+		entityManager.createNativeQuery("DELETE FROM push_subscription").executeUpdate();
+		entityManager.createNativeQuery("DELETE FROM category").executeUpdate();
+		entityManager.createNativeQuery("DELETE FROM users").executeUpdate();
 
-		entityManager.createNativeQuery("ALTER TABLE article_migration ALTER COLUMN article_id RESTART WITH 1")
+		entityManager.createNativeQuery("ALTER TABLE article ALTER COLUMN article_id RESTART WITH 1")
 			.executeUpdate();
-		entityManager.createNativeQuery("ALTER TABLE category_migration ALTER COLUMN category_id RESTART WITH 1")
+		entityManager.createNativeQuery("ALTER TABLE category ALTER COLUMN category_id RESTART WITH 1")
 			.executeUpdate();
 	}
 }
