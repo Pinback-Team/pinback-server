@@ -1,31 +1,8 @@
-plugins {
-    id 'java-library'
-}
-
-group = 'com.pinback'
-version = '0.0.1-SNAPSHOT'
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
-
 dependencies {
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.17.0'
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    api 'com.fasterxml.jackson.core:jackson-annotations'
+    api 'org.springframework:spring-web'
 
-    testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'org.assertj:assertj-core:3.24.2'
-}
+    api 'org.springframework.boot:spring-boot-starter-validation'
 
-tasks.withType(JavaCompile).configureEach {
-    inputs.files(fileTree(dir: 'src', include: '**/*.java'))
-    outputs.cacheIf { true }
+    testImplementation 'org.assertj:assertj-core'
 }
