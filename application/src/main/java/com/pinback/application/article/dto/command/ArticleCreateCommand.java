@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record ArticleCreateCommand(
 	String url,
-	long categoryId,
+	Long categoryId,
 	String memo,
 	LocalDateTime remindTime
 ) {
