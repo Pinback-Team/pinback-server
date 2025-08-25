@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        module: [ shared, core, infrastructure ]
+        module: [ shared, domain, application, infrastructure ]
     steps:
       - uses: actions/checkout@v4
 

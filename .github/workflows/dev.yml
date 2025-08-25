@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: build/libs/*.jar
+          path: api/build/libs/*.jar
   
   docker-build-and-push:
     needs: build
@@ -65,7 +65,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: build/libs/
+          path: api/build/libs/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
