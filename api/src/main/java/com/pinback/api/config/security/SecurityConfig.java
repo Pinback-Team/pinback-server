@@ -1,4 +1,4 @@
-package com.pinback.infrastructure.config.security;
+package com.pinback.api.config.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-import com.pinback.infrastructure.config.auth.filter.JwtAuthenticationFilter;
+import com.pinback.api.config.filter.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 

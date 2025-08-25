@@ -5,6 +5,7 @@ include 'core'
 include 'infrastructure'
 include 'shared'
 include 'application'
+include 'api'
 
 buildCache {
     local {

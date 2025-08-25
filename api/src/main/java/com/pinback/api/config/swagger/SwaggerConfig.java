@@ -1,4 +1,4 @@
-package com.pinback.infrastructure.config.swagger;
+package com.pinback.api.config.swagger;
 
 import java.util.List;
 
@@ -33,4 +33,6 @@ public class SwaggerConfig {
 						.scheme("bearer")
 						.bearerFormat("JWT")));
 	}
+
 }
+
