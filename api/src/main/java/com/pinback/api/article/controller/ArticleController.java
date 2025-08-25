@@ -1,7 +1,5 @@
 package com.pinback.api.article.controller;
 
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -78,9 +76,10 @@ public class ArticleController {
 	@GetMapping
 	public ResponseDto<ArticlesPageResponse> getAllArticles(
 		@Parameter(hidden = true) @CurrentUser User user,
-		@PageableDefault(size = 20) Pageable pageable
+		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {
-		PageQuery query = new PageQuery(pageable.getPageNumber(), pageable.getPageSize());
+		PageQuery query = new PageQuery(page, size);
 		ArticlesPageResponse response = getArticlePort.getAllArticles(user, query);
 		return ResponseDto.ok(response);
 	}
@@ -90,9 +89,10 @@ public class ArticleController {
 	public ResponseDto<ArticlesPageResponse> getAllArticlesByCategory(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "카테고리 ID") @PathVariable Long categoryId,
-		@PageableDefault(size = 20) Pageable pageable
+		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {
-		PageQuery query = new PageQuery(pageable.getPageNumber(), pageable.getPageSize());
+		PageQuery query = new PageQuery(page, size);
 		ArticlesPageResponse response = getArticlePort.getAllArticlesByCategory(user, categoryId, query);
 		return ResponseDto.ok(response);
 	}
@@ -101,9 +101,10 @@ public class ArticleController {
 	@GetMapping("/unread")
 	public ResponseDto<ArticlesPageResponse> getUnreadArticles(
 		@Parameter(hidden = true) @CurrentUser User user,
-		@PageableDefault(size = 20) Pageable pageable
+		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {
-		PageQuery query = new PageQuery(pageable.getPageNumber(), pageable.getPageSize());
+		PageQuery query = new PageQuery(page, size);
 		ArticlesPageResponse response = getArticlePort.getUnreadArticles(user, query);
 		return ResponseDto.ok(response);
 	}
