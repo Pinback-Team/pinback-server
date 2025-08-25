@@ -1,10 +1,10 @@
 package com.pinback.domain.article;
 
 import static com.pinback.fixture.TestFixture.*;
+import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -26,7 +26,7 @@ class ArticleDomainTest {
 		boolean isOwnedBy = article.isOwnedBy(user);
 
 		//then
-		Assertions.assertThat(isOwnedBy).isTrue();
+		assertThat(isOwnedBy).isTrue();
 	}
 
 	@DisplayName("최초 생성된 Article 인스턴스는 읽지 않은 상태로 초기화된다.")
@@ -38,7 +38,7 @@ class ArticleDomainTest {
 
 		//when & then
 		Article article = Article.create("test", "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));
-		Assertions.assertThat(article.isRead()).isFalse();
+		assertThat(article.isRead()).isFalse();
 	}
 
 	@DisplayName("Article 생성시 메모의 길이가 300개 초과하면 예외가 발생한다.")
@@ -53,6 +53,6 @@ class ArticleDomainTest {
 		//when & then
 		Article article = Article.create("test", longMemo, user, category,
 			LocalDateTime.of(2025, 7, 7, 12, 0, 0));
-		Assertions.assertThat(article.isRead()).isFalse();
+		assertThat(article.isRead()).isFalse();
 	}
 }
