@@ -32,6 +32,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Build all modules first (for QueryDSL)
+        run: ./gradlew build -x test
+
       - name: Test ${{ matrix.module }} module
         run: ./gradlew :${{ matrix.module }}:test
 
