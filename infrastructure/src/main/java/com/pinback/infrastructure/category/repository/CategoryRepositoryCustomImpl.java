@@ -27,7 +27,7 @@ public class CategoryRepositoryCustomImpl implements CategoryRepositoryCustom {
 		List<Category> categories = queryFactory
 			.selectFrom(category)
 			.where(category.user.id.eq(userId))
-			.orderBy(category.id.asc()) // 생성 오래된 순
+			.orderBy(category.id.asc())
 			.fetch();
 
 		return categories;

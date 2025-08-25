@@ -1,47 +1,10 @@
-plugins {
-    id 'java'
-    id 'io.spring.dependency-management' version '1.1.7'
-}
-
-group = 'com.pinback'
-version = '0.0.1-SNAPSHOT'
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.boot:spring-boot-dependencies:3.3.2"
-    }
-}
-
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
-repositories {
-    mavenCentral()
-}
+// Domain 모듈: 순수 비즈니스 로직과 엔티티
+// 외부 프레임워크에 의존하지 않는 핵심 도메인 코드
 
 dependencies {
-    // shared 모듈 의존성
-    implementation project(':shared')
-
-    // JPA 의존성
+    api project(':shared')
+    
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-
-
-    // h2 데이터베이스 의존성
-    runtimeOnly 'com.h2database:h2'
+    
     testImplementation 'com.h2database:h2'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-
-tasks.named('test') {
-    useJUnitPlatform()
 }
