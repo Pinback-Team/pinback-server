@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "category_migration")
+@Table(name = "category")
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

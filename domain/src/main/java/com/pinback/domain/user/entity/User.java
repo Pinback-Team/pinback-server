@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "users_migration")
+@Table(name = "users")
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor

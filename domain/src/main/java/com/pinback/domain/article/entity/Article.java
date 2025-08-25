@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "article_migration", uniqueConstraints =
+@Table(name = "article", uniqueConstraints =
 @UniqueConstraint(columnNames = {"user_id", "url"}))
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

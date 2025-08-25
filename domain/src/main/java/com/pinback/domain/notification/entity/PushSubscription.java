@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "push_subscription_migration")
+@Table(name = "push_subscriptio")
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
