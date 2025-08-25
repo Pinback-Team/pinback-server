@@ -1,34 +1,55 @@
 dependencies {
     implementation project(':application')
-    
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'com.h2database:h2'
-    
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    
+
     implementation 'org.springframework.boot:spring-boot-starter-security'
-    
+
     implementation "io.github.openfeign.querydsl:querydsl-core:6.11"
     implementation "io.github.openfeign.querydsl:querydsl-jpa:6.11"
     annotationProcessor "io.github.openfeign.querydsl:querydsl-apt:6.11:jpa"
-    
+
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    
+
     implementation 'com.google.firebase:firebase-admin:9.2.0'
-    
+
     implementation 'com.auth0:java-jwt:4.5.0'
 }
 
-// QueryDSL 설정
-def generated = 'build/generated/querydsl'
+def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile
 
 sourceSets {
-    main.java.srcDirs += [generated]
+    main.java.srcDirs += generated
 }
 
-tasks.withType(JavaCompile) {
+configurations {
+    querydsOnly
+}
+
+dependencies {
+    querydsOnly project(':domain')
+}
+
+tasks.register('generateQuerydsl', JavaCompile) {
+    source = project(':domain').sourceSets.main.allJava
+    classpath = configurations.querydsOnly + configurations.annotationProcessor
+    options.annotationProcessorPath = configurations.annotationProcessor
     options.annotationProcessorGeneratedSourcesDirectory = file(generated)
+    destinationDirectory = file("$buildDir/tmp/querydsl")
+    dependsOn project(':domain').classes
+}
+
+tasks.withType(JavaCompile).configureEach {
+    if (name != 'generateQuerydsl') {
+        dependsOn generateQuerydsl
+        inputs.files(fileTree(dir: 'src', include: '**/*.java'))
+        outputs.cacheIf { true }
+        options.annotationProcessorGeneratedSourcesDirectory = generated
+    }
 }
 
 clean {
