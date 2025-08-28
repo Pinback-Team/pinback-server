@@ -1,0 +1,10 @@
+// Domain 모듈: 순수 비즈니스 로직과 엔티티
+// 외부 프레임워크에 의존하지 않는 핵심 도메인 코드
+
+dependencies {
+    api project(':shared')
+    
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    
+    testImplementation 'com.h2database:h2'
+}

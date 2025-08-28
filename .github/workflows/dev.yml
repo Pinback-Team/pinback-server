@@ -38,9 +38,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*gradle*','**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      # gradle 빌드
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew clean build --no-daemon --build-cache
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
@@ -52,7 +51,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: build-artifact
-          path: build/libs/*.jar
+          path: api/build/libs/*.jar
   
   docker-build-and-push:
     needs: build
@@ -65,7 +64,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: build/libs/
+          path: api/build/libs/
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -83,6 +82,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pinback:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: docker-build-and-push
