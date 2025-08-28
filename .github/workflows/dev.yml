@@ -38,9 +38,8 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*gradle*','**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      # gradle 빌드
       - name: Build with Gradle Wrapper
-        run: ./gradlew build
+        run: ./gradlew clean build --no-daemon --build-cache
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
@@ -83,6 +82,8 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/pinback:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy:
     needs: docker-build-and-push
