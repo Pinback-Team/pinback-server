@@ -1,10 +1,13 @@
 package com.pinback.domain.category.entity;
 
+import com.pinback.domain.category.enums.CategoryColor;
 import com.pinback.domain.common.BaseEntity;
 import com.pinback.domain.user.entity.User;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,10 +41,15 @@ public class Category extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	public static Category create(String name, User user) {
+	@Column(name = "color")
+	@Enumerated(EnumType.STRING)
+	private CategoryColor color;
+
+	public static Category create(String name, User user, CategoryColor color) {
 		return Category.builder()
 			.name(name)
 			.user(user)
+			.color(color)
 			.build();
 	}
 
