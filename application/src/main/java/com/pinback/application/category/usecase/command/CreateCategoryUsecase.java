@@ -39,7 +39,7 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 		Category category = Category.create(command.categoryName(), user, availableColor);
 		Category savedCategory = categorySaveService.save(category);
 
-		return CreateCategoryResponse.of(savedCategory.getId(), savedCategory.getName());
+		return CreateCategoryResponse.of(savedCategory.getId(), savedCategory.getName(), savedCategory.getColor());
 	}
 
 	private void validateCategoryCreation(User user, CreateCategoryCommand command) {
@@ -55,7 +55,7 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 
 	private CategoryColor getNextAvailableColor(User user) {
 		Set<CategoryColor> usedColors = categoryColorService.getUsedColorsByUser(user);
-		
+
 		return Arrays.stream(CategoryColor.values())
 			.filter(color -> !usedColors.contains(color))
 			.findFirst()
