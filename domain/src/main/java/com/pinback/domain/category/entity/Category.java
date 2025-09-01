@@ -15,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +24,12 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "category")
+@Table(name = "category", 
+	uniqueConstraints = @UniqueConstraint(
+		name = "uk_category_user_color",
+		columnNames = {"user_id", "color"}
+	)
+)
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -41,7 +47,7 @@ public class Category extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@Column(name = "color")
+	@Column(name = "color", nullable = false)
 	@Enumerated(EnumType.STRING)
 	private CategoryColor color;
 
