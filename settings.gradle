@@ -1,7 +1,6 @@
 rootProject.name = 'pinback-server'
 
 include 'domain'
-include 'core'
 include 'infrastructure'
 include 'shared'
 include 'application'
