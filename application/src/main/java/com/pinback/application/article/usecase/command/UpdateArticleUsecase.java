@@ -44,7 +44,7 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 		Category category = getCategoryPort.getCategoryAndUser(command.categoryId(), user);
 		article.update(command.memo(), category, command.remindTime());
 
-		handleReminderUpdate(article, user, command.remindTime(), remindTimeChanged, articleId);
+		handleReminderUpdate(article, user, command.now(), command.remindTime(), remindTimeChanged, articleId);
 	}
 
 	private void validateMemoLength(String memo) {
@@ -53,12 +53,12 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 		}
 	}
 
-	private void handleReminderUpdate(Article article, User user, LocalDateTime remindTime,
+	private void handleReminderUpdate(Article article, User user, LocalDateTime now, LocalDateTime remindTime,
 		boolean remindTimeChanged, long articleId) {
 		if (remindTimeChanged) {
 			manageArticleReminderPort.cancelArticleReminder(articleId, user.getId());
 
-			if (remindTime != null && !remindTime.isBefore(LocalDateTime.now())) {
+			if (remindTime != null && !remindTime.isBefore(now)) {
 				PushSubscription subscriptionInfo = getPushSubscription.findPushSubscription(user);
 				manageArticleReminderPort.scheduleArticleReminder(article, user, subscriptionInfo.getToken());
 			}
