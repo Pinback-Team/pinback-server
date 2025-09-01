@@ -1,5 +1,6 @@
 package com.pinback.infrastructure.article.service;
 
+import static com.pinback.domain.category.enums.CategoryColor.*;
 import static com.pinback.infrastructure.fixture.TestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -122,7 +123,7 @@ class ArticleGetServiceTest extends ServiceTest {
 		//given
 		User user = userRepository.save(user());
 		Category category1 = categoryRepository.save(category(user));
-		Category category2 = categoryRepository.save(Category.create("다른카테고리", user));
+		Category category2 = categoryRepository.save(Category.create("다른카테고리", user, COLOR2));
 
 		articleRepository.save(article(user, "url1", category1));
 		articleRepository.save(article(user, "url2", category2));
