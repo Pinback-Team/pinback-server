@@ -5,6 +5,7 @@ import java.time.LocalTime;
 
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
+import com.pinback.domain.category.enums.CategoryColor;
 import com.pinback.domain.notification.entity.PushSubscription;
 import com.pinback.domain.user.entity.User;
 
@@ -19,7 +20,7 @@ public class TestFixture {
 	}
 
 	public static Category category(User user) {
-		return Category.create("테스트카테고리", user);
+		return Category.create("테스트카테고리", user, CategoryColor.COLOR1);
 	}
 
 	public static Article article(User user) {

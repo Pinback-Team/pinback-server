@@ -1,6 +1,6 @@
 package com.pinback.domain.article;
 
-import static com.pinback.fixture.TestFixture.*;
+import static com.pinback.domain.fixture.TestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
+import com.pinback.domain.fixture.TestFixture;
 import com.pinback.domain.user.entity.User;
-import com.pinback.fixture.TestFixture;
 
 class ArticleDomainTest {
 
