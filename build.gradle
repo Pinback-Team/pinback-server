@@ -66,6 +66,20 @@ subprojects {
         testLogging {
             events "passed", "skipped", "failed"
             exceptionFormat "full"
+            showStandardStreams = false
+            showCauses = true
+            showExceptions = true
+        }
+        
+        // 테스트 완료 후 결과 출력
+        afterSuite { desc, result ->
+            if (!desc.parent) {
+                println "\n${project.name} Test Results:"
+                println "  Tests: ${result.testCount}"
+                println "  Passed: ${result.successfulTestCount}"
+                println "  Failed: ${result.failedTestCount}"
+                println "  Skipped: ${result.skippedTestCount}"
+            }
         }
     }
 }
