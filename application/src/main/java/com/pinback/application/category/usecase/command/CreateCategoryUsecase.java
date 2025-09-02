@@ -13,6 +13,7 @@ import com.pinback.application.category.port.out.CategoryColorServicePort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.application.category.port.out.CategorySaveServicePort;
 import com.pinback.application.common.exception.CategoryAlreadyExistException;
+import com.pinback.application.common.exception.CategoryLimitOverException;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.category.enums.CategoryColor;
 import com.pinback.domain.category.exception.CategoryNameLengthOverException;
@@ -44,6 +45,9 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 	}
 
 	private void validateCategoryCreation(User user, CreateCategoryCommand command) {
+		if (categoryGetService.countCategoriesByUser(user) >= 10) {
+			throw new CategoryLimitOverException();
+		}
 		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
 			throw new CategoryAlreadyExistException();
 		}
