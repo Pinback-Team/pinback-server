@@ -7,6 +7,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: ['21']
+      fail-fast: false
     services:
       redis:
         image: redis:7
@@ -39,7 +43,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
       - name: Build with Gradle Wrapper
-        run: ./gradlew clean build --no-daemon --build-cache
+        run: ./gradlew clean build --no-daemon --build-cache --parallel --max-workers=4
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5

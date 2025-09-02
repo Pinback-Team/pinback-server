@@ -55,6 +55,18 @@ subprojects {
         useJUnitPlatform()
         inputs.property("java.vendor", System.getProperty("java.vendor"))
         inputs.property("java.version", System.getProperty("java.version"))
+        
+        // 병렬 테스트 실행
+        maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
+        
+        // 테스트 성능 최적화
+        jvmArgs = ['-XX:+UseG1GC', '-Xmx1g']
+        
+        // 테스트 보고서 설정
+        testLogging {
+            events "passed", "skipped", "failed"
+            exceptionFormat "full"
+        }
     }
 }
 
