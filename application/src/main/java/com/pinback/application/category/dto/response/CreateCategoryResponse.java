@@ -5,9 +5,9 @@ import com.pinback.domain.category.enums.CategoryColor;
 public record CreateCategoryResponse(
 	Long categoryId,
 	String categoryName,
-	CategoryColor categoryColor
+	String categoryColor
 ) {
 	public static CreateCategoryResponse of(Long categoryId, String categoryName, CategoryColor categoryColor) {
-		return new CreateCategoryResponse(categoryId, categoryName, categoryColor);
+		return new CreateCategoryResponse(categoryId, categoryName, categoryColor.toString());
 	}
 }
