@@ -70,8 +70,8 @@ public class ArticleGetService implements ArticleGetServicePort {
 	}
 
 	@Override
-	public Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable) {
-		return articleRepository.findTodayRemind(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1));
+	public Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead) {
+		return articleRepository.findTodayRemind(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1), isRead);
 	}
 
 	private ArticlesWithUnreadCountDto convertToDto(ArticlesWithUnreadCount infraResult) {

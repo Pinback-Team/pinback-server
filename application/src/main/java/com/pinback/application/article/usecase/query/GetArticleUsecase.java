@@ -100,7 +100,7 @@ public class GetArticleUsecase implements GetArticlePort {
 		LocalDateTime remindDateTime = getRemindDateTime(now, user.getRemindDefault());
 
 		Page<Article> articles = articleGetServicePort.findTodayRemind(
-			user, remindDateTime, PageRequest.of(query.pageNumber(), query.pageSize()));
+			user, remindDateTime, PageRequest.of(query.pageNumber(), query.pageSize()), null);
 
 		List<ArticleResponse> articleResponses = articles.stream()
 			.map(ArticleResponse::from)

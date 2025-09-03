@@ -151,7 +151,7 @@ class ArticleGetServiceTest extends ServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
 		//when
-		Page<Article> result = articleGetService.findTodayRemind(user, today, pageRequest);
+		Page<Article> result = articleGetService.findTodayRemind(user, today, pageRequest, null);
 
 		//then
 		assertThat(result.getContent()).hasSize(1);

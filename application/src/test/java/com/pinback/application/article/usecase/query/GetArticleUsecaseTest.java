@@ -185,7 +185,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		List<Article> articles = List.of(article, article);
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 2);
 
-		when(articleGetServicePort.findTodayRemind(userWithRemindTime, todayRemindTime, pageRequest)).thenReturn(
+		when(articleGetServicePort.findTodayRemind(userWithRemindTime, todayRemindTime, pageRequest, null)).thenReturn(
 			articlePage);
 
 		// when
@@ -193,6 +193,6 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 
 		// then
 		assertThat(response.articles()).hasSize(2);
-		verify(articleGetServicePort).findTodayRemind(userWithRemindTime, todayRemindTime, pageRequest);
+		verify(articleGetServicePort).findTodayRemind(userWithRemindTime, todayRemindTime, pageRequest, null);
 	}
 }

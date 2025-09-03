@@ -29,5 +29,5 @@ public interface ArticleGetServicePort {
 
 	ArticlesWithUnreadCountDto findUnreadArticles(User user, PageRequest pageRequest);
 
-	Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable);
+	Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead);
 }

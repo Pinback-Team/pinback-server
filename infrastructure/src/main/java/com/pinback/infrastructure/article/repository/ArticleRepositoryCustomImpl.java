@@ -87,9 +87,13 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 	@Override
 	public Page<Article> findTodayRemind(UUID userId, Pageable pageable, LocalDateTime startAt,
-		LocalDateTime endAt) {
+		LocalDateTime endAt, Boolean isRead) {
 		BooleanExpression conditions = article.user.id.eq(userId)
 			.and(article.remindAt.goe(startAt).and(article.remindAt.loe(endAt)));
+
+		if (isRead != null) {
+			conditions = conditions.and(article.isRead.eq(isRead));
+		}
 
 		List<Article> articles = queryFactory
 			.selectFrom(article)

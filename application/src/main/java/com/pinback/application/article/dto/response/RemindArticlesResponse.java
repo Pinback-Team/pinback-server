@@ -8,7 +8,8 @@ public record RemindArticlesResponse(
 	LocalDateTime nextRemindDate,
 	List<ArticleResponse> articles
 ) {
-	public static RemindArticlesResponse of(long totalElements, LocalDateTime nextRemindDate, List<ArticleResponse> articles) {
+	public static RemindArticlesResponse of(long totalElements, LocalDateTime nextRemindDate,
+		List<ArticleResponse> articles) {
 		return new RemindArticlesResponse(totalElements, nextRemindDate, articles);
 	}
 }
