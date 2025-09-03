@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.pinback.domain.article.entity.Article;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
+import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 
 public interface ArticleRepositoryCustom {
 	ArticlesWithUnreadCount findAllCustom(UUID userId, Pageable pageable);
@@ -15,6 +16,8 @@ public interface ArticleRepositoryCustom {
 	ArticlesWithUnreadCount findAllByCategory(UUID userId, long articleId, Pageable pageable);
 
 	Page<Article> findTodayRemind(UUID userId, Pageable pageable, LocalDateTime startAt, LocalDateTime endAt, Boolean isRead);
+	
+	RemindArticlesWithCount findTodayRemindWithCount(UUID userId, Pageable pageable, LocalDateTime startAt, LocalDateTime endAt, Boolean isRead);
 
 	ArticlesWithUnreadCount findAllByIsReadFalse(UUID userId, Pageable pageable);
 

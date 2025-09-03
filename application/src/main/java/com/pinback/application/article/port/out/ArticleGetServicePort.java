@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -30,4 +31,6 @@ public interface ArticleGetServicePort {
 	ArticlesWithUnreadCountDto findUnreadArticles(User user, PageRequest pageRequest);
 
 	Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead);
+	
+	RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead);
 }

@@ -5,17 +5,18 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
-import com.pinback.application.article.dto.response.RemindArticlesResponse;
+import com.pinback.application.article.dto.response.RemindArticleResponse;
+import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.port.in.GetArticlePort;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
@@ -96,19 +97,19 @@ public class GetArticleUsecase implements GetArticlePort {
 	}
 
 	@Override
-	public RemindArticlesResponse getRemindArticles(User user, LocalDateTime now, PageQuery query) {
+	public TodayRemindResponse getRemindArticles(User user, LocalDateTime now, boolean readStatus, PageQuery query) {
 		LocalDateTime remindDateTime = getRemindDateTime(now, user.getRemindDefault());
 
-		Page<Article> articles = articleGetServicePort.findTodayRemind(
-			user, remindDateTime, PageRequest.of(query.pageNumber(), query.pageSize()), null);
+		RemindArticlesWithCountDto result = articleGetServicePort.findTodayRemindWithCount(
+			user, remindDateTime, PageRequest.of(query.pageNumber(), query.pageSize()), readStatus);
 
-		List<ArticleResponse> articleResponses = articles.stream()
-			.map(ArticleResponse::from)
+		List<RemindArticleResponse> articleResponses = result.articles().stream()
+			.map(RemindArticleResponse::from)
 			.toList();
 
-		return RemindArticlesResponse.of(
-			articles.getTotalElements(),
-			remindDateTime.plusDays(1),
+		return TodayRemindResponse.of(
+			result.readCount(),
+			result.unreadCount(),
 			articleResponses
 		);
 	}

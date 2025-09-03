@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotFoundException;
 import com.pinback.domain.article.entity.Article;
@@ -16,6 +17,7 @@ import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
+import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,6 +74,16 @@ public class ArticleGetService implements ArticleGetServicePort {
 	@Override
 	public Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead) {
 		return articleRepository.findTodayRemind(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1), isRead);
+	}
+
+	@Override
+	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead) {
+		RemindArticlesWithCount infraResult = articleRepository.findTodayRemindWithCount(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1), isRead);
+		return new RemindArticlesWithCountDto(
+			infraResult.readCount(),
+			infraResult.unreadCount(),
+			infraResult.articles()
+		);
 	}
 
 	private ArticlesWithUnreadCountDto convertToDto(ArticlesWithUnreadCount infraResult) {

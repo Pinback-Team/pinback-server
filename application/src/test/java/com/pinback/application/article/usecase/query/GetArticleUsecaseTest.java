@@ -24,7 +24,7 @@ import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
-import com.pinback.application.article.dto.response.RemindArticlesResponse;
+import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
 import com.pinback.domain.article.entity.Article;
@@ -189,7 +189,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 			articlePage);
 
 		// when
-		RemindArticlesResponse response = getArticleUsecase.getRemindArticles(userWithRemindTime, now, pageQuery);
+		TodayRemindResponse response = getArticleUsecase.getRemindArticles(userWithRemindTime, now, true, pageQuery);
 
 		// then
 		assertThat(response.articles()).hasSize(2);

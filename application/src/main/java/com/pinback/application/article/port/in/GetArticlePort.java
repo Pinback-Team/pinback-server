@@ -6,6 +6,7 @@ import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.RemindArticlesResponse;
+import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.domain.user.entity.User;
 
 public interface GetArticlePort {
@@ -19,5 +20,5 @@ public interface GetArticlePort {
 
 	ArticlesPageResponse getUnreadArticles(User user, PageQuery query);
 
-	RemindArticlesResponse getRemindArticles(User user, LocalDateTime now, PageQuery query);
+	TodayRemindResponse getRemindArticles(User user, LocalDateTime now, boolean readStatus, PageQuery query);
 }
