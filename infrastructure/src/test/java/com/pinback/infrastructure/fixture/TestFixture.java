@@ -46,6 +46,12 @@ public class TestFixture {
 		return article;
 	}
 
+	public static Article readArticleWithDate(User user, String url, Category category, LocalDateTime remindAt) {
+		Article article = Article.create(url, "testmemo", user, category, remindAt);
+		article.markAsRead();
+		return article;
+	}
+
 	public static PushSubscription pushSubscription(User user) {
 		return PushSubscription.create(
 			user, "testToken"

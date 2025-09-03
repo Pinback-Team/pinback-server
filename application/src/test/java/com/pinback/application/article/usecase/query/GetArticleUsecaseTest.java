@@ -21,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.pinback.application.ApplicationTestBase;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
@@ -170,9 +171,9 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		verify(articleGetServicePort).findUnreadArticles(user, pageRequest);
 	}
 
-	@DisplayName("오늘 리마인드할 아티클을 조회할 수 있다")
+	@DisplayName("오늘 리마인드할 읽은 아티클을 조회할 수 있다")
 	@Test
-	void getRemindArticles_Success() {
+	void getRemindArticles_ReadStatus_Success() {
 		// given
 		User userWithRemindTime = User.create("test@example.com", LocalTime.of(14, 0));
 		ReflectionTestUtils.setField(userWithRemindTime, "id", java.util.UUID.randomUUID());
@@ -184,15 +185,45 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 
 		List<Article> articles = List.of(article, article);
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 2);
+		RemindArticlesWithCountDto dto = new RemindArticlesWithCountDto(2L, 3L, articlePage);
 
-		when(articleGetServicePort.findTodayRemind(userWithRemindTime, todayRemindTime, pageRequest, null)).thenReturn(
-			articlePage);
+		when(articleGetServicePort.findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, true)).thenReturn(dto);
 
 		// when
 		TodayRemindResponse response = getArticleUsecase.getRemindArticles(userWithRemindTime, now, true, pageQuery);
 
 		// then
 		assertThat(response.articles()).hasSize(2);
-		verify(articleGetServicePort).findTodayRemind(userWithRemindTime, todayRemindTime, pageRequest, null);
+		assertThat(response.readArticleCount()).isEqualTo(2L);
+		assertThat(response.unreadArticleCount()).isEqualTo(3L);
+		verify(articleGetServicePort).findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, true);
+	}
+
+	@DisplayName("오늘 리마인드할 안읽은 아티클을 조회할 수 있다")
+	@Test
+	void getRemindArticles_UnreadStatus_Success() {
+		// given
+		User userWithRemindTime = User.create("test@example.com", LocalTime.of(14, 0));
+		ReflectionTestUtils.setField(userWithRemindTime, "id", java.util.UUID.randomUUID());
+
+		LocalDateTime now = LocalDateTime.of(2025, 8, 20, 15, 0);
+		LocalDateTime todayRemindTime = LocalDateTime.of(2025, 8, 20, 14, 0);
+		PageQuery pageQuery = new PageQuery(0, 10);
+		PageRequest pageRequest = PageRequest.of(0, 10);
+
+		List<Article> articles = List.of(article, article, article);
+		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 3);
+		RemindArticlesWithCountDto dto = new RemindArticlesWithCountDto(2L, 3L, articlePage);
+
+		when(articleGetServicePort.findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, false)).thenReturn(dto);
+
+		// when
+		TodayRemindResponse response = getArticleUsecase.getRemindArticles(userWithRemindTime, now, false, pageQuery);
+
+		// then
+		assertThat(response.articles()).hasSize(3);
+		assertThat(response.readArticleCount()).isEqualTo(2L);
+		assertThat(response.unreadArticleCount()).isEqualTo(3L);
+		verify(articleGetServicePort).findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, false);
 	}
 }
