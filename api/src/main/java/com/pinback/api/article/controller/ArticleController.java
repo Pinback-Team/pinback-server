@@ -66,7 +66,7 @@ public class ArticleController {
 	}
 
 	@Operation(summary = "아티클 존재 여부 확인", description = "URL로 아티클 존재 여부를 확인합니다")
-	@GetMapping
+	@GetMapping("/saved")
 	public ResponseDto<ArticleDetailResponse> checkArticleExists(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "확인할 URL") @RequestParam String url
@@ -88,10 +88,10 @@ public class ArticleController {
 	}
 
 	@Operation(summary = "카테고리별 아티클 조회", description = "특정 카테고리의 아티클을 조회합니다")
-	@GetMapping("/category/{categoryId}")
+	@GetMapping("/category")
 	public ResponseDto<ArticlesPageResponse> getAllArticlesByCategory(
 		@Parameter(hidden = true) @CurrentUser User user,
-		@Parameter(description = "카테고리 ID") @PathVariable Long categoryId,
+		@Parameter(description = "카테고리 ID") @RequestParam Long categoryId,
 		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
 		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {
@@ -124,7 +124,7 @@ public class ArticleController {
 	}
 
 	@Operation(summary = "아티클 읽음 처리", description = "아티클을 읽음으로 처리하고 도토리를 수집합니다")
-	@PutMapping("/{articleId}/read")
+	@PutMapping("/{articleId}/readStatus")
 	public ResponseDto<ReadArticleResponse> updateArticleStatus(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "아티클 ID") @PathVariable Long articleId
