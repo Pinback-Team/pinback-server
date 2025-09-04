@@ -1,5 +1,6 @@
 package com.pinback.infrastructure.article.service;
 
+import static com.pinback.domain.category.enums.CategoryColor.*;
 import static com.pinback.infrastructure.fixture.TestFixture.*;
 import static org.assertj.core.api.Assertions.*;
 
@@ -15,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.common.exception.ArticleNotFoundException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
@@ -122,7 +124,7 @@ class ArticleGetServiceTest extends ServiceTest {
 		//given
 		User user = userRepository.save(user());
 		Category category1 = categoryRepository.save(category(user));
-		Category category2 = categoryRepository.save(Category.create("다른카테고리", user));
+		Category category2 = categoryRepository.save(Category.create("다른카테고리", user, COLOR2));
 
 		articleRepository.save(article(user, "url1", category1));
 		articleRepository.save(article(user, "url2", category2));
@@ -150,7 +152,7 @@ class ArticleGetServiceTest extends ServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
 		//when
-		Page<Article> result = articleGetService.findTodayRemind(user, today, pageRequest);
+		Page<Article> result = articleGetService.findTodayRemind(user, today, pageRequest, null);
 
 		//then
 		assertThat(result.getContent()).hasSize(1);
@@ -237,5 +239,80 @@ class ArticleGetServiceTest extends ServiceTest {
 		assertThat(result.unReadCount()).isEqualTo(1L);
 		assertThat(result.article().getContent()).hasSize(1);
 		assertThat(result.article().getContent().get(0).isRead()).isFalse();
+	}
+
+	@DisplayName("오늘 리마인드할 읽은 아티클을 조회하면 읽은 아티클과 전체 카운트를 반환한다.")
+	@Test
+	void findTodayRemindWithCount_ReadStatus_Test() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
+		LocalDateTime yesterday = today.minusDays(1);
+
+		// 오늘 리마인드할 아티클들 (읽음/안읽음)
+		articleRepository.save(readArticleWithDate(user, "read-url1", category, today));
+		articleRepository.save(readArticleWithDate(user, "read-url2", category, today));
+		articleRepository.save(articleWithDate(user, "unread-url1", category, today));
+		articleRepository.save(articleWithDate(user, "unread-url2", category, today));
+		articleRepository.save(articleWithDate(user, "unread-url3", category, today));
+		
+		// 어제 리마인드 (카운트에 포함되지 않음)
+		articleRepository.save(articleWithDate(user, "yesterday-url", category, yesterday));
+		
+		PageRequest pageRequest = PageRequest.of(0, 10);
+
+		//when
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, today, pageRequest, true);
+
+		//then
+		assertThat(result.articles().getContent()).hasSize(2); // 읽은 아티클 2개
+		assertThat(result.readCount()).isEqualTo(2L);
+		assertThat(result.unreadCount()).isEqualTo(3L);
+		assertThat(result.articles().getContent()).allMatch(Article::isRead);
+	}
+
+	@DisplayName("오늘 리마인드할 안읽은 아티클을 조회하면 안읽은 아티클과 전체 카운트를 반환한다.")
+	@Test
+	void findTodayRemindWithCount_UnreadStatus_Test() {
+		//given
+		User user = userRepository.save(user());
+		Category category = categoryRepository.save(category(user));
+		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
+
+		// 오늘 리마인드할 아티클들
+		articleRepository.save(readArticleWithDate(user, "read-url1", category, today));
+		articleRepository.save(readArticleWithDate(user, "read-url2", category, today));
+		articleRepository.save(articleWithDate(user, "unread-url1", category, today));
+		articleRepository.save(articleWithDate(user, "unread-url2", category, today));
+		articleRepository.save(articleWithDate(user, "unread-url3", category, today));
+		
+		PageRequest pageRequest = PageRequest.of(0, 10);
+
+		//when
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, today, pageRequest, false);
+
+		//then
+		assertThat(result.articles().getContent()).hasSize(3); // 안읽은 아티클 3개
+		assertThat(result.readCount()).isEqualTo(2L);
+		assertThat(result.unreadCount()).isEqualTo(3L);
+		assertThat(result.articles().getContent()).allMatch(article -> !article.isRead());
+	}
+
+	@DisplayName("오늘 리마인드할 아티클이 없으면 카운트는 0을 반환한다.")
+	@Test
+	void findTodayRemindWithCount_NoArticles_Test() {
+		//given
+		User user = userRepository.save(user());
+		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
+		PageRequest pageRequest = PageRequest.of(0, 10);
+
+		//when
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, today, pageRequest, true);
+
+		//then
+		assertThat(result.articles().getContent()).isEmpty();
+		assertThat(result.readCount()).isEqualTo(0L);
+		assertThat(result.unreadCount()).isEqualTo(0L);
 	}
 }

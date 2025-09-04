@@ -1,5 +1,7 @@
 package com.pinback.api.article.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +18,7 @@ import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.ReadArticleResponse;
+import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.port.in.CreateArticlePort;
 import com.pinback.application.article.port.in.DeleteArticlePort;
 import com.pinback.application.article.port.in.GetArticlePort;
@@ -127,6 +130,20 @@ public class ArticleController {
 		@Parameter(description = "아티클 ID") @PathVariable Long articleId
 	) {
 		ReadArticleResponse response = updateArticleStatusPort.updateArticleStatus(user, articleId);
+		return ResponseDto.ok(response);
+	}
+
+	@Operation(summary = "리마인드 아티클 조회", description = "오늘 리마인드할 아티클을 읽음/안읽음 상태별로 조회합니다")
+	@GetMapping("/remind")
+	public ResponseDto<TodayRemindResponse> getRemindArticles(
+		@Parameter(hidden = true) @CurrentUser User user,
+		@Parameter(description = "현재 시간", example = "2025-09-03T10:00:00") @RequestParam LocalDateTime now,
+		@Parameter(description = "읽음 상태 (true: 읽음, false: 안읽음)", example = "true") @RequestParam(name = "read-status") boolean readStatus,
+		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
+	) {
+		PageQuery query = new PageQuery(page, size);
+		TodayRemindResponse response = getArticlePort.getRemindArticles(user, now, readStatus, query);
 		return ResponseDto.ok(response);
 	}
 

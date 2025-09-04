@@ -55,6 +55,7 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		newCategory = categoryWithName(user, "새 카테고리");
 		ReflectionTestUtils.setField(newCategory, "id", 2L);
 		article = articleWithDate(user, "https://test.com", originalCategory, LocalDateTime.of(2025, 8, 20, 15, 0));
+		ReflectionTestUtils.setField(article, "id", 1L);
 		pushSubscription = pushSubscription(user);
 	}
 
@@ -64,9 +65,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		// given
 		Long articleId = 1L;
 		LocalDateTime newRemindTime = LocalDateTime.of(2025, 9, 1, 14, 0);
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			newCategory.getId(),
 			"업데이트된 메모",
+			now,
 			newRemindTime
 		);
 
@@ -91,9 +94,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		// given
 		Long articleId = 1L;
 		String longMemo = "a".repeat(501);
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			originalCategory.getId(),
 			longMemo,
+			now,
 			LocalDateTime.of(2025, 9, 1, 14, 0)
 		);
 
@@ -110,9 +115,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		// given
 		Long articleId = 1L;
 		LocalDateTime originalRemindTime = LocalDateTime.of(2025, 8, 20, 15, 0);
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			originalCategory.getId(),
 			"업데이트된 메모",
+			now,
 			originalRemindTime
 		);
 
@@ -133,9 +140,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 	void updateArticle_RemindTimeToNull_CancelReminder() {
 		// given
 		Long articleId = 1L;
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			originalCategory.getId(),
 			"업데이트된 메모",
+			now,
 			null
 		);
 
@@ -159,9 +168,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		// given
 		Long articleId = 1L;
 		LocalDateTime pastRemindTime = LocalDateTime.of(2020, 1, 1, 12, 0);
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			originalCategory.getId(),
 			"업데이트된 메모",
+			now,
 			pastRemindTime
 		);
 
@@ -185,9 +196,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		// given
 		Long articleId = 1L;
 		Article articleWithNullReminder = articleWithDate(user, "https://test.com", originalCategory, null);
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			newCategory.getId(),
 			"업데이트된 메모",
+			now,
 			null
 		);
 
@@ -210,9 +223,11 @@ class UpdateArticleUsecaseTest extends ApplicationTestBase {
 		Long articleId = 1L;
 		Article articleWithNullReminder = articleWithDate(user, "https://test.com", originalCategory, null);
 		LocalDateTime futureRemindTime = LocalDateTime.of(2025, 12, 31, 23, 59);
+		LocalDateTime now = LocalDateTime.of(2025, 9, 1, 13, 0);
 		ArticleUpdateCommand command = new ArticleUpdateCommand(
 			originalCategory.getId(),
 			"업데이트된 메모",
+			now,
 			futureRemindTime
 		);
 

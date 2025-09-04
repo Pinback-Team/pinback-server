@@ -1,8 +1,10 @@
 package com.pinback.api.auth.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.api.auth.dto.request.SignUpRequest;
@@ -33,12 +35,12 @@ public class AuthController {
 		return ResponseDto.created(response);
 	}
 
-	@Operation(summary = "로그인", description = "이메일로 로그인합니다")
-	@PostMapping("/signin")
+	@Operation(summary = "토큰 재발급", description = "이메일로 토큰을 발급합니다.")
+	@GetMapping("/token")
 	public ResponseDto<TokenResponse> signIn(
-		@Valid @RequestBody SignUpRequest request
+		@Valid @RequestParam String email
 	) {
-		TokenResponse response = authUsecase.getToken(request.email());
+		TokenResponse response = authUsecase.getToken(email);
 		return ResponseDto.ok(response);
 	}
 }

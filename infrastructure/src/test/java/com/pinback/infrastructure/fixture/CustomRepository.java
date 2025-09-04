@@ -13,6 +13,8 @@ public class CustomRepository {
 
 	@Transactional
 	public void clearAndReset() {
+		entityManager.clear();
+		
 		entityManager.createNativeQuery("DELETE FROM article").executeUpdate();
 		entityManager.createNativeQuery("DELETE FROM push_subscription").executeUpdate();
 		entityManager.createNativeQuery("DELETE FROM category").executeUpdate();
