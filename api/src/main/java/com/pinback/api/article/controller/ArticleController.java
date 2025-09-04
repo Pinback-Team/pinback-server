@@ -66,7 +66,7 @@ public class ArticleController {
 	}
 
 	@Operation(summary = "아티클 존재 여부 확인", description = "URL로 아티클 존재 여부를 확인합니다")
-	@GetMapping("/check")
+	@GetMapping
 	public ResponseDto<ArticleDetailResponse> checkArticleExists(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "확인할 URL") @RequestParam String url
