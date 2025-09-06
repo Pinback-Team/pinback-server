@@ -125,6 +125,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 
 		// then
 		assertThat(response.articles()).hasSize(5);
+		assertThat(response.isNewUser()).isNotNull();
 		verify(articleGetServicePort).findAll(user, pageRequest);
 	}
 

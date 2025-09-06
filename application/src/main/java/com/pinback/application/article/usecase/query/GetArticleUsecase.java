@@ -56,9 +56,12 @@ public class GetArticleUsecase implements GetArticlePort {
 			.map(ArticleResponse::from)
 			.toList();
 
+		boolean isNewUser = user.isNewUser(LocalDateTime.now());
+
 		return GetAllArticlesResponse.of(
 			result.article().getTotalElements(),
 			result.unReadCount(),
+			isNewUser,
 			articleResponses
 		);
 	}
