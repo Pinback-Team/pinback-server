@@ -1,5 +1,6 @@
 package com.pinback.domain.user.entity;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.UUID;
 
@@ -53,5 +54,9 @@ public class User extends BaseEntity {
 
 	public void updateRemindDefault(LocalTime newRemindDefault) {
 		this.remindDefault = newRemindDefault;
+	}
+
+	public boolean isNewUser(LocalDateTime now) {
+		return getCreatedAt().isAfter(now.minusDays(3));
 	}
 }
