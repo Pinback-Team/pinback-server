@@ -25,6 +25,7 @@ import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
+import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
@@ -50,6 +51,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 	void setUp() {
 		user = user();
 		ReflectionTestUtils.setField(user, "id", java.util.UUID.randomUUID());
+		ReflectionTestUtils.setField(user, "createdAt", LocalDateTime.now().minusDays(5));
 		category = categoryWithName(user, "테스트 카테고리");
 		ReflectionTestUtils.setField(category, "id", 1L);
 		article = articleWithDate(user, "https://test.com", category, LocalDateTime.of(2025, 8, 20, 15, 0));
@@ -119,7 +121,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		when(articleGetServicePort.findAll(user, pageRequest)).thenReturn(dto);
 
 		// when
-		ArticlesPageResponse response = getArticleUsecase.getAllArticles(user, pageQuery);
+		GetAllArticlesResponse response = getArticleUsecase.getAllArticles(user, pageQuery);
 
 		// then
 		assertThat(response.articles()).hasSize(5);

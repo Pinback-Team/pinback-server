@@ -17,6 +17,7 @@ import com.pinback.api.article.dto.request.ArticleUpdateRequest;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
+import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.ReadArticleResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.port.in.CreateArticlePort;
@@ -77,13 +78,13 @@ public class ArticleController {
 
 	@Operation(summary = "모든 아티클 조회", description = "사용자의 모든 아티클을 페이징으로 조회합니다")
 	@GetMapping
-	public ResponseDto<ArticlesPageResponse> getAllArticles(
+	public ResponseDto<GetAllArticlesResponse> getAllArticles(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
 		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {
 		PageQuery query = new PageQuery(page, size);
-		ArticlesPageResponse response = getArticlePort.getAllArticles(user, query);
+		GetAllArticlesResponse response = getArticlePort.getAllArticles(user, query);
 		return ResponseDto.ok(response);
 	}
 

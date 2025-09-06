@@ -15,6 +15,7 @@ import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
+import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.port.in.GetArticlePort;
@@ -47,7 +48,7 @@ public class GetArticleUsecase implements GetArticlePort {
 	}
 
 	@Override
-	public ArticlesPageResponse getAllArticles(User user, PageQuery query) {
+	public GetAllArticlesResponse getAllArticles(User user, PageQuery query) {
 		ArticlesWithUnreadCountDto result = articleGetServicePort.findAll(
 			user, PageRequest.of(query.pageNumber(), query.pageSize()));
 
@@ -55,7 +56,7 @@ public class GetArticleUsecase implements GetArticlePort {
 			.map(ArticleResponse::from)
 			.toList();
 
-		return ArticlesPageResponse.of(
+		return GetAllArticlesResponse.of(
 			result.article().getTotalElements(),
 			result.unReadCount(),
 			articleResponses
