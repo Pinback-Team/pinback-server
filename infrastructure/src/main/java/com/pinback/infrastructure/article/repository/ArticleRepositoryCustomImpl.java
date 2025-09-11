@@ -155,7 +155,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.where(conditions)
 			.offset(pageable.getOffset())
 			.limit(pageable.getPageSize())
-			.orderBy(article.createdAt.desc())
+			.orderBy(article.remindAt.asc())
 			.fetch();
 
 		JPAQuery<Long> countQuery = queryFactory
