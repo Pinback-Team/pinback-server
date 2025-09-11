@@ -40,7 +40,7 @@ public class Article extends BaseEntity {
 	@Column(name = "article_id")
 	private Long id;
 
-	@Column(name = "url", nullable = false)
+	@Column(name = "url", length = 700, nullable = false)
 	private String url;
 
 	@Column(name = "memo")
