@@ -2,6 +2,7 @@ package com.pinback.application.article.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.pinback.application.category.dto.response.CategoryResponse;
 import com.pinback.domain.article.entity.Article;
 
 public record ArticleDetailResponse(
@@ -9,7 +10,8 @@ public record ArticleDetailResponse(
 	String url,
 	String memo,
 	LocalDateTime remindAt,
-	LocalDateTime createdAt
+	LocalDateTime createdAt,
+	CategoryResponse categoryResponse
 ) {
 	public static ArticleDetailResponse from(Article article) {
 		return new ArticleDetailResponse(
@@ -17,7 +19,8 @@ public record ArticleDetailResponse(
 			article.getUrl(),
 			article.getMemo(),
 			article.getRemindAt(),
-			article.getCreatedAt()
+			article.getCreatedAt(),
+			CategoryResponse.from(article.getCategory())
 		);
 	}
 }
