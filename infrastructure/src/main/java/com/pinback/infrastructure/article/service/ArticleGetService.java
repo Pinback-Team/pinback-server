@@ -54,8 +54,10 @@ public class ArticleGetService implements ArticleGetServicePort {
 	}
 
 	@Override
-	public ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, PageRequest pageRequest) {
+	public ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, boolean isRead,
+		PageRequest pageRequest) {
 		ArticlesWithUnreadCount infraResult = articleRepository.findAllByCategory(user.getId(), category.getId(),
+			isRead,
 			pageRequest);
 		return convertToDto(infraResult);
 	}
@@ -73,12 +75,15 @@ public class ArticleGetService implements ArticleGetServicePort {
 
 	@Override
 	public Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead) {
-		return articleRepository.findTodayRemind(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1), isRead);
+		return articleRepository.findTodayRemind(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1),
+			isRead);
 	}
 
 	@Override
-	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead) {
-		RemindArticlesWithCount infraResult = articleRepository.findTodayRemindWithCount(user.getId(), pageable, remindDateTime, remindDateTime.plusDays(1), isRead);
+	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime,
+		Pageable pageable, Boolean isRead) {
+		RemindArticlesWithCount infraResult = articleRepository.findTodayRemindWithCount(user.getId(), pageable,
+			remindDateTime, remindDateTime.plusDays(1), isRead);
 		return new RemindArticlesWithCountDto(
 			infraResult.readCount(),
 			infraResult.unreadCount(),
