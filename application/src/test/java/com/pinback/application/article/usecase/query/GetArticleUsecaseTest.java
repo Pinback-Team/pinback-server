@@ -142,15 +142,15 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage);
 
 		when(getCategoryPort.getCategoryAndUser(categoryId, user)).thenReturn(category);
-		when(articleGetServicePort.findAllByCategory(user, category, pageRequest)).thenReturn(dto);
+		when(articleGetServicePort.findAllByCategory(user, category, true, pageRequest)).thenReturn(dto);
 
 		// when
-		ArticlesPageResponse response = getArticleUsecase.getAllArticlesByCategory(user, categoryId, pageQuery);
+		ArticlesPageResponse response = getArticleUsecase.getAllArticlesByCategory(user, categoryId, true, pageQuery);
 
 		// then
 		assertThat(response.articles()).hasSize(3);
 		verify(getCategoryPort).getCategoryAndUser(categoryId, user);
-		verify(articleGetServicePort).findAllByCategory(user, category, pageRequest);
+		verify(articleGetServicePort).findAllByCategory(user, category, true, pageRequest);
 	}
 
 	@DisplayName("읽지 않은 아티클만 조회할 수 있다")

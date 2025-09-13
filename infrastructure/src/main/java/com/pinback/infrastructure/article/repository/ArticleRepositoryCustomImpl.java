@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
-	
+
 	private final JPAQueryFactory queryFactory;
 
 	@Override
@@ -58,9 +58,10 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public ArticlesWithUnreadCount findAllByCategory(UUID userId, long categoryId, Pageable pageable) {
+	public ArticlesWithUnreadCount findAllByCategory(UUID userId, long categoryId, boolean isRead, Pageable pageable) {
 
-		BooleanExpression conditions = article.category.id.eq(categoryId);
+		BooleanExpression conditions = article.category.id.eq(categoryId)
+			.and(article.isRead.eq(isRead));
 
 		List<Article> articles = queryFactory
 			.selectFrom(article)

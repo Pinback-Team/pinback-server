@@ -131,7 +131,7 @@ class ArticleGetServiceTest extends ServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
 		//when
-		ArticlesWithUnreadCountDto result = articleGetService.findAllByCategory(user, category1, pageRequest);
+		ArticlesWithUnreadCountDto result = articleGetService.findAllByCategory(user, category1, false, pageRequest);
 
 		//then
 		assertThat(result.article().getContent()).hasSize(1);

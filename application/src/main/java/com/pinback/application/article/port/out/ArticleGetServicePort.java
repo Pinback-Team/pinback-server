@@ -26,11 +26,12 @@ public interface ArticleGetServicePort {
 
 	ArticlesWithUnreadCountDto findAll(User user, PageRequest pageRequest);
 
-	ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, PageRequest pageRequest);
+	ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, boolean isRead, PageRequest pageRequest);
 
 	ArticlesWithUnreadCountDto findUnreadArticles(User user, PageRequest pageRequest);
 
 	Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead);
-	
-	RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead);
+
+	RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime, Pageable pageable,
+		Boolean isRead);
 }
