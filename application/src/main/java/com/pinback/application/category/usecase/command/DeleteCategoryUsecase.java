@@ -33,7 +33,7 @@ public class DeleteCategoryUsecase implements DeleteCategoryPort {
 	}
 
 	private void checkOwner(Category category, User user) {
-		if (!category.getUser().equals(user)) {
+		if (!category.getUser().getId().equals(user.getId())) {
 			throw new CategoryNotOwnedException();
 		}
 	}
