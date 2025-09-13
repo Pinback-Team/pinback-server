@@ -6,7 +6,6 @@ import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
-import com.pinback.application.article.dto.response.RemindArticlesResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.domain.user.entity.User;
 
@@ -17,7 +16,7 @@ public interface GetArticlePort {
 
 	GetAllArticlesResponse getAllArticles(User user, PageQuery query);
 
-	ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, PageQuery query);
+	ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, boolean isRead, PageQuery query);
 
 	ArticlesPageResponse getUnreadArticles(User user, PageQuery query);
 
