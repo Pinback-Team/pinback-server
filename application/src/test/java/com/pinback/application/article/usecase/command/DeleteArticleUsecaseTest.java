@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.pinback.application.ApplicationTestBase;
 import com.pinback.application.article.port.out.ArticleDeleteServicePort;
@@ -36,7 +37,11 @@ class DeleteArticleUsecaseTest extends ApplicationTestBase {
 	@BeforeEach
 	void setUp() {
 		user = user();
+		ReflectionTestUtils.setField(user, "id", java.util.UUID.randomUUID());
+
 		otherUser = userWithEmail("other@example.com");
+		ReflectionTestUtils.setField(otherUser, "id", java.util.UUID.randomUUID());
+
 		category = category(user);
 		article = articleWithCategory(user, category);
 	}
