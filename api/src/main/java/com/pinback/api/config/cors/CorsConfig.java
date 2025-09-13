@@ -25,7 +25,8 @@ public class CorsConfig {
 			"https://pinback-client.vercel.app",
 			"https://pinback.today",
 			"https://landing.pinback.today",
-			"https://www.pinback.today"
+			"https://www.pinback.today",
+			"https://api.pinack.today"
 		));
 
 		configuration.setAllowedMethods(Arrays.asList(
