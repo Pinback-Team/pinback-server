@@ -28,7 +28,7 @@ public class DeleteArticleUsecase implements DeleteArticlePort {
 	}
 
 	private void validateOwnership(Article article, User user) {
-		if (!article.getUser().equals(user)) {
+		if (!article.getUser().getId().equals(user.getId())) {
 			throw new ArticleNotOwnedException();
 		}
 	}
