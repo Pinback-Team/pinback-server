@@ -26,7 +26,7 @@ public class CorsConfig {
 			"https://pinback.today",
 			"https://landing.pinback.today",
 			"https://www.pinback.today",
-			"https://api.pinack.today"
+			"https://api.pinback.today"
 		));
 
 		configuration.setAllowedMethods(Arrays.asList(
