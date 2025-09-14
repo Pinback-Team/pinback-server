@@ -17,7 +17,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +25,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @Entity
-@Table(name = "article", uniqueConstraints =
-@UniqueConstraint(
-	columnNames = {"user_id", "url"}
-))
+@Table(name = "article")
 @Builder(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -40,7 +36,7 @@ public class Article extends BaseEntity {
 	@Column(name = "article_id")
 	private Long id;
 
-	@Column(name = "url", length = 700, nullable = false)
+	@Column(name = "url", columnDefinition = "TEXT", nullable = false)
 	private String url;
 
 	@Column(name = "memo")
