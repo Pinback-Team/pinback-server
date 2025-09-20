@@ -78,7 +78,7 @@ public class GetArticleUsecase implements GetArticlePort {
 			.toList();
 
 		return ArticlesPageResponse.of(
-			result.article().getTotalElements(),
+			result.totalCategoryArticleCount(),
 			result.unReadCount(),
 			articleResponses
 		);
