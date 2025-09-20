@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
@@ -54,7 +55,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.fetchOne();
 
 		return new ArticlesWithUnreadCount(unReadCount,
-			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne));
+			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne),
+			null);
 	}
 
 	@Override
@@ -80,7 +82,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(article.user.id.eq(userId).and(article.category.id.eq(categoryId)));
+			.where(conditions);
 
 		Long unReadCount = queryFactory
 			.select(article.count())
@@ -90,8 +92,15 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 				.and(article.isRead.isFalse()))
 			.fetchOne();
 
+		Long totalCategoryArticleCount = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(article.user.id.eq(userId).and(article.category.id.eq(categoryId)))
+			.fetchOne();
+
 		return new ArticlesWithUnreadCount(unReadCount,
-			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne));
+			new PageImpl<>(articles, pageable, countQuery.fetchOne()),
+			totalCategoryArticleCount);
 	}
 
 	@Override
@@ -146,7 +155,8 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.fetchOne();
 
 		return new ArticlesWithUnreadCount(unReadCount,
-			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne));
+			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne),
+			null);
 	}
 
 	@Override
