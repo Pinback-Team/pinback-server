@@ -1,6 +1,7 @@
 package com.pinback.api.article.controller;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -93,7 +94,7 @@ public class ArticleController {
 	public ResponseDto<ArticlesPageResponse> getAllArticlesByCategory(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "카테고리 ID") @RequestParam Long categoryId,
-		@Parameter(description = "읽음 상태 (true: 읽음, false: 안읽음)", example = "true") @RequestParam(name = "read-status") boolean isRead,
+		@Parameter(description = "읽음 상태 (true: 읽음, false: 안읽음, 생략시: 전체)", example = "true") @RequestParam(name = "read-status", required = false) Boolean isRead,
 		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
 		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {

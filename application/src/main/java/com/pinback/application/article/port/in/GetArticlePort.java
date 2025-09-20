@@ -16,7 +16,7 @@ public interface GetArticlePort {
 
 	GetAllArticlesResponse getAllArticles(User user, PageQuery query);
 
-	ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, boolean isRead, PageQuery query);
+	ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, Boolean isRead, PageQuery query);
 
 	ArticlesPageResponse getUnreadArticles(User user, PageQuery query);
 

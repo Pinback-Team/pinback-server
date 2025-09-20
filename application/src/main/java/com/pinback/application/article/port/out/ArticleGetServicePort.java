@@ -26,7 +26,7 @@ public interface ArticleGetServicePort {
 
 	ArticlesWithUnreadCountDto findAll(User user, PageRequest pageRequest);
 
-	ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, boolean isRead, PageRequest pageRequest);
+	ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, Boolean isRead, PageRequest pageRequest);
 
 	ArticlesWithUnreadCountDto findUnreadArticles(User user, PageRequest pageRequest);
 
