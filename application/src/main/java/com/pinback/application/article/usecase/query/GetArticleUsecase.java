@@ -67,7 +67,7 @@ public class GetArticleUsecase implements GetArticlePort {
 	}
 
 	@Override
-	public ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, boolean isRead, PageQuery query) {
+	public ArticlesPageResponse getAllArticlesByCategory(User user, long categoryId, Boolean isRead, PageQuery query) {
 		Category category = getCategoryPort.getCategoryAndUser(categoryId, user);
 
 		ArticlesWithUnreadCountDto result = articleGetServicePort.findAllByCategory(
@@ -78,7 +78,7 @@ public class GetArticleUsecase implements GetArticlePort {
 			.toList();
 
 		return ArticlesPageResponse.of(
-			result.article().getTotalElements(),
+			result.totalCategoryArticleCount(),
 			result.unReadCount(),
 			articleResponses
 		);

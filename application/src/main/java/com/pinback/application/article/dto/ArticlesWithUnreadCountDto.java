@@ -6,6 +6,7 @@ import com.pinback.domain.article.entity.Article;
 
 public record ArticlesWithUnreadCountDto(
 	Long unReadCount,
-	Page<Article> article
+	Page<Article> article,
+	Long totalCategoryArticleCount
 ) {
 }
