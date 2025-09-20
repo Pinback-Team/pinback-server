@@ -116,7 +116,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 
 		List<Article> articles = List.of(article, article, article, article, article);
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 5);
-		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage);
+		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage, null);
 
 		when(articleGetServicePort.findAll(user, pageRequest)).thenReturn(dto);
 
@@ -139,7 +139,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 
 		List<Article> articles = List.of(article, article, article);
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 3);
-		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage);
+		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage, 5L);
 
 		when(getCategoryPort.getCategoryAndUser(categoryId, user)).thenReturn(category);
 		when(articleGetServicePort.findAllByCategory(user, category, true, pageRequest)).thenReturn(dto);
@@ -162,7 +162,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 
 		List<Article> articles = List.of(article, article, article);
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 3);
-		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage);
+		ArticlesWithUnreadCountDto dto = new ArticlesWithUnreadCountDto(3L, articlePage, null);
 
 		when(articleGetServicePort.findUnreadArticles(user, pageRequest)).thenReturn(dto);
 
