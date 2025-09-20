@@ -58,13 +58,18 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public ArticlesWithUnreadCount findAllByCategory(UUID userId, long categoryId, boolean isRead, Pageable pageable) {
+	public ArticlesWithUnreadCount findAllByCategory(UUID userId, long categoryId, Boolean isRead, Pageable pageable) {
 
-		BooleanExpression conditions = article.category.id.eq(categoryId)
-			.and(article.isRead.eq(isRead));
+		BooleanExpression conditions = article.user.id.eq(userId)
+			.and(article.category.id.eq(categoryId));
+
+		if (isRead != null) {
+			conditions = conditions.and(article.isRead.eq(isRead));
+		}
 
 		List<Article> articles = queryFactory
 			.selectFrom(article)
+			.join(article.user, user).fetchJoin()
 			.join(article.category, category).fetchJoin()
 			.where(conditions)
 			.offset(pageable.getOffset())
@@ -75,12 +80,14 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		JPAQuery<Long> countQuery = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(conditions);
+			.where(article.user.id.eq(userId).and(article.category.id.eq(categoryId)));
 
 		Long unReadCount = queryFactory
 			.select(article.count())
 			.from(article)
-			.where(conditions.and(article.isRead.isFalse()))
+			.where(article.user.id.eq(userId)
+				.and(article.category.id.eq(categoryId))
+				.and(article.isRead.isFalse()))
 			.fetchOne();
 
 		return new ArticlesWithUnreadCount(unReadCount,

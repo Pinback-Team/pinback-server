@@ -54,7 +54,7 @@ public class ArticleGetService implements ArticleGetServicePort {
 	}
 
 	@Override
-	public ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, boolean isRead,
+	public ArticlesWithUnreadCountDto findAllByCategory(User user, Category category, Boolean isRead,
 		PageRequest pageRequest) {
 		ArticlesWithUnreadCount infraResult = articleRepository.findAllByCategory(user.getId(), category.getId(),
 			isRead,

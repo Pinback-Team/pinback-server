@@ -13,7 +13,7 @@ import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount
 public interface ArticleRepositoryCustom {
 	ArticlesWithUnreadCount findAllCustom(UUID userId, Pageable pageable);
 
-	ArticlesWithUnreadCount findAllByCategory(UUID userId, long articleId, boolean isRead, Pageable pageable);
+	ArticlesWithUnreadCount findAllByCategory(UUID userId, long articleId, Boolean isRead, Pageable pageable);
 
 	Page<Article> findTodayRemind(UUID userId, Pageable pageable, LocalDateTime startAt, LocalDateTime endAt,
 		Boolean isRead);
