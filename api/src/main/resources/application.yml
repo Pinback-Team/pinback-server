@@ -1,9 +1,4 @@
 spring:
-  datasource:
-    url: ${DATABASE_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    driver-class-name: ${DB_DRIVER}
   jpa:
     hibernate:
       ddl-auto: ${DDL_AUTO}
