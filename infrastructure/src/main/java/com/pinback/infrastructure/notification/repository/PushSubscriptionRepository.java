@@ -12,7 +12,7 @@ import com.pinback.domain.user.entity.User;
 public interface PushSubscriptionRepository extends JpaRepository<PushSubscription, Long> {
 
 	List<PushSubscription> findByUserId(UUID userId);
-	
+
 	Optional<PushSubscription> findByUser(User user);
 
 	Optional<PushSubscription> findByToken(String token);
@@ -20,4 +20,6 @@ public interface PushSubscriptionRepository extends JpaRepository<PushSubscripti
 	boolean existsByToken(String token);
 
 	void deleteByUserId(UUID userId);
+
+	void deleteByUser(User user);
 }

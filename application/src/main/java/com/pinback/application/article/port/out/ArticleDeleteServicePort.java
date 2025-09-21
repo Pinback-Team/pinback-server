@@ -7,4 +7,6 @@ public interface ArticleDeleteServicePort {
 	void deleteByCategory(User user, long categoryId);
 
 	void delete(Article article);
+
+	void deleteAllByUser(User user);
 }
