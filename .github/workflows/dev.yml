@@ -113,7 +113,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. 환경에 따라 SSH 연결 정보 및 경로 설정
+      # 2. SSH Agent 액션 추가
+      - name: Set up SSH agent
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: |
+            ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
+
+      # 3. 환경에 따라 SSH 연결 정보 및 경로 설정
       - name: Set Deploy Environment
         id: set-env
         run: |
@@ -127,23 +134,21 @@ jobs:
             echo "DEPLOY_DIR=/home/ubuntu/pinback" >> $GITHUB_ENV
           fi
 
-      # 3. docker-compose.yml 파일을 EC2로 복사
+      # 4. docker-compose.yml 파일을 EC2로 복사
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
           source: "docker-compose.yml"
           target: "${{ env.DEPLOY_DIR }}"
 
-      # 4. 배포 (docker composee(v2))
+      # 5. 배포 (docker composee(v2))
       - name: Deploy with Docker Compose to EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
           script: |
             # 1) 배포 디렉터리로 이동
             mkdir -p "${{ env.DEPLOY_DIR }}" # 디렉토리가 없으면 생성 (최초 배포 시)
