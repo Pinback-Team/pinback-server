@@ -11,12 +11,15 @@ import org.springframework.stereotype.Service;
 import com.pinback.application.article.port.out.ArticleDeleteServicePort;
 import com.pinback.application.article.port.out.ArticleSaveServicePort;
 import com.pinback.application.category.port.out.CategoryColorServicePort;
+import com.pinback.application.category.port.out.CategoryDeleteServicePort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.application.category.port.out.CategorySaveServicePort;
+import com.pinback.application.notification.port.out.PushSubscriptionDeleteServicePort;
 import com.pinback.application.test.dto.request.PushTestRequest;
 import com.pinback.application.test.dto.response.CategoriesTestResponse;
 import com.pinback.application.test.port.in.TestPort;
 import com.pinback.application.test.port.out.FcmServicePort;
+import com.pinback.application.user.port.out.UserDeleteServicePort;
 import com.pinback.application.user.port.out.UserGetServicePort;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
@@ -36,6 +39,9 @@ public class TestUsecase implements TestPort {
 	private final CategorySaveServicePort categorySaveServicePort;
 	private final CategoryColorServicePort categoryColorServicePort;
 	private final ArticleDeleteServicePort articleDeleteServicePort;
+	private final CategoryDeleteServicePort categoryDeleteServicePort;
+	private final PushSubscriptionDeleteServicePort pushSubscriptionDeleteServicePort;
+	private final UserDeleteServicePort userDeleteServicePort;
 
 	@Override
 	public void pushTest(PushTestRequest request) {
@@ -108,5 +114,14 @@ public class TestUsecase implements TestPort {
 		Category category = categoryGetServicePort.findById(categoryId);
 		User getUser = userGetServicePort.findById(user.getId());
 		articleDeleteServicePort.deleteByCategory(getUser, category.getId());
+	}
+
+	@Override
+	public void deleteUser(User user) {
+		User getUser = userGetServicePort.findById(user.getId());
+		articleDeleteServicePort.deleteAllByUser(getUser);
+		categoryDeleteServicePort.deleteAllByUser(getUser);
+		pushSubscriptionDeleteServicePort.deleteByUser(getUser);
+		userDeleteServicePort.delete(getUser);
 	}
 }

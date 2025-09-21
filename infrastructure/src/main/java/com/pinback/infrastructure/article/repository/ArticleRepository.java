@@ -21,4 +21,6 @@ public interface ArticleRepository extends JpaRepository<Article, Long>, Article
 
 	@Query("SELECT a FROM Article a WHERE a.user = :user ORDER BY a.createdAt DESC LIMIT 1")
 	Optional<Article> findRecentArticleByUser(@Param("user") User user);
+
+	void deleteAllByUser(User user);
 }

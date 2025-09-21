@@ -26,4 +26,9 @@ public class ArticleDeleteService implements ArticleDeleteServicePort {
 	public void delete(Article article) {
 		articleRepository.delete(article);
 	}
+
+	@Override
+	public void deleteAllByUser(User user) {
+		articleRepository.deleteAllByUser(user);
+	}
 }

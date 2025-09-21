@@ -61,4 +61,12 @@ public class TestController {
 	public ResponseDto<String> healthCheck() {
 		return ResponseDto.ok("OK");
 	}
+
+	@DeleteMapping("/user")
+	public ResponseDto<Void> deleteUser(
+		@Parameter(hidden = true) @CurrentUser User user
+	) {
+		testPort.deleteUser(user);
+		return ResponseDto.ok();
+	}
 }

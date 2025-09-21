@@ -12,4 +12,6 @@ public interface TestPort {
 	CategoriesTestResponse createCategories(User user);
 
 	void deleteArticlesByCategory(User user, Long categoryId);
+
+	void deleteUser(User user);
 }
