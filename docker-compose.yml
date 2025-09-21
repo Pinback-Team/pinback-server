@@ -15,8 +15,8 @@ services:
     restart: always # 컨테이너 비정상 종료 또는 호스트 재부팅 시 자동 재시작
 
   pinback:
-    image: ${DOCKER_USERNAME}/pinback:latest
-    container_name: pinback-server-container
+    image: ${DOCKER_USERNAME}/pinback:${DOCKER_IMAGE_TAG}
+    container_name: pinback
     ports:
       - "8080:8080"
     depends_on:
@@ -28,6 +28,7 @@ services:
     environment:
       TZ: Asia/Seoul
       FCM_JSON: /app/firebase-service-account.json
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
     restart: always
 
 volumes:

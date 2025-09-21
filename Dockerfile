@@ -12,4 +12,4 @@ COPY --from=builder /app/api/build/libs/*.jar /pinback.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/pinback.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=${SPRING_PROFILES_ACTIVE}", "/pinback.jar"]
