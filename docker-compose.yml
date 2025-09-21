@@ -25,6 +25,7 @@ services:
       - pinback.env
     volumes:
       - ./firebase-service-account.json:/app/firebase-service-account.json:ro
+      - ./application-dev.yml:/config/application-dev.yml:ro
     environment:
       TZ: Asia/Seoul
       FCM_JSON: /app/firebase-service-account.json
