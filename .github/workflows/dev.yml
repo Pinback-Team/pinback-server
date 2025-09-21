@@ -127,10 +127,20 @@ jobs:
           if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             echo "HOST=${{ secrets.DEV_EC2_SSH_HOST }}" >> $GITHUB_ENV
             echo "USERNAME=${{ secrets.DEV_EC2_SSH_USERNAME }}" >> $GITHUB_ENV
+            {
+              echo 'SSH_KEY<<EOF'
+              echo '${{ secrets.DEV_EC2_SSH_KEY }}'
+              echo 'EOF'
+            } >> "$GITHUB_ENV"
             echo "DEPLOY_DIR=/home/ubuntu/pinback-dev" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "HOST=${{ secrets.EC2_SSH_HOST }}" >> $GITHUB_ENV
             echo "USERNAME=${{ secrets.EC2_SSH_USERNAME }}" >> $GITHUB_ENV
+            {
+              echo 'SSH_KEY<<EOF'
+              echo '${{ secrets.EC2_SSH_KEY }}'
+              echo 'EOF'
+            } >> "$GITHUB_ENV"
             echo "DEPLOY_DIR=/home/ubuntu/pinback" >> $GITHUB_ENV
           fi
 
@@ -140,6 +150,7 @@ jobs:
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
+          key: ${{ env.SSH_KEY }}
           source: "docker-compose.yml"
           target: "${{ env.DEPLOY_DIR }}"
 
@@ -149,6 +160,7 @@ jobs:
         with:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
+          key: ${{ env.SSH_KEY }}
           script: |
             # 1) 배포 디렉터리로 이동
             mkdir -p "${{ env.DEPLOY_DIR }}" # 디렉토리가 없으면 생성 (최초 배포 시)
