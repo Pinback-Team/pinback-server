@@ -123,6 +123,7 @@ jobs:
       # 3. 환경에 따라 SSH 연결 정보 및 경로 설정
       - name: Set Deploy Environment
         id: set-env
+        shell: bash
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             echo "HOST=${{ secrets.DEV_EC2_SSH_HOST }}" >> $GITHUB_ENV
@@ -144,6 +145,12 @@ jobs:
             echo "DEPLOY_DIR=/home/ubuntu/pinback" >> $GITHUB_ENV
           fi
 
+      # 비대화형 접속 위해 known_hosts 등록
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p 22 ${{ env.HOST }} >> ~/.ssh/known_hosts
+
       # 4. docker-compose.yml 파일을 EC2로 복사
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
@@ -153,6 +160,7 @@ jobs:
           key: ${{ env.SSH_KEY }}
           source: "docker-compose.yml"
           target: "${{ env.DEPLOY_DIR }}"
+          debug: true
 
       # 5. 배포 (docker composee(v2))
       - name: Deploy with Docker Compose to EC2
@@ -161,6 +169,7 @@ jobs:
           host: ${{ env.HOST }}
           username: ${{ env.USERNAME }}
           key: ${{ env.SSH_KEY }}
+          debug: true
           script: |
             # 1) 배포 디렉터리로 이동
             mkdir -p "${{ env.DEPLOY_DIR }}" # 디렉토리가 없으면 생성 (최초 배포 시)
