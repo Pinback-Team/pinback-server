@@ -32,6 +32,6 @@ public interface ArticleGetServicePort {
 
 	Page<Article> findTodayRemind(User user, LocalDateTime remindDateTime, Pageable pageable, Boolean isRead);
 
-	RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime, Pageable pageable,
+	RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime startDateTime, LocalDateTime endDateTime, Pageable pageable,
 		Boolean isRead);
 }
