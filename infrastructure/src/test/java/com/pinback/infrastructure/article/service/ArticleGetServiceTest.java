@@ -259,11 +259,13 @@ class ArticleGetServiceTest extends ServiceTest {
 		
 		// 어제 리마인드 (카운트에 포함되지 않음)
 		articleRepository.save(articleWithDate(user, "yesterday-url", category, yesterday));
-		
+
 		PageRequest pageRequest = PageRequest.of(0, 10);
+		LocalDateTime startOfDay = LocalDateTime.of(2025, 8, 18, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 18, 23, 59, 59, 999999999);
 
 		//when
-		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, today, pageRequest, true);
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay, pageRequest, true);
 
 		//then
 		assertThat(result.articles().getContent()).hasSize(2); // 읽은 아티클 2개
@@ -286,11 +288,13 @@ class ArticleGetServiceTest extends ServiceTest {
 		articleRepository.save(articleWithDate(user, "unread-url1", category, today));
 		articleRepository.save(articleWithDate(user, "unread-url2", category, today));
 		articleRepository.save(articleWithDate(user, "unread-url3", category, today));
-		
+
 		PageRequest pageRequest = PageRequest.of(0, 10);
+		LocalDateTime startOfDay = LocalDateTime.of(2025, 8, 18, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 18, 23, 59, 59, 999999999);
 
 		//when
-		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, today, pageRequest, false);
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay, pageRequest, false);
 
 		//then
 		assertThat(result.articles().getContent()).hasSize(3); // 안읽은 아티클 3개
@@ -304,11 +308,12 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findTodayRemindWithCount_NoArticles_Test() {
 		//given
 		User user = userRepository.save(user());
-		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
+		LocalDateTime startOfDay = LocalDateTime.of(2025, 8, 18, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 18, 23, 59, 59, 999999999);
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
 		//when
-		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, today, pageRequest, true);
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay, pageRequest, true);
 
 		//then
 		assertThat(result.articles().getContent()).isEmpty();

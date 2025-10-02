@@ -182,7 +182,8 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		ReflectionTestUtils.setField(userWithRemindTime, "id", java.util.UUID.randomUUID());
 
 		LocalDateTime now = LocalDateTime.of(2025, 8, 20, 15, 0);
-		LocalDateTime todayRemindTime = LocalDateTime.of(2025, 8, 20, 14, 0);
+		LocalDateTime startOfDay = LocalDateTime.of(2025, 8, 20, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 20, 23, 59, 59, 999999999);
 		PageQuery pageQuery = new PageQuery(0, 10);
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -190,7 +191,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 2);
 		RemindArticlesWithCountDto dto = new RemindArticlesWithCountDto(2L, 3L, articlePage);
 
-		when(articleGetServicePort.findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, true)).thenReturn(dto);
+		when(articleGetServicePort.findTodayRemindWithCount(userWithRemindTime, startOfDay, endOfDay, pageRequest, true)).thenReturn(dto);
 
 		// when
 		TodayRemindResponse response = getArticleUsecase.getRemindArticles(userWithRemindTime, now, true, pageQuery);
@@ -199,7 +200,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		assertThat(response.articles()).hasSize(2);
 		assertThat(response.readArticleCount()).isEqualTo(2L);
 		assertThat(response.unreadArticleCount()).isEqualTo(3L);
-		verify(articleGetServicePort).findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, true);
+		verify(articleGetServicePort).findTodayRemindWithCount(userWithRemindTime, startOfDay, endOfDay, pageRequest, true);
 	}
 
 	@DisplayName("오늘 리마인드할 안읽은 아티클을 조회할 수 있다")
@@ -210,7 +211,8 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		ReflectionTestUtils.setField(userWithRemindTime, "id", java.util.UUID.randomUUID());
 
 		LocalDateTime now = LocalDateTime.of(2025, 8, 20, 15, 0);
-		LocalDateTime todayRemindTime = LocalDateTime.of(2025, 8, 20, 14, 0);
+		LocalDateTime startOfDay = LocalDateTime.of(2025, 8, 20, 0, 0);
+		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 20, 23, 59, 59, 999999999);
 		PageQuery pageQuery = new PageQuery(0, 10);
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
@@ -218,7 +220,7 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		Page<Article> articlePage = new PageImpl<>(articles, pageRequest, 3);
 		RemindArticlesWithCountDto dto = new RemindArticlesWithCountDto(2L, 3L, articlePage);
 
-		when(articleGetServicePort.findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, false)).thenReturn(dto);
+		when(articleGetServicePort.findTodayRemindWithCount(userWithRemindTime, startOfDay, endOfDay, pageRequest, false)).thenReturn(dto);
 
 		// when
 		TodayRemindResponse response = getArticleUsecase.getRemindArticles(userWithRemindTime, now, false, pageQuery);
@@ -227,6 +229,6 @@ class GetArticleUsecaseTest extends ApplicationTestBase {
 		assertThat(response.articles()).hasSize(3);
 		assertThat(response.readArticleCount()).isEqualTo(2L);
 		assertThat(response.unreadArticleCount()).isEqualTo(3L);
-		verify(articleGetServicePort).findTodayRemindWithCount(userWithRemindTime, todayRemindTime, pageRequest, false);
+		verify(articleGetServicePort).findTodayRemindWithCount(userWithRemindTime, startOfDay, endOfDay, pageRequest, false);
 	}
 }

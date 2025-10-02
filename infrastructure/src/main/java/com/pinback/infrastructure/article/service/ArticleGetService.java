@@ -80,10 +80,10 @@ public class ArticleGetService implements ArticleGetServicePort {
 	}
 
 	@Override
-	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime remindDateTime,
+	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime startDateTime, LocalDateTime endDateTime,
 		Pageable pageable, Boolean isRead) {
 		RemindArticlesWithCount infraResult = articleRepository.findTodayRemindWithCount(user.getId(), pageable,
-			remindDateTime, remindDateTime.plusDays(1), isRead);
+			startDateTime, endDateTime, isRead);
 		return new RemindArticlesWithCountDto(
 			infraResult.readCount(),
 			infraResult.unreadCount(),
