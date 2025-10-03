@@ -18,7 +18,8 @@ public class FcmService {
 				.setToken(token)
 				.setNotification(Notification.builder()
 					.setTitle("pinback")
-					.setBody("저장한 문구를 확인해보세요")
+					.setBody("저장한 북마크를 확인해보세요")
+					.setImage("https://pinback-image.s3.ap-northeast-2.amazonaws.com/FCM-IMG.png")
 					.build())
 				.putData("url", url);
 
