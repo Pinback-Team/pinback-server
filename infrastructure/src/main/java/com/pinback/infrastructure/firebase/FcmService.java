@@ -21,6 +21,7 @@ public class FcmService {
 					.setBody("저장한 북마크를 확인해보세요")
 					.setImage("https://pinback-image.s3.ap-northeast-2.amazonaws.com/FCM-IMG.png")
 					.build())
+				.putData("image", "https://pinback-image.s3.ap-northeast-2.amazonaws.com/FCM-IMG.png")
 				.putData("url", url);
 
 			FirebaseMessaging.getInstance().send(messageBuilder.build());
