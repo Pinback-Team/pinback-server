@@ -54,13 +54,27 @@ public class RedisNotificationService {
 
 	public void cancelArticleReminder(Long articleId, UUID userId) {
 		try {
-			String pattern = NOTIFICATION_PREFIX + articleId + ":" + userId + ":*";
-			var keys = objectRedisTemplate.keys(pattern);
+			String notificationPattern = NOTIFICATION_PREFIX + articleId + ":" + userId + ":*";
+			String dataPattern = NOTIFICATION_PREFIX_DATA + articleId + ":" + userId + ":*";
 
-			if (keys != null && !keys.isEmpty()) {
-				objectRedisTemplate.delete(keys);
+			var notificationKeys = objectRedisTemplate.keys(notificationPattern);
+			var dataKeys = objectRedisTemplate.keys(dataPattern);
+
+			int deletedCount = 0;
+
+			if (notificationKeys != null && !notificationKeys.isEmpty()) {
+				objectRedisTemplate.delete(notificationKeys);
+				deletedCount += notificationKeys.size();
+			}
+
+			if (dataKeys != null && !dataKeys.isEmpty()) {
+				objectRedisTemplate.delete(dataKeys);
+				deletedCount += dataKeys.size();
+			}
+
+			if (deletedCount > 0) {
 				log.info("Article 알림 취소 완료: articleId={}, userId={}, 삭제된 키 수={}",
-					articleId, userId, keys.size());
+					articleId, userId, deletedCount);
 			} else {
 				log.debug("취소할 알림이 없습니다: articleId={}, userId={}", articleId, userId);
 			}

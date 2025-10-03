@@ -37,6 +37,11 @@ public class NotificationExpirationListener implements MessageListener {
 			String dataKey = NOTIFICATION_PREFIX_DATA + notificationId;
 			NotificationData remainingData = (NotificationData)objectRedisTemplate.opsForValue().get(dataKey);
 
+			if (remainingData == null) {
+				log.warn("TTL 만료 이벤트 수신했으나 데이터 없음 (이미 삭제됨): notificationId={}", notificationId);
+				return;
+			}
+
 			log.info("TTL 만료 알림 감지: notificationId={}, articleId={}, userId={}, " +
 					"scheduledTime={}, url=\"{}\"",
 				notificationId,
@@ -47,6 +52,7 @@ public class NotificationExpirationListener implements MessageListener {
 
 			fcmService.sendNotification(remainingData.getFcmToken(), remainingData.getUrl());
 
+			objectRedisTemplate.delete(dataKey);
 			log.info("TTL 만료로 알림 자동 삭제: notificationId={}", notificationId);
 
 		} catch (Exception e) {
