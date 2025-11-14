@@ -133,7 +133,7 @@ jobs:
               echo '${{ secrets.DEV_EC2_SSH_KEY }}'
               echo 'EOF'
             } >> "$GITHUB_ENV"
-            echo "DEPLOY_DIR=/home/ubuntu/pinback-dev" >> $GITHUB_ENV
+            echo "DEPLOY_DIR=/home/pinbacksub/pinback-dev" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "HOST=${{ secrets.EC2_SSH_HOST }}" >> $GITHUB_ENV
             echo "USERNAME=${{ secrets.EC2_SSH_USERNAME }}" >> $GITHUB_ENV
