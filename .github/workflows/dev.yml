@@ -151,6 +151,17 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p 22 ${{ env.HOST }} >> ~/.ssh/known_hosts
 
+      # 3 - 1 기존 docker-compose.yml 파일 삭제
+      - name: Remove existing docker-compose.yml
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.HOST }}
+          username: ${{ env.USERNAME }}
+          key: ${{ env.SSH_KEY }}
+          # 복사 전에 파일을 강제로 삭제 (오류 무시를 위해 || true 추가)
+          script: |
+            rm -f ${{ env.DEPLOY_DIR }}/docker-compose.yml || true
+
       # 4. docker-compose.yml 파일을 EC2로 복사
       - name: Copy docker-compose.yml to EC2
         uses: appleboy/scp-action@master
