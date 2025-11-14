@@ -161,6 +161,7 @@ jobs:
           source: "docker-compose.yml"
           target: "${{ env.DEPLOY_DIR }}"
           debug: true
+          overwrite: true
 
       # 5. 배포 (docker composee(v2))
       - name: Deploy with Docker Compose to EC2
