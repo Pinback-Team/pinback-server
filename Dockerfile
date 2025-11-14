@@ -6,7 +6,7 @@ COPY . .
 
 RUN ./gradlew clean build -x test
 
-FROM openjdk:21-jdk-slim AS runtime
+FROM eclipse-temurin:21-jre-jammy AS runtime
 
 COPY --from=builder /app/api/build/libs/*.jar /pinback.jar
 
