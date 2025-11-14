@@ -210,16 +210,23 @@ jobs:
                 echo "ERROR: .env file not found at $DEPLOY_DIR/pinback.env"
                 exit 1
             fi
-            export $(cat "$DEPLOY_DIR/pinback.env" | xargs) && \
+            while IFS='=' read -r name value; do
+              # 주석 및 빈 줄 무시
+              if [[ "$name" =~ ^# ]] || [ -z "$name" ]; then
+                continue
+              fi
+              # 공백 제거 및 export
+              export "$name"="$(echo "$value" | xargs)"
+            done < "$DEPLOY_DIR/pinback.env"
             
             # 3) 기존 Docker Compose 스택 중지 및 삭제
-             docker compose -f "$DEPLOY_DIR/docker-compose.yml" down || true && \
+            docker-compose --file "$DEPLOY_DIR/docker-compose.yml" down || true && \
             
             # Docker Hub에서 최신 이미지 pull
-            docker compose -f "$DEPLOY_DIR/docker-compose.yml" pull && \
+            docker-compose --file "$DEPLOY_DIR/docker-compose.yml" pull && \
             
             # 5) Docker Compose로 서비스 시작
-            docker compose -f "$DEPLOY_DIR/docker-compose.yml" up -d --remove-orphans && \
+            docker-compose --file "$DEPLOY_DIR/docker-compose.yml" up -d --remove-orphans && \
             
             # 6) 사용하지 않는 Docker 이미지 정리
             docker image prune -f
