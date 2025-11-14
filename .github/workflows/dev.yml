@@ -141,11 +141,6 @@ jobs:
             # 3. 기존 파일 삭제 (권한 문제 방지)
             rm -f "$DEPLOY_DIR/docker-compose.yml" || true
 
-      # 비대화형 접속 위해 known_hosts 등록
-      - name: Add host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p 22 ${{ env.HOST }} >> ~/.ssh/known_hosts
 
       # 3. docker-compose.yml 파일을 EC2로 복사
       - name: Copy docker-compose.yml to EC2
