@@ -122,10 +122,12 @@ jobs:
             echo "HOST=${{ secrets.DEV_EC2_SSH_HOST }}" >> $GITHUB_ENV
             echo "USERNAME=${{ secrets.DEV_EC2_SSH_USERNAME }}" >> $GITHUB_ENV
             echo "DEPLOY_DIR=/home/ubuntu/pinback-dev" >> $GITHUB_ENV
+            echo "ENV_SECRET_NAME=DEV_ENV_CONTENT" >> $GITHUB_ENV
           elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             echo "HOST=${{ secrets.EC2_SSH_HOST }}" >> $GITHUB_ENV
             echo "USERNAME=${{ secrets.EC2_SSH_USERNAME }}" >> $GITHUB_ENV
             echo "DEPLOY_DIR=/home/ubuntu/pinback" >> $GITHUB_ENV
+            echo "ENV_SECRET_NAME=PROD_ENV_CONTENT" >> $GITHUB_ENV
           fi
 
       # 3. known_hosts 등록
@@ -165,8 +167,19 @@ jobs:
           debug: true
           overwrite: true
 
-      # 6. pinback.env 파일 복사
-      - name: Copy pinback.env to EC2
+      # 6. pinback.env 파일을 Runner에 임시 생성 후 복사
+      - name: Create & Copy pinback.env to EC2
+        run: |
+          # 환경 변수 이름으로 Secret 값을 가져와 파일 생성
+          
+          if [[ "${{ env.ENV_SECRET_NAME }}" == "DEV_ENV_CONTENT" ]]; then
+              echo "${{ secrets.DEV_ENV_CONTENT }}" > pinback.env
+          elif [[ "${{ env.ENV_SECRET_NAME }}" == "PROD_ENV_CONTENT" ]]; then
+              echo "${{ secrets.PROD_ENV_CONTENT }}" > pinback.env
+          fi
+
+      # 6 - 1
+      - name: Copy pinback.env file
         uses: appleboy/scp-action@master
         with:
           host: ${{ env.HOST }}
