@@ -11,6 +11,7 @@ import com.pinback.application.google.dto.response.GoogleLoginResponse;
 import com.pinback.application.notification.port.in.SavePushSubscriptionPort;
 import com.pinback.application.user.port.out.UserGetServicePort;
 import com.pinback.application.user.port.out.UserSaveServicePort;
+import com.pinback.application.user.port.out.UserUpdateServicePort;
 import com.pinback.application.user.port.out.UserValidateServicePort;
 import com.pinback.domain.user.entity.User;
 
@@ -29,6 +30,7 @@ public class AuthUsecase {
 
 	private final SavePushSubscriptionPort savePushSubscriptionPort;
 	private final UserGetServicePort userGetServicePort;
+	private final UserUpdateServicePort userUpdateServicePort;
 
 	@Transactional
 	public SignUpResponse signUp(SignUpCommand signUpCommand) {
@@ -55,14 +57,22 @@ public class AuthUsecase {
 	public Mono<GoogleLoginResponse> getInfoAndToken(String email) {
 		return userGetServicePort.findUserByEmail(email)
 			.flatMap(existingUser -> {
-				log.info("기존 사용자 로그인 성공: User ID {}", existingUser.getId());
+				if (existingUser.getRemindDefault() != null) {
+					log.info("기존 사용자 로그인 성공: User ID {}", existingUser.getId());
 
-				//Access Token 발급
-				String accessToken = jwtProvider.createAccessToken(existingUser.getId());
+					//Access Token 발급
+					String accessToken = jwtProvider.createAccessToken(existingUser.getId());
 
-				return Mono.just(GoogleLoginResponse.loggedIn(
-					existingUser.getId(), existingUser.getEmail(), accessToken
-				));
+					return Mono.just(GoogleLoginResponse.loggedIn(
+						existingUser.getId(), existingUser.getEmail(), accessToken
+					));
+				} else {
+					log.info("기존 사용자 - 온보딩 미완료 유저 처리: User ID {}", existingUser.getId());
+
+					return Mono.just(GoogleLoginResponse.tempLogin(
+						existingUser.getId(), existingUser.getEmail()
+					));
+				}
 			})
 			.switchIfEmpty(Mono.defer(() -> {
 				log.info("신규 유저 - 임시 유저 생성");
