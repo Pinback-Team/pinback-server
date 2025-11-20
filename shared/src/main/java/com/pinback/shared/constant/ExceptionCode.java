@@ -40,8 +40,11 @@ public enum ExceptionCode {
 	CATEGORY_ALREADY_EXIST(HttpStatus.CONFLICT, "c40903", "이미 존재하는 카테고리입니다."),
 
 	//500
-	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50000", "서버 내부 오류가 발생했습니다.");
-
+	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50000", "서버 내부 오류가 발생했습니다."),
+	GOOGLE_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50001", "Google API 처리 중 오류가 발생했습니다."),
+	EXTERNAL_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "s50300", "외부 서비스(Google)와 통신할 수 없습니다."),
+	GOOGLE_TOKEN_MISSING(HttpStatus.INTERNAL_SERVER_ERROR, "s50002", "Google API에서 필수 Access Token을 받지 못했습니다."),
+	GOOGLE_EMAIL_MISSING(HttpStatus.INTERNAL_SERVER_ERROR, "s50003", "Google API에서 email을 받지 못했습니다.");
 	private final HttpStatus status;
 	private final String code;
 	private final String message;
