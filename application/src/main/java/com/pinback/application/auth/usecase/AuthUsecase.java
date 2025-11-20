@@ -84,4 +84,15 @@ public class AuthUsecase {
 					});
 			}));
 	}
+
+	@Transactional
+	public SignUpResponse signUpV2(SignUpCommand signUpCommand) {
+		User user = userGetServicePort.findByEmail(signUpCommand.email());
+		String accessToken = jwtProvider.createAccessToken(user.getId());
+		userUpdateServicePort.updateRemindDefault(user.getId(), signUpCommand.remindDefault());
+
+		savePushSubscriptionPort.savePushSubscription(user, signUpCommand.fcmToken());
+
+		return SignUpResponse.from(accessToken);
+	}
 }
