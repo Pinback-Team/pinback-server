@@ -7,6 +7,7 @@ import com.pinback.application.auth.dto.SignUpCommand;
 import com.pinback.application.auth.dto.SignUpResponse;
 import com.pinback.application.auth.dto.TokenResponse;
 import com.pinback.application.auth.service.JwtProvider;
+import com.pinback.application.google.dto.response.GoogleLoginResponse;
 import com.pinback.application.notification.port.in.SavePushSubscriptionPort;
 import com.pinback.application.user.port.out.UserGetServicePort;
 import com.pinback.application.user.port.out.UserSaveServicePort;
@@ -14,7 +15,10 @@ import com.pinback.application.user.port.out.UserValidateServicePort;
 import com.pinback.domain.user.entity.User;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthUsecase {
@@ -45,5 +49,29 @@ public class AuthUsecase {
 		String accessToken = jwtProvider.createAccessToken(user.getId());
 
 		return new TokenResponse(accessToken);
+	}
+
+	@Transactional(readOnly = true)
+	public Mono<GoogleLoginResponse> getInfoAndToken(String email) {
+		return userGetServicePort.findUserByEmail(email)
+			.flatMap(existingUser -> {
+				log.info("기존 사용자 로그인 성공: User ID {}", existingUser.getId());
+
+				//Access Token 발급
+				String accessToken = jwtProvider.createAccessToken(existingUser.getId());
+
+				return Mono.just(GoogleLoginResponse.loggedIn(
+					existingUser.getId(), existingUser.getEmail(), accessToken
+				));
+			})
+			.switchIfEmpty(Mono.defer(() -> {
+				log.info("신규 유저 - 임시 유저 생성");
+				User tempUser = User.createTempUser(email);
+
+				return userSaveServicePort.saveUser(tempUser)
+					.flatMap(savedUser -> {
+						return Mono.just(GoogleLoginResponse.tempLogin(savedUser.getId(), savedUser.getEmail()));
+					});
+			}));
 	}
 }

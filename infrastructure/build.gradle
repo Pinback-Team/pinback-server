@@ -18,6 +18,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-admin:9.2.0'
 
     implementation 'com.auth0:java-jwt:4.5.0'
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
 }
 
 def generated = layout.buildDirectory.dir("generated/querydsl").get().asFile

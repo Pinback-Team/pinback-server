@@ -27,3 +27,10 @@ jwt:
   issuer: ${ISSUER}
 
 fcm: ${FCM_JSON}
+
+google:
+  client-id: ${CLIENT_ID}
+  client-secret: ${CLIENT_SECRET}
+  redirect-uri: ${REDIRECT_URI}
+  token-uri: ${TOKEN_URI}
+  user-info-uri: ${USER_INFO_URI}

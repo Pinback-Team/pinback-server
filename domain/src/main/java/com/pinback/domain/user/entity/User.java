@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class User extends BaseEntity {
+	private static final LocalTime TEMP_REMIND_DEFAULT_MARKER = null;
+	private static final Long DEFAULT_ACORN_COUNT = 0L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
@@ -34,7 +36,7 @@ public class User extends BaseEntity {
 	@Column(name = "email", nullable = false, unique = true)
 	private String email;
 
-	@Column(name = "remind_default", nullable = false)
+	@Column(name = "remind_default", nullable = true)
 	private LocalTime remindDefault;
 
 	@Column(name = "acorn_count", nullable = false)
@@ -44,7 +46,15 @@ public class User extends BaseEntity {
 		return User.builder()
 			.email(email)
 			.remindDefault(remindDefault)
-			.acornCount(0L)
+			.acornCount(DEFAULT_ACORN_COUNT)
+			.build();
+	}
+
+	public static User createTempUser(String email) {
+		return User.builder()
+			.email(email)
+			.remindDefault(TEMP_REMIND_DEFAULT_MARKER)
+			.acornCount(DEFAULT_ACORN_COUNT)
 			.build();
 	}
 
