@@ -2,6 +2,7 @@ package com.pinback.application.article.usecase.query;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,13 +12,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
+import com.pinback.application.article.dto.response.RemindArticleResponseV2;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
+import com.pinback.application.article.dto.response.TodayRemindResponseV2;
 import com.pinback.application.article.port.in.GetArticlePort;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
@@ -105,7 +109,6 @@ public class GetArticleUsecase implements GetArticlePort {
 		LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
 		LocalDateTime endOfDay = now.toLocalDate().atTime(23, 59, 59, 999999999);
 
-
 		RemindArticlesWithCountDto result = articleGetServicePort.findTodayRemindWithCount(
 			user, startOfDay, endOfDay, PageRequest.of(query.pageNumber(), query.pageSize()), readStatus);
 
@@ -114,6 +117,40 @@ public class GetArticleUsecase implements GetArticlePort {
 			.toList();
 
 		return TodayRemindResponse.of(
+			result.readCount(),
+			result.unreadCount(),
+			articleResponses
+		);
+	}
+
+	@Override
+	public TodayRemindResponseV2 getRemindArticlesV2(
+		User user,
+		LocalDateTime now,
+		boolean readStatus,
+		PageQuery query
+	) {
+		LocalDateTime endBound = now;
+		LocalDateTime startBound = now.minusHours(24);
+
+		RemindArticlesWithCountDtoV2 result = articleGetServicePort.findTodayRemindWithCountV2(
+			user,
+			startBound,
+			endBound,
+			PageRequest.of(query.pageNumber(), query.pageSize()),
+			readStatus
+		);
+
+		List<RemindArticleResponseV2> articleResponses =
+			result.articles() != null ?
+				result.articles().stream()
+					.map(RemindArticleResponseV2::from)
+					.toList() :
+				Collections.emptyList();
+
+		return TodayRemindResponseV2.of(
+			result.hasNext(),
+			result.totalCount(),
 			result.readCount(),
 			result.unreadCount(),
 			articleResponses

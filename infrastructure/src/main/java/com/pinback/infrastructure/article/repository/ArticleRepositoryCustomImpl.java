@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
+import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -208,5 +209,58 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.delete(article)
 			.where(conditions)
 			.execute();
+	}
+
+	@Override
+	public RemindArticlesWithCountV2 findTodayRemindWithCountV2(
+		UUID userId,
+		Pageable pageable,
+		LocalDateTime startBound,
+		LocalDateTime endBound,
+		Boolean isReadAfterRemind
+	) {
+		BooleanExpression baseConditions = article.user.id.eq(userId)
+			.and(article.remindAt.gt(startBound).and(article.remindAt.loe(endBound)));
+
+		BooleanExpression conditions = baseConditions.and(article.isReadAfterRemind.eq(isReadAfterRemind));
+
+		List<Article> articles = queryFactory
+			.selectFrom(article)
+			.join(article.user, user).fetchJoin()
+			.where(conditions)
+			.offset(pageable.getOffset())
+			.limit(pageable.getPageSize())
+			.orderBy(article.remindAt.asc())
+			.fetch();
+
+		JPAQuery<Long> countQuery = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(conditions);
+
+		Long readCount = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(baseConditions.and(article.isReadAfterRemind.isTrue()))
+			.fetchOne();
+
+		Long unreadCount = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(baseConditions.and(article.isReadAfterRemind.isFalse()))
+			.fetchOne();
+
+		Long totalCount = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(baseConditions)
+			.fetchOne();
+
+		return new RemindArticlesWithCountV2(
+			readCount,
+			unreadCount,
+			totalCount,
+			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne)
+		);
 	}
 }

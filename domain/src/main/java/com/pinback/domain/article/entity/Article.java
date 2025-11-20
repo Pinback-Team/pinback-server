@@ -2,6 +2,8 @@ package com.pinback.domain.article.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.common.BaseEntity;
 import com.pinback.domain.user.entity.User;
@@ -56,6 +58,10 @@ public class Article extends BaseEntity {
 	@Column(name = "is_read", nullable = false)
 	private Boolean isRead;
 
+	@Column(name = "is_read_after_remind", nullable = false)
+	@ColumnDefault("false")
+	private Boolean isReadAfterRemind;
+
 	public static Article create(String url, String memo, User user, Category category, LocalDateTime remindAt) {
 		validateMemo(memo);
 
@@ -66,6 +72,7 @@ public class Article extends BaseEntity {
 			.category(category)
 			.isRead(false)
 			.remindAt(remindAt)
+			.isReadAfterRemind(false)
 			.build();
 	}
 
@@ -80,8 +87,16 @@ public class Article extends BaseEntity {
 		return isRead;
 	}
 
+	public boolean isReadAfterRemind() {
+		return isReadAfterRemind;
+	}
+
 	public void markAsRead() {
 		this.isRead = true;
+	}
+
+	public void markAsReadAfterRemind() {
+		this.isReadAfterRemind = true;
 	}
 
 	public void update(String memo, Category category, LocalDateTime remindAt) {

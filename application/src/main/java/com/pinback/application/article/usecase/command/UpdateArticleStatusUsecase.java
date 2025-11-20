@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.AcornCollectResult;
 import com.pinback.application.article.dto.response.ReadArticleResponse;
+import com.pinback.application.article.dto.response.ReadRemindArticleResponse;
 import com.pinback.application.article.port.in.UpdateArticleStatusPort;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.user.port.in.ManageAcornPort;
@@ -37,5 +38,20 @@ public class UpdateArticleStatusUsecase implements UpdateArticleStatusPort {
 		}
 
 		return ReadArticleResponse.of(currentAcorns, false);
+	}
+
+	@Override
+	public ReadRemindArticleResponse updateRemindArticleStatus(User user, long articleId) {
+		Article article = articleGetService.findByUserAndId(user, articleId);
+		int currentAcorns = manageAcornPort.getCurrentAcorns(user.getId());
+		log.info("수집하기 전 도토리 수: {}", currentAcorns);
+
+		if (!article.isReadAfterRemind()) {
+			article.markAsReadAfterRemind();
+			AcornCollectResult result = manageAcornPort.tryCollectAcorns(user);
+			return ReadRemindArticleResponse.of(article.isReadAfterRemind(), result.finalAcornCount(),
+				result.isCollected());
+		}
+		return ReadRemindArticleResponse.of(article.isReadAfterRemind(), currentAcorns, false);
 	}
 }
