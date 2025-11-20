@@ -100,7 +100,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				path.startsWith("/api/v2/auth/google") ||
 				path.startsWith("/oauth/callback") ||
 				path.startsWith("/login/google") ||
-				path.startsWith("/login/oauth2/code/google")
+				path.startsWith("/login/oauth2/code/google") ||
+				path.startsWith("/api/v2/auth/signup")
 			;
 	}
 }
