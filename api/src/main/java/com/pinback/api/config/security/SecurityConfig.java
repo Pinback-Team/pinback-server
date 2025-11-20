@@ -53,7 +53,7 @@ public class SecurityConfig {
 
 				.requestMatchers(
 					"/api/v1/auth/token",
-					"/api/v1/auth/google"
+					"/api/v2/auth/google"
 				).permitAll()
 
 				.requestMatchers(

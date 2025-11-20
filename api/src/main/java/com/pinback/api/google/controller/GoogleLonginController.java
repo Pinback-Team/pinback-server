@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/auth/google")
+@RequestMapping("/api/v2/auth/google")
 @RequiredArgsConstructor
 @Tag(name = "Google", description = "구글 소셜 로그인 API")
 public class GoogleLonginController {
