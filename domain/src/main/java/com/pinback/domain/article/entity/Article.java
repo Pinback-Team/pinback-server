@@ -95,6 +95,10 @@ public class Article extends BaseEntity {
 		this.isRead = true;
 	}
 
+	public void markAsReadAfterRemind() {
+		this.isReadAfterRemind = true;
+	}
+
 	public void update(String memo, Category category, LocalDateTime remindAt) {
 		validateMemo(memo);
 		this.memo = memo;

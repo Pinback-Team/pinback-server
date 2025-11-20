@@ -3,13 +3,17 @@ package com.pinback.api.article.controller;
 import java.time.LocalDateTime;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.application.article.dto.query.PageQuery;
+import com.pinback.application.article.dto.response.ReadRemindArticleResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV2;
 import com.pinback.application.article.port.in.GetArticlePort;
+import com.pinback.application.article.port.in.UpdateArticleStatusPort;
 import com.pinback.domain.user.entity.User;
 import com.pinback.shared.annotation.CurrentUser;
 import com.pinback.shared.dto.ResponseDto;
@@ -27,6 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Tag(name = "ArticleV2", description = "아티클 관리 API V2")
 public class ArticleControllerV2 {
 	private final GetArticlePort getArticlePort;
+	private final UpdateArticleStatusPort updateArticleStatusPort;
 
 	@Operation(summary = "리마인드 아티클 조회 v2", description = "오늘 리마인드할 아티클을 읽음/안읽음 상태별로 조회합니다.")
 	@GetMapping("/remind")
@@ -41,4 +46,15 @@ public class ArticleControllerV2 {
 		TodayRemindResponseV2 response = getArticlePort.getRemindArticlesV2(user, now, readStatus, query);
 		return ResponseDto.ok(response);
 	}
+
+	@Operation(summary = "리마인드 아티클 읽음 상태 변경 v2", description = "리마인드 아티클의 읽음 상태를 변경합니다")
+	@PatchMapping("/remind/{articleId}/read-status")
+	public ResponseDto<ReadRemindArticleResponse> updateRemindArticleStatus(
+		@Parameter(hidden = true) @CurrentUser User user,
+		@Parameter(description = "아티클 ID") @PathVariable Long articleId
+	) {
+		ReadRemindArticleResponse response = updateArticleStatusPort.updateRemindArticleStatus(user, articleId);
+		return ResponseDto.ok(response);
+	}
+
 }
