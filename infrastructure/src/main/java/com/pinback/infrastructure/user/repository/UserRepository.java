@@ -20,4 +20,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	@Modifying
 	@Query("UPDATE User u SET u.remindDefault = :newRemindDefault WHERE u.id = :userId")
 	void updateRemindDefault(@Param("userId") UUID userId, @Param("newRemindDefault") LocalTime newRemindDefault);
+
+	@Modifying
+	@Query("UPDATE User u SET u.profileImage = :imageProfile WHERE u.id = :userId")
+	void updateProfileImage(@Param("userId") UUID userId, @Param("imageProfile") String imageProfile);
 }

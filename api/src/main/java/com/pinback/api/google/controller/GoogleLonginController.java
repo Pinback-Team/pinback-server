@@ -1,6 +1,5 @@
 package com.pinback.api.google.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -39,7 +38,8 @@ public class GoogleLonginController {
 	) {
 		return googleUsecase.getUserInfo(request.toCommand())
 			.flatMap(googleResponse -> {
-				return authUsecase.getInfoAndToken(googleResponse.email())
+				return authUsecase.getInfoAndToken(googleResponse.email(), googleResponse.pictureUrl(),
+						googleResponse.name())
 					.map(loginResponse -> {
 						return ResponseDto.ok(loginResponse);
 					});
@@ -48,10 +48,10 @@ public class GoogleLonginController {
 
 	@Operation(summary = "신규 회원 온보딩", description = "신규 회원의 기본 정보를 등록합니다")
 	@PatchMapping("/signup")
-	public ResponseEntity<SignUpResponse> signUpV2(
+	public ResponseDto<SignUpResponse> signUpV2(
 		@Valid @RequestBody SignUpRequest request
 	) {
 		SignUpResponse response = authUsecase.signUpV2(request.toCommand());
-		return ResponseEntity.ok(response);
+		return ResponseDto.ok(response);
 	}
 }

@@ -42,6 +42,15 @@ public class User extends BaseEntity {
 	@Column(name = "acorn_count", nullable = false)
 	private Long acornCount;
 
+	@Column(name = "google_profile_image", unique = true)
+	private String googleProfileImage;
+
+	@Column(name = "user_name")
+	private String username;
+
+	@Column(name = "profile_image")
+	private String profileImage;
+
 	public static User create(String email, LocalTime remindDefault) {
 		return User.builder()
 			.email(email)
@@ -50,11 +59,12 @@ public class User extends BaseEntity {
 			.build();
 	}
 
-	public static User createTempUser(String email) {
+	public static User createTempUser(String email, String name) {
 		return User.builder()
 			.email(email)
 			.remindDefault(TEMP_REMIND_DEFAULT_MARKER)
 			.acornCount(DEFAULT_ACORN_COUNT)
+			.username(name)
 			.build();
 	}
 
@@ -68,5 +78,17 @@ public class User extends BaseEntity {
 
 	public boolean isNewUser(LocalDateTime now) {
 		return getCreatedAt().isAfter(now.minusDays(3));
+	}
+
+	public void updateGoogleProfileImage(String googleProfileImage) {
+		this.googleProfileImage = googleProfileImage;
+	}
+
+	public void updateName(String name) {
+		this.username = name;
+	}
+
+	public void updateProfileImage(String profileImage) {
+		this.profileImage = profileImage;
 	}
 }
