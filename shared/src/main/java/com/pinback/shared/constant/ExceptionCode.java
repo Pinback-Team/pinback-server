@@ -39,12 +39,23 @@ public enum ExceptionCode {
 	ARTICLE_ALREADY_EXIST(HttpStatus.CONFLICT, "c40902", "이미 저장한 url 입니다."),
 	CATEGORY_ALREADY_EXIST(HttpStatus.CONFLICT, "c40903", "이미 존재하는 카테고리입니다."),
 
+	//422
+	GOOGLE_PROFILE_IMAGE_MISSING(HttpStatus.UNPROCESSABLE_ENTITY, "c42201",
+		"Google API에서 email을 받지 못했습니다. scope에 profile이 포함되어 있는지 확인해 주세요."),
+	GOOGLE_EMAIL_MISSING(HttpStatus.UNPROCESSABLE_ENTITY, "s42202",
+		"Google API에서 email을 받지 못했습니다. scope에 email이 포함되어 있는지 확인해 주세요."),
+	GOOGLE_NAME_MISSING(HttpStatus.UNPROCESSABLE_ENTITY, "s42203",
+		"Google API에서 name을 받지 못했습니다. scope에 profile이 포함되어 있는지 확인해 주세요."),
+
 	//500
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50000", "서버 내부 오류가 발생했습니다."),
 	GOOGLE_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50001", "Google API 처리 중 오류가 발생했습니다."),
-	EXTERNAL_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "s50300", "외부 서비스(Google)와 통신할 수 없습니다."),
 	GOOGLE_TOKEN_MISSING(HttpStatus.INTERNAL_SERVER_ERROR, "s50002", "Google API에서 필수 Access Token을 받지 못했습니다."),
-	GOOGLE_EMAIL_MISSING(HttpStatus.INTERNAL_SERVER_ERROR, "s50003", "Google API에서 email을 받지 못했습니다.");
+	S3_UPLOAD_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50003", "S3 업로드 중 오류 발생"),
+
+	//503
+	EXTERNAL_SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "s50300", "외부 서비스(Google)와 통신할 수 없습니다.");
+
 	private final HttpStatus status;
 	private final String code;
 	private final String message;

@@ -7,6 +7,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.pinback.application.common.exception.GoogleApiException;
 import com.pinback.application.common.exception.GoogleEmailMissingException;
+import com.pinback.application.common.exception.GoogleNameMissingException;
+import com.pinback.application.common.exception.GoogleProfileImageMissingException;
 import com.pinback.application.common.exception.GoogleTokenMissingException;
 import com.pinback.application.google.dto.response.GoogleApiResponse;
 import com.pinback.application.google.dto.response.GoogleTokenResponse;
@@ -105,13 +107,48 @@ public class GoogleOAuthClient implements GoogleOAuthPort {
 			)
 			.bodyToMono(GoogleApiResponse.class)
 			.map(apiData -> {
+				log.info("Google UserInfo API 전체 응답 데이터: {}", apiData);
 				// 이메일 필드 유효성 검사
 				if (apiData.email() == null || apiData.email().isBlank()) {
 					log.error("Google UserInfo 응답에 이메일 필드가 누락되었습니다.");
 					throw new GoogleEmailMissingException();
 				}
+
+				// 프로필 필드 유효성 검사
+				if (apiData.picture() == null || apiData.picture().isBlank()) {
+					log.error("Google UserInfo 응답에 프로필 필드가 누락되었습니다.");
+					throw new GoogleProfileImageMissingException();
+				}
+
+				// 이름 필드 유효성 검사
+				String securedName = getSecuredName(apiData);
+				if (securedName.isBlank()) {
+					log.error("Google UserInfo 응답에 이름 필드가 누락되었습니다.");
+					throw new GoogleNameMissingException();
+				}
+
 				// 최종 DTO로 변환하여 반환
-				return GoogleUserInfoResponse.from(apiData.email());
+				return GoogleUserInfoResponse.from(apiData.email(), apiData.picture(), securedName);
 			});
 	}
+
+	private String getSecuredName(GoogleApiResponse apiData) {
+		String givenName = apiData.givenName();
+		String familyName = apiData.familyName();
+		String fullName = apiData.name();
+
+		// given + family name
+		if (givenName != null && !givenName.isBlank() && familyName != null && !familyName.isBlank()) {
+			return givenName + " " + familyName;
+		}
+
+		// fullName
+		if (fullName != null && !fullName.isBlank()) {
+			return fullName;
+		}
+
+		// 모든 필드 존재 x
+		return "";
+	}
+
 }
