@@ -8,6 +8,8 @@ import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 @Service
 @RequiredArgsConstructor
@@ -19,5 +21,13 @@ public class UserSaveService implements UserSaveServicePort {
 	@Override
 	public User save(User user) {
 		return userRepository.save(user);
+	}
+
+	@Override
+	public Mono<User> saveUser(User user) {
+		return Mono.fromCallable(() -> {
+				return userRepository.save(user);
+			})
+			.subscribeOn(Schedulers.boundedElastic());
 	}
 }

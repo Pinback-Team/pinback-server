@@ -52,11 +52,19 @@ public class SecurityConfig {
 				).permitAll()
 
 				.requestMatchers(
-					"/api/v1/auth/token"
+					"/api/v1/auth/token",
+					"/api/v2/auth/google",
+					"/api/v2/auth/signup"
 				).permitAll()
 
 				.requestMatchers(
 					"/api/v1/test/*"
+				).permitAll()
+
+				.requestMatchers(
+					"/login/google",
+					"/oauth/callback",
+					"/login/oauth2/code/google"
 				).permitAll()
 
 				.anyRequest().authenticated()

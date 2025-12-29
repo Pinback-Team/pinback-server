@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
+import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotFoundException;
 import com.pinback.domain.article.entity.Article;
@@ -18,6 +19,7 @@ import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
+import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 
 import lombok.RequiredArgsConstructor;
 
@@ -80,13 +82,38 @@ public class ArticleGetService implements ArticleGetServicePort {
 	}
 
 	@Override
-	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime startDateTime, LocalDateTime endDateTime,
+	public RemindArticlesWithCountDto findTodayRemindWithCount(User user, LocalDateTime startDateTime,
+		LocalDateTime endDateTime,
 		Pageable pageable, Boolean isRead) {
 		RemindArticlesWithCount infraResult = articleRepository.findTodayRemindWithCount(user.getId(), pageable,
 			startDateTime, endDateTime, isRead);
 		return new RemindArticlesWithCountDto(
 			infraResult.readCount(),
 			infraResult.unreadCount(),
+			infraResult.articles()
+		);
+	}
+
+	@Override
+	public RemindArticlesWithCountDtoV2 findTodayRemindWithCountV2(
+		User user,
+		LocalDateTime startDateTime,
+		LocalDateTime endDateTime,
+		Pageable pageable,
+		Boolean isReadAtferRemind
+	) {
+		RemindArticlesWithCountV2 infraResult = articleRepository.findTodayRemindWithCountV2(
+			user.getId(),
+			pageable,
+			startDateTime,
+			endDateTime,
+			isReadAtferRemind
+		);
+		return new RemindArticlesWithCountDtoV2(
+			infraResult.articles().hasNext(),
+			infraResult.readCount(),
+			infraResult.unreadCount(),
+			infraResult.totalCount(),
 			infraResult.articles()
 		);
 	}

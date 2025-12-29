@@ -96,7 +96,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				path.startsWith("/v3/api-docs") ||
 				path.startsWith("/docs") ||
 				path.startsWith("/api/v1/test/push") ||
-				path.startsWith("/api/v1/test/health")
+				path.startsWith("/api/v1/test/health") ||
+				path.startsWith("/api/v2/auth/google") ||
+				path.startsWith("/oauth/callback") ||
+				path.startsWith("/login/google") ||
+				path.startsWith("/login/oauth2/code/google") ||
+				path.startsWith("/api/v2/auth/signup")
 			;
 	}
 }
