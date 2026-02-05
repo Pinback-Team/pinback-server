@@ -13,6 +13,7 @@ public enum ExceptionCode {
 	TEXT_LENGTH_OVER(HttpStatus.BAD_REQUEST, "c40002", "글자 수 제한을 초과하였습니다."),
 	CATEGORY_NAME_INVALID(HttpStatus.BAD_REQUEST, "c40003", "카테고리 이름은 공백을 포함할 수 없습니다."),
 	INVALID_FCM_TOKEN(HttpStatus.BAD_REQUEST, "c40004", "유효하지 않은 FCM 토큰입니다."),
+	INVALID_URL(HttpStatus.BAD_REQUEST, "c40005", "유효하지 않은 URL이거나 접속할 수 없는 사이트입니다."),
 
 	//401
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "유효하지 않은 토큰입니다."),
@@ -46,6 +47,7 @@ public enum ExceptionCode {
 		"Google API에서 email을 받지 못했습니다. scope에 email이 포함되어 있는지 확인해 주세요."),
 	GOOGLE_NAME_MISSING(HttpStatus.UNPROCESSABLE_ENTITY, "s42203",
 		"Google API에서 name을 받지 못했습니다. scope에 profile이 포함되어 있는지 확인해 주세요."),
+	ARTICLE_TILE_NOT_FOUND(HttpStatus.UNPROCESSABLE_ENTITY, "c42204", "해당 URL에서 제목 정보를 찾을 수 없어 아티클을 저장할 수 없습니다."),
 
 	//500
 	INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "s50000", "서버 내부 오류가 발생했습니다."),
