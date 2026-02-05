@@ -52,3 +52,5 @@ profile-images:
     IMAGE1: ${PROFILE_IMAGE1:}
     IMAGE2: ${PROFILE_IMAGE2:}
     IMAGE3: ${PROFILE_IMAGE3:}
+
+default-thumbnail: ${DEFAULT_THUMBNAIL:}

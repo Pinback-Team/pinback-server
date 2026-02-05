@@ -62,6 +62,12 @@ public class Article extends BaseEntity {
 	@ColumnDefault("false")
 	private Boolean isReadAfterRemind;
 
+	@Column(name = "title")
+	private String title;
+
+	@Column(name = "thumbnail")
+	private String thumbnail;
+
 	public static Article create(String url, String memo, User user, Category category, LocalDateTime remindAt) {
 		validateMemo(memo);
 
@@ -73,6 +79,23 @@ public class Article extends BaseEntity {
 			.isRead(false)
 			.remindAt(remindAt)
 			.isReadAfterRemind(false)
+			.build();
+	}
+
+	public static Article createWithMetaData(String url, String memo, User user, Category category,
+		LocalDateTime remindAt, String title, String thumbnail) {
+		validateMemo(memo);
+
+		return Article.builder()
+			.url(url)
+			.memo(memo)
+			.user(user)
+			.category(category)
+			.isRead(false)
+			.remindAt(remindAt)
+			.isReadAfterRemind(false)
+			.title(title)
+			.thumbnail(thumbnail)
 			.build();
 	}
 
@@ -116,5 +139,16 @@ public class Article extends BaseEntity {
 
 	public boolean isReminderDue(LocalDateTime now) {
 		return hasReminder() && this.remindAt.isBefore(now);
+	}
+
+	public void updateMetadata(String title, String thumbnail) {
+		if (title != null && !title.isBlank()) {
+			this.title = title;
+		}
+
+		// 썸네일이 유효할 때만 업데이트 (null 방어 로직)
+		if (thumbnail != null && !thumbnail.isBlank()) {
+			this.thumbnail = thumbnail;
+		}
 	}
 }
