@@ -5,4 +5,6 @@ import com.pinback.domain.user.entity.User;
 
 public interface CreateArticlePort {
 	void createArticle(User user, ArticleCreateCommand command);
+
+	void createArticleV3(User user, ArticleCreateCommand command);
 }
