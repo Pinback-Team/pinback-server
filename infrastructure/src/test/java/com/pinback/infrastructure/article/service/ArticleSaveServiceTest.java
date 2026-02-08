@@ -38,7 +38,7 @@ class ArticleSaveServiceTest extends ServiceTest {
 	void saveArticleTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		Article article = article(user, "test-url", category);
 
 		//when
@@ -56,7 +56,7 @@ class ArticleSaveServiceTest extends ServiceTest {
 	void savedArticleCanBeRetrieved() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		Article article = article(user, "test-url-2", category);
 
 		//when

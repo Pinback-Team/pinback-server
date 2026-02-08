@@ -34,7 +34,7 @@ class CategorySaveServiceTest extends ServiceTest {
 	void saveSuccess() {
 		// given
 		User user = userRepository.save(user());
-		Category category = Category.create("테스트카테고리", user, CategoryColor.COLOR1);
+		Category category = Category.createWithIsPublic("테스트카테고리", user, CategoryColor.COLOR1, true);
 
 		// when
 		Category savedCategory = categorySaveService.save(category);
@@ -56,9 +56,9 @@ class CategorySaveServiceTest extends ServiceTest {
 	void saveMultipleCategories_DifferentColors() {
 		// given
 		User user = userRepository.save(user());
-		Category category1 = Category.create("카테고리1", user, CategoryColor.COLOR1);
-		Category category2 = Category.create("카테고리2", user, CategoryColor.COLOR2);
-		Category category3 = Category.create("카테고리3", user, CategoryColor.COLOR3);
+		Category category1 = Category.createWithIsPublic("카테고리1", user, CategoryColor.COLOR1, true);
+		Category category2 = Category.createWithIsPublic("카테고리2", user, CategoryColor.COLOR2, true);
+		Category category3 = Category.createWithIsPublic("카테고리3", user, CategoryColor.COLOR3, true);
 
 		// when
 		Category savedCategory1 = categorySaveService.save(category1);
@@ -85,8 +85,8 @@ class CategorySaveServiceTest extends ServiceTest {
 		// given
 		User user1 = userRepository.save(user());
 		User user2 = userRepository.save(userWithEmail("user2@test.com"));
-		Category category1 = Category.create("카테고리1", user1, CategoryColor.COLOR1);
-		Category category2 = Category.create("카테고리2", user2, CategoryColor.COLOR1);
+		Category category1 = Category.createWithIsPublic("카테고리1", user1, CategoryColor.COLOR1, true);
+		Category category2 = Category.createWithIsPublic("카테고리2", user2, CategoryColor.COLOR1, true);
 
 		// when
 		Category savedCategory1 = categorySaveService.save(category1);
@@ -104,10 +104,10 @@ class CategorySaveServiceTest extends ServiceTest {
 	void saveSameColorCategories_SameUser_ThrowsException() {
 		// given
 		User user = userRepository.save(user());
-		Category category1 = Category.create("카테고리1", user, CategoryColor.COLOR1);
+		Category category1 = Category.createWithIsPublic("카테고리1", user, CategoryColor.COLOR1, true);
 		categorySaveService.save(category1);
 
-		Category category2 = Category.create("카테고리2", user, CategoryColor.COLOR1);
+		Category category2 = Category.createWithIsPublic("카테고리2", user, CategoryColor.COLOR1, true);
 
 		// when & then
 		assertThatThrownBy(() -> categorySaveService.save(category2))
@@ -119,7 +119,7 @@ class CategorySaveServiceTest extends ServiceTest {
 	void save_NullColor_ThrowsException() {
 		// given
 		User user = userRepository.save(user());
-		Category category = Category.create("테스트카테고리", user, null);
+		Category category = Category.createWithIsPublic("테스트카테고리", user, null, true);
 
 		// when & then
 		assertThatThrownBy(() -> categorySaveService.save(category))

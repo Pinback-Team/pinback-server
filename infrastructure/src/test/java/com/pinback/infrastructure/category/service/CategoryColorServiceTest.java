@@ -36,9 +36,9 @@ class CategoryColorServiceTest extends ServiceTest {
 	void getUsedColorsByUser_Success() {
 		// given
 		User user = userRepository.save(user());
-		categoryRepository.save(Category.create("카테고리1", user, CategoryColor.COLOR1));
-		categoryRepository.save(Category.create("카테고리2", user, CategoryColor.COLOR3));
-		categoryRepository.save(Category.create("카테고리3", user, CategoryColor.COLOR5));
+		categoryRepository.save(Category.createWithIsPublic("카테고리1", user, CategoryColor.COLOR1, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리2", user, CategoryColor.COLOR3, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리3", user, CategoryColor.COLOR5, true));
 
 		// when
 		Set<CategoryColor> usedColors = categoryColorService.getUsedColorsByUser(user);
@@ -67,9 +67,9 @@ class CategoryColorServiceTest extends ServiceTest {
 	void getUsedColorsByUser_UniqueColorsPerUser() {
 		// given
 		User user = userRepository.save(user());
-		categoryRepository.save(Category.create("카테고리1", user, CategoryColor.COLOR1));
-		categoryRepository.save(Category.create("카테고리2", user, CategoryColor.COLOR2));
-		categoryRepository.save(Category.create("카테고리3", user, CategoryColor.COLOR3));
+		categoryRepository.save(Category.createWithIsPublic("카테고리1", user, CategoryColor.COLOR1, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리2", user, CategoryColor.COLOR2, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리3", user, CategoryColor.COLOR3, true));
 
 		// when
 		Set<CategoryColor> usedColors = categoryColorService.getUsedColorsByUser(user);
@@ -86,10 +86,10 @@ class CategoryColorServiceTest extends ServiceTest {
 		User user1 = userRepository.save(user());
 		User user2 = userRepository.save(userWithEmail("user2@test.com"));
 
-		categoryRepository.save(Category.create("카테고리1", user1, CategoryColor.COLOR1));
-		categoryRepository.save(Category.create("카테고리2", user1, CategoryColor.COLOR2));
-		categoryRepository.save(Category.create("카테고리3", user2, CategoryColor.COLOR3));
-		categoryRepository.save(Category.create("카테고리4", user2, CategoryColor.COLOR4));
+		categoryRepository.save(Category.createWithIsPublic("카테고리1", user1, CategoryColor.COLOR1, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리2", user1, CategoryColor.COLOR2, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리3", user2, CategoryColor.COLOR3, true));
+		categoryRepository.save(Category.createWithIsPublic("카테고리4", user2, CategoryColor.COLOR4, true));
 
 		// when
 		Set<CategoryColor> user1Colors = categoryColorService.getUsedColorsByUser(user1);
@@ -113,7 +113,7 @@ class CategoryColorServiceTest extends ServiceTest {
 		CategoryColor[] allColors = CategoryColor.values();
 
 		for (int i = 0; i < allColors.length; i++) {
-			categoryRepository.save(Category.create("카테고리" + (i + 1), user, allColors[i]));
+			categoryRepository.save(Category.createWithIsPublic("카테고리" + (i + 1), user, allColors[i], true));
 		}
 
 		// when
@@ -134,13 +134,13 @@ class CategoryColorServiceTest extends ServiceTest {
 		// user1은 COLOR1~COLOR5 사용
 		for (int i = 1; i <= 5; i++) {
 			CategoryColor color = CategoryColor.valueOf("COLOR" + i);
-			categoryRepository.save(Category.create("user1카테고리" + i, user1, color));
+			categoryRepository.save(Category.createWithIsPublic("user1카테고리" + i, user1, color, true));
 		}
 
 		// user2는 COLOR6~COLOR10 사용
 		for (int i = 6; i <= 10; i++) {
 			CategoryColor color = CategoryColor.valueOf("COLOR" + i);
-			categoryRepository.save(Category.create("user2카테고리" + i, user2, color));
+			categoryRepository.save(Category.createWithIsPublic("user2카테고리" + i, user2, color, true));
 		}
 
 		// when
