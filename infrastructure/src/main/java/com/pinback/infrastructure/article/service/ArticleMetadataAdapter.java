@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ArticleMetadataAdapter implements ArticleMetadataPort {
 	private static final String COMMON_USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
-	private static final int TIMEOUT_MILLIS = 5000;
+	private static final int TIMEOUT_MILLIS = 8000;
 	private final S3StorageService s3StorageService;
 	@Value("${default-thumbnail}")
 	private String DEFAULT_THUMBNAIL_URL;
@@ -37,11 +37,13 @@ public class ArticleMetadataAdapter implements ArticleMetadataPort {
 			// 1. 웹페이지 접속
 			Document doc = Jsoup.connect(processedUrl)
 				.userAgent(COMMON_USER_AGENT)
+				.referrer("https://www.google.com/")
+				.header("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8")
 				.timeout(TIMEOUT_MILLIS)
 				.get();
 
 			// 2. 제목 추출 (Open Graph -> HTML Title 순)
-			String title = extractMetaContent(doc, "meta[property=og:title]");
+			String title = extractMetaContent(doc, "meta[property=og:title]", false);
 			if (title.isBlank()) {
 				title = doc.title();
 			}
@@ -53,7 +55,7 @@ public class ArticleMetadataAdapter implements ArticleMetadataPort {
 			}
 
 			// 3. 썸네일 추출 (Open Graph)
-			String originalThumbnail = extractMetaContent(doc, "meta[property=og:image]");
+			String originalThumbnail = extractMetaContent(doc, "meta[property=og:image]", true);
 
 			// 썸네일이 없는 경우 기본 이미지로 처리
 			String finalThumbnail;
@@ -72,7 +74,11 @@ public class ArticleMetadataAdapter implements ArticleMetadataPort {
 
 	}
 
-	private String extractMetaContent(Document doc, String selector) {
+	private String extractMetaContent(Document doc, String selector, boolean isUrl) {
+		if (isUrl) {
+			String absContent = doc.select(selector).attr("abs:content").trim();
+			return absContent.isEmpty() ? doc.select(selector).attr("content").trim() : absContent;
+		}
 		return doc.select(selector).attr("content").trim();
 	}
 
