@@ -7,7 +7,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.category.dto.command.CreateCategoryCommand;
+import com.pinback.application.category.dto.command.CreateCategoryCommandV3;
 import com.pinback.application.category.dto.response.CreateCategoryResponse;
+import com.pinback.application.category.dto.response.CreateCategoryResponseV3;
 import com.pinback.application.category.port.in.CreateCategoryPort;
 import com.pinback.application.category.port.out.CategoryColorServicePort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
@@ -44,6 +46,26 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 		}
 	}
 
+	@Override
+	public CreateCategoryResponseV3 createCategoryV3(User user, CreateCategoryCommandV3 command) {
+		validateCategoryCreationV3(user, command);
+
+		CategoryColor availableColor = getNextAvailableColor(user);
+		try {
+			Category category = Category.createWithIsPublic(command.categoryName(), user, availableColor,
+				command.isPublic());
+			Category savedCategory = categorySaveService.save(category);
+			return CreateCategoryResponseV3.of(
+				savedCategory.getId(),
+				savedCategory.getName(),
+				savedCategory.getColor(),
+				savedCategory.getIsPublic()
+			);
+		} catch (CategoryNameLengthOverException e) {
+			throw new CategoryNameLengthOverException();
+		}
+	}
+
 	private void validateCategoryCreation(User user, CreateCategoryCommand command) {
 		if (categoryGetService.countCategoriesByUser(user) >= 10) {
 			throw new CategoryLimitOverException();
@@ -60,5 +82,14 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 			.filter(color -> !usedColors.contains(color))
 			.findFirst()
 			.orElse(CategoryColor.COLOR1);
+	}
+
+	private void validateCategoryCreationV3(User user, CreateCategoryCommandV3 command) {
+		if (categoryGetService.countCategoriesByUser(user) >= 10) {
+			throw new CategoryLimitOverException();
+		}
+		if (categoryGetService.checkExistsByCategoryNameAndUser(command.categoryName(), user)) {
+			throw new CategoryAlreadyExistException();
+		}
 	}
 }
