@@ -77,7 +77,7 @@ public class Category extends BaseEntity {
 
 	private static void validateName(String name) {
 		int characterCount = TextUtil.countGraphemeClusters(name);
-		if (characterCount > 300) {
+		if (characterCount > 10) {
 			throw new CategoryNameLengthOverException();
 		}
 	}
