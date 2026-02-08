@@ -51,9 +51,9 @@ public class CreateCategoryUsecase implements CreateCategoryPort {
 		validateCategoryCreationV3(user, command);
 
 		CategoryColor availableColor = getNextAvailableColor(user);
+		boolean isPublic = (command.isPublic() != null) ? command.isPublic() : false;
 		try {
-			Category category = Category.createWithIsPublic(command.categoryName(), user, availableColor,
-				command.isPublic());
+			Category category = Category.createWithIsPublic(command.categoryName(), user, availableColor, isPublic);
 			Category savedCategory = categorySaveService.save(category);
 			return CreateCategoryResponseV3.of(
 				savedCategory.getId(),
