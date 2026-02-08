@@ -134,13 +134,13 @@ class CategoryColorServiceTest extends ServiceTest {
 		// user1은 COLOR1~COLOR5 사용
 		for (int i = 1; i <= 5; i++) {
 			CategoryColor color = CategoryColor.valueOf("COLOR" + i);
-			categoryRepository.save(Category.createWithIsPublic("user1카테고리" + i, user1, color, true));
+			categoryRepository.save(Category.createWithIsPublic("usr1카테고리" + i, user1, color, true));
 		}
 
 		// user2는 COLOR6~COLOR10 사용
 		for (int i = 6; i <= 10; i++) {
 			CategoryColor color = CategoryColor.valueOf("COLOR" + i);
-			categoryRepository.save(Category.createWithIsPublic("user2카테고리" + i, user2, color, true));
+			categoryRepository.save(Category.createWithIsPublic("usr2카테고리" + i, user2, color, true));
 		}
 
 		// when
