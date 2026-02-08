@@ -53,12 +53,25 @@ public class Category extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private CategoryColor color;
 
+	@Column(name = "is_public", nullable = false)
+	private Boolean isPublic;
+
 	public static Category create(String name, User user, CategoryColor color) {
 		validateName(name);
 		return Category.builder()
 			.name(name)
 			.user(user)
 			.color(color)
+			.build();
+	}
+
+	public static Category createWithIsPublic(String name, User user, CategoryColor color, Boolean isPublic) {
+		validateName(name);
+		return Category.builder()
+			.name(name)
+			.user(user)
+			.color(color)
+			.isPublic(isPublic)
 			.build();
 	}
 
@@ -76,5 +89,9 @@ public class Category extends BaseEntity {
 
 	public boolean isOwnedBy(User user) {
 		return this.user.equals(user);
+	}
+
+	public void updateIsPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 }
