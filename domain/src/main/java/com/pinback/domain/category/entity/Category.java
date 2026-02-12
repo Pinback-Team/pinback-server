@@ -53,7 +53,7 @@ public class Category extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private CategoryColor color;
 
-	@Column(name = "is_public", nullable = false)
+	@Column(name = "is_public")
 	private Boolean isPublic;
 
 	public static Category create(String name, User user, CategoryColor color) {
