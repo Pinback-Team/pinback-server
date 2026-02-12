@@ -10,24 +10,31 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.config.ProfileImageConfig;
+import com.pinback.application.user.dto.command.UpdateUserJobCommand;
 import com.pinback.application.user.dto.response.UserGoogleProfileResponse;
 import com.pinback.application.user.dto.response.UserInfoResponse;
+import com.pinback.application.user.dto.response.UserJobInfoResponse;
 import com.pinback.application.user.dto.response.UserProfileInfoResponse;
 import com.pinback.application.user.dto.response.UserRemindInfoResponse;
 import com.pinback.application.user.port.in.UserManagementPort;
 import com.pinback.application.user.port.out.AcornServicePort;
+import com.pinback.application.user.port.out.UserGetServicePort;
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class UserManagementUsecase implements UserManagementPort {
 	private final AcornServicePort acornService;
 	private final ProfileImageConfig profileImageConfig;
+	private final UserGetServicePort userGetServicePort;
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserInfoResponse getUserInfo(User user, LocalDateTime now) {
 		LocalTime userRemindDefault = user.getRemindDefault();
 		LocalDateTime remindDateTime = getRemindDateTime(now, userRemindDefault);
@@ -38,6 +45,7 @@ public class UserManagementUsecase implements UserManagementPort {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserRemindInfoResponse getUserRemindInfo(User user, LocalDateTime now) {
 		LocalTime userRemindTime = user.getRemindDefault();
 		LocalDate userRemindDate = now.toLocalDate().plusDays(1L);
@@ -46,6 +54,7 @@ public class UserManagementUsecase implements UserManagementPort {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserProfileInfoResponse getUserProfileInfo(User user) {
 		String name = user.getUsername();
 		String email = user.getEmail();
@@ -58,9 +67,23 @@ public class UserManagementUsecase implements UserManagementPort {
 	}
 
 	@Override
+	@Transactional(readOnly = true)
 	public UserGoogleProfileResponse getUserGoogleProfile(User user) {
 		String googleProfile = user.getGoogleProfileImage();
 		return UserGoogleProfileResponse.of(googleProfile);
+	}
+
+	@Override
+	@Transactional
+	public UserJobInfoResponse updateUserJobInfo(User user, UpdateUserJobCommand command) {
+		User getUser = userGetServicePort.findById(user.getId());
+
+		Job job = Job.from(command.job());
+		getUser.updateJob(job);
+		log.info("user: {}, job: {}, user.job: {}", user.getId(), job, getUser.getJob());
+
+		String updatedJob = getUser.getJob().getValue();
+		return UserJobInfoResponse.of(updatedJob);
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
@@ -70,4 +93,5 @@ public class UserManagementUsecase implements UserManagementPort {
 			remindDate.getDayOfMonth(),
 			remindDefault.getHour(), remindDefault.getMinute());
 	}
+
 }

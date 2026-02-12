@@ -6,11 +6,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.auth.dto.SignUpCommand;
+import com.pinback.application.auth.dto.SignUpCommandV3;
 import com.pinback.application.auth.dto.SignUpResponse;
 import com.pinback.application.auth.dto.TokenResponse;
 import com.pinback.application.auth.service.JwtProvider;
 import com.pinback.application.config.ProfileImageConfig;
 import com.pinback.application.google.dto.response.GoogleLoginResponse;
+import com.pinback.application.google.dto.response.GoogleLoginResponseV3;
 import com.pinback.application.notification.port.in.SavePushSubscriptionPort;
 import com.pinback.application.user.port.out.UserGetServicePort;
 import com.pinback.application.user.port.out.UserSaveServicePort;
@@ -18,6 +20,7 @@ import com.pinback.application.user.port.out.UserUpdateServicePort;
 import com.pinback.application.user.port.out.UserValidateServicePort;
 import com.pinback.application.user.usecase.UserOAuthUsecase;
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,6 +120,69 @@ public class AuthUsecase {
 		userUpdateServicePort.updateProfileImage(user.getId(), profileImage);
 
 		return SignUpResponse.from(accessToken);
+	}
+
+	@Transactional
+	public SignUpResponse signUpV3(SignUpCommandV3 signUpCommand) {
+		User user = userGetServicePort.findByEmail(signUpCommand.email());
+		String accessToken = jwtProvider.createAccessToken(user.getId());
+		userUpdateServicePort.updateRemindDefault(user.getId(), signUpCommand.remindDefault());
+
+		savePushSubscriptionPort.savePushSubscription(user, signUpCommand.fcmToken());
+		String profileImage = matchingProfileImage(signUpCommand.remindDefault());
+		userUpdateServicePort.updateProfileImage(user.getId(), profileImage);
+
+		Job job = Job.from(signUpCommand.job());
+		userUpdateServicePort.updateJob(user.getId(), job);
+
+		return SignUpResponse.from(accessToken);
+	}
+
+	@Transactional
+	public Mono<GoogleLoginResponseV3> getInfoAndTokenV3(String email, String pictureUrl, String name) {
+		return userGetServicePort.findUserByEmail(email)
+			.flatMap(existingUser -> {
+
+				Mono<User> updateMono = applyMissingUserInfo(existingUser, pictureUrl, name);
+				return updateMono
+					.flatMap(updatedUser -> {
+						if (updatedUser.getRemindDefault() != null && updatedUser.getProfileImage() != null) {
+							log.info("기존 사용자 로그인 성공: User ID {}", updatedUser.getId());
+
+							//Access Token 발급
+							String accessToken = jwtProvider.createAccessToken(updatedUser.getId());
+
+							return Mono.just(GoogleLoginResponseV3.loggedIn(
+								updatedUser.hasJob(), updatedUser.getId(), updatedUser.getEmail(), accessToken
+							));
+						} else {
+							log.info("기존 사용자 - 온보딩 미완료 유저 처리: User ID {}", updatedUser.getId());
+
+							return Mono.just(GoogleLoginResponseV3.tempLogin(
+								updatedUser.getId(), updatedUser.getEmail()
+							));
+						}
+					});
+			})
+			.switchIfEmpty(Mono.defer(() -> {
+				log.info("신규 유저 - 임시 유저 생성");
+				User tempUser = User.createTempUser(email, name);
+
+				return userSaveServicePort.saveUser(tempUser)
+					.flatMap(savedUser -> {
+						// 1. S3 이미지 저장 서비스 호출
+						Mono<String> s3UrlMono = userOAuthUsecase.saveProfileImage(savedUser.getId(), pictureUrl);
+						return s3UrlMono.flatMap(s3Url -> {
+							// 2. S3 URL로 유저 엔티티 업데이트
+							savedUser.updateGoogleProfileImage(s3Url);
+							return userUpdateServicePort.updateUser(savedUser);
+
+						}).then(
+							// 3. 최종 응답 반환 (이미지 저장 트랜잭션 완료 후)
+							Mono.just(GoogleLoginResponseV3.tempLogin(savedUser.getId(), savedUser.getEmail()))
+						);
+					});
+			}));
 	}
 
 	private Mono<User> applyMissingUserInfo(User existingUser, String pictureUrl, String name) {

@@ -5,9 +5,12 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import com.pinback.domain.common.BaseEntity;
+import com.pinback.domain.user.enums.Job;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -51,6 +54,10 @@ public class User extends BaseEntity {
 	@Column(name = "profile_image")
 	private String profileImage;
 
+	@Enumerated(EnumType.STRING)
+	@Column(name = "job")
+	private Job job;
+
 	public static User create(String email, LocalTime remindDefault) {
 		return User.builder()
 			.email(email)
@@ -90,5 +97,13 @@ public class User extends BaseEntity {
 
 	public void updateProfileImage(String profileImage) {
 		this.profileImage = profileImage;
+	}
+
+	public void updateJob(Job job) {
+		this.job = job;
+	}
+
+	public boolean hasJob() {
+		return this.job != null;
 	}
 }

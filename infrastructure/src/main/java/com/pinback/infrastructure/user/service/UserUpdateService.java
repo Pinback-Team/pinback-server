@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.user.port.out.UserUpdateServicePort;
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 import com.pinback.infrastructure.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,10 @@ public class UserUpdateService implements UserUpdateServicePort {
 	@Override
 	public void updateProfileImage(UUID userId, String imageProfile) {
 		userRepository.updateProfileImage(userId, imageProfile);
+	}
+
+	@Override
+	public void updateJob(UUID userId, Job job) {
+		userRepository.updateJob(userId, job);
 	}
 }
