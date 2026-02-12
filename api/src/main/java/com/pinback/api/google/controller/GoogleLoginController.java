@@ -26,7 +26,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v2/auth")
 @RequiredArgsConstructor
 @Tag(name = "Google", description = "구글 소셜 로그인 API")
-public class GoogleLonginController {
+public class GoogleLoginController {
 
 	private final GoogleUsecase googleUsecase;
 	private final AuthUsecase authUsecase;
