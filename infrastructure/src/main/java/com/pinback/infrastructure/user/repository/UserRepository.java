@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 
@@ -24,4 +25,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 	@Modifying
 	@Query("UPDATE User u SET u.profileImage = :imageProfile WHERE u.id = :userId")
 	void updateProfileImage(@Param("userId") UUID userId, @Param("imageProfile") String imageProfile);
+
+	@Modifying
+	@Query("UPDATE User u SET u.job = :job WHERE u.id = :userId")
+	void updateJob(@Param("userId") UUID userId, @Param("job") Job job);
 }

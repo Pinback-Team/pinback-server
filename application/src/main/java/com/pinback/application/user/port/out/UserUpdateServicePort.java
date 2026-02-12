@@ -4,6 +4,7 @@ import java.time.LocalTime;
 import java.util.UUID;
 
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 
 import reactor.core.publisher.Mono;
 
@@ -13,4 +14,6 @@ public interface UserUpdateServicePort {
 	Mono<User> updateUser(User user);
 
 	void updateProfileImage(UUID userId, String imageProfile);
+
+	void updateJob(UUID userId, Job job);
 }
