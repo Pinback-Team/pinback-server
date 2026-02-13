@@ -1,14 +1,19 @@
 package com.pinback.api.article.controller;
 
+import java.time.LocalDateTime;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.api.article.dto.request.ArticleCreateRequest;
+import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
+import com.pinback.application.article.dto.response.TodayRemindResponseV3;
 import com.pinback.application.article.port.in.CreateArticlePort;
 import com.pinback.application.article.port.in.GetArticlePort;
 import com.pinback.domain.user.entity.User;
@@ -49,6 +54,20 @@ public class ArticleControllerV3 {
 		@Parameter(description = "아티클 ID") @PathVariable Long articleId
 	) {
 		ArticleDetailResponseV3 response = getArticlePort.getArticleDetailWithMetadata(articleId);
+		return ResponseDto.ok(response);
+	}
+
+	@Operation(summary = "리마인드 아티클 조회 v3", description = "오늘 리마인드할 아티클을 읽음/안읽음 상태별로 조회합니다.")
+	@GetMapping("/remind")
+	public ResponseDto<TodayRemindResponseV3> getRemindArticlesV3(
+		@Parameter(hidden = true) @CurrentUser User user,
+		@Parameter(description = "현재 시간", example = "2026-02-13T10:00:00") @RequestParam LocalDateTime now,
+		@Parameter(description = "읽음 상태 (true: 읽음, false: 안읽음)", example = "true") @RequestParam(name = "read-status") boolean readStatus,
+		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
+	) {
+		PageQuery query = new PageQuery(page, size);
+		TodayRemindResponseV3 response = getArticlePort.getRemindArticlesV3(user, now, readStatus, query);
 		return ResponseDto.ok(response);
 	}
 

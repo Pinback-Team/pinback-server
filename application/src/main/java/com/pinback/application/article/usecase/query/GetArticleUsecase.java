@@ -21,8 +21,10 @@ import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponseV2;
+import com.pinback.application.article.dto.response.RemindArticleResponseV3;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV2;
+import com.pinback.application.article.dto.response.TodayRemindResponseV3;
 import com.pinback.application.article.port.in.GetArticlePort;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
@@ -162,6 +164,40 @@ public class GetArticleUsecase implements GetArticlePort {
 	public ArticleDetailResponseV3 getArticleDetailWithMetadata(long articleId) {
 		Article article = articleGetServicePort.findById(articleId);
 		return ArticleDetailResponseV3.from(article);
+	}
+
+	@Override
+	public TodayRemindResponseV3 getRemindArticlesV3(
+		User user,
+		LocalDateTime now,
+		boolean readStatus,
+		PageQuery query
+	) {
+		LocalDateTime endBound = now;
+		LocalDateTime startBound = now.minusHours(24);
+
+		RemindArticlesWithCountDtoV2 result = articleGetServicePort.findTodayRemindWithCountV2(
+			user,
+			startBound,
+			endBound,
+			PageRequest.of(query.pageNumber(), query.pageSize()),
+			readStatus
+		);
+
+		List<RemindArticleResponseV3> articleResponses =
+			result.articles() != null ?
+				result.articles().stream()
+					.map(RemindArticleResponseV3::from)
+					.toList() :
+				Collections.emptyList();
+
+		return TodayRemindResponseV3.of(
+			result.hasNext(),
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount(),
+			articleResponses
+		);
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
