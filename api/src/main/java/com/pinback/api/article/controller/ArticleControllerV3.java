@@ -51,9 +51,10 @@ public class ArticleControllerV3 {
 	@Operation(summary = "아티클 상세 조회 V3", description = "아티클의 상세 정보를 조회합니다")
 	@GetMapping("/{articleId}")
 	public ResponseDto<ArticleDetailResponseV3> getArticleDetail(
+		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "아티클 ID") @PathVariable Long articleId
 	) {
-		ArticleDetailResponseV3 response = getArticlePort.getArticleDetailWithMetadata(articleId);
+		ArticleDetailResponseV3 response = getArticlePort.getArticleDetailWithMetadata(user, articleId);
 		return ResponseDto.ok(response);
 	}
 

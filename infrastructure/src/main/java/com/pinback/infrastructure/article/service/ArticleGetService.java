@@ -13,6 +13,7 @@ import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotFoundException;
+import com.pinback.application.common.exception.ArticleNotOwnedException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -72,7 +73,7 @@ public class ArticleGetService implements ArticleGetServicePort {
 
 	@Override
 	public Article findByUserAndId(User user, long articleId) {
-		return articleRepository.findArticleByUserAndId(user, articleId).orElseThrow(ArticleNotFoundException::new);
+		return articleRepository.findArticleByUserAndId(user, articleId).orElseThrow(ArticleNotOwnedException::new);
 	}
 
 	@Override

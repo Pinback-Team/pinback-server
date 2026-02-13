@@ -161,8 +161,8 @@ public class GetArticleUsecase implements GetArticlePort {
 	}
 
 	@Override
-	public ArticleDetailResponseV3 getArticleDetailWithMetadata(long articleId) {
-		Article article = articleGetServicePort.findById(articleId);
+	public ArticleDetailResponseV3 getArticleDetailWithMetadata(User user, long articleId) {
+		Article article = articleGetServicePort.findByUserAndId(user, articleId);
 		return ArticleDetailResponseV3.from(article);
 	}
 

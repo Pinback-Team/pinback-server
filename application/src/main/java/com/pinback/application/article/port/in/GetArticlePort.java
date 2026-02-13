@@ -27,7 +27,7 @@ public interface GetArticlePort {
 
 	TodayRemindResponseV2 getRemindArticlesV2(User user, LocalDateTime now, boolean readStatus, PageQuery query);
 
-	ArticleDetailResponseV3 getArticleDetailWithMetadata(long articleId);
+	ArticleDetailResponseV3 getArticleDetailWithMetadata(User user, long articleId);
 
 	TodayRemindResponseV3 getRemindArticlesV3(User user, LocalDateTime now, boolean readStatus, PageQuery query);
 }
