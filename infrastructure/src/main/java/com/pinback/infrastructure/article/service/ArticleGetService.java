@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
@@ -19,7 +20,9 @@ import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
+import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
+import com.pinback.infrastructure.article.repository.dto.RemindArticleCountV3;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 
@@ -123,7 +126,7 @@ public class ArticleGetService implements ArticleGetServicePort {
 	@Override
 	public RemindArticleCountDtoV3 findTodayRemindCountV3(User user, LocalDateTime startDateTime,
 		LocalDateTime endDateTime) {
-		RemindArticleCountDtoV3 infraResult = articleRepository.findTodayRemindCountV3(
+		RemindArticleCountV3 infraResult = articleRepository.findTodayRemindCountV3(
 			user.getId(),
 			startDateTime,
 			endDateTime
@@ -133,6 +136,20 @@ public class ArticleGetService implements ArticleGetServicePort {
 			infraResult.readCount(),
 			infraResult.unreadCount()
 
+		);
+	}
+
+	@Override
+	public ArticlesWithCountDto findAllByReadStatus(User user, Boolean readStatus, PageRequest pageRequest) {
+		ArticleWithCountV3 infraResult = articleRepository.findAllByReadStatus(
+			user.getId(),
+			readStatus,
+			pageRequest
+		);
+		return new ArticlesWithCountDto(
+			infraResult.totalCount(),
+			infraResult.unreadCount(),
+			infraResult.article()
 		);
 	}
 

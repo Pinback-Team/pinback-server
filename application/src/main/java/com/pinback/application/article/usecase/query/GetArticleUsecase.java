@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
@@ -18,8 +19,10 @@ import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticleResponse;
+import com.pinback.application.article.dto.response.ArticleResponseV3;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
+import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponseV2;
 import com.pinback.application.article.dto.response.RemindArticleResponseV3;
@@ -30,6 +33,7 @@ import com.pinback.application.article.dto.response.TodayRemindResponseV3;
 import com.pinback.application.article.port.in.GetArticlePort;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
+import com.pinback.application.common.exception.InvalidReadStatusException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -217,6 +221,27 @@ public class GetArticleUsecase implements GetArticlePort {
 			result.totalCount(),
 			result.readCount(),
 			result.unreadCount()
+		);
+	}
+
+	@Override
+	public GetAllArticlesResponseV3 getAllArticlesV3(User user, Boolean readStatus, PageQuery query) {
+		if (readStatus != null && readStatus) {
+			throw new InvalidReadStatusException();
+
+		}
+
+		ArticlesWithCountDto result = articleGetServicePort.findAllByReadStatus(
+			user, readStatus, PageRequest.of(query.pageNumber(), query.pageSize()));
+
+		List<ArticleResponseV3> articleResponses = result.article().stream()
+			.map(ArticleResponseV3::from)
+			.toList();
+
+		return GetAllArticlesResponseV3.of(
+			result.totalCount(),
+			result.unreadCount(),
+			articleResponses
 		);
 	}
 

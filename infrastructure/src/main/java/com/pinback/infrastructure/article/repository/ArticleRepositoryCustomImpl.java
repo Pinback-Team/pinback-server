@@ -10,13 +10,16 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
-import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.domain.article.entity.Article;
+import com.pinback.infrastructure.article.repository.dto.ArticleInfoV3;
+import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
+import com.pinback.infrastructure.article.repository.dto.RemindArticleCountV3;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 import com.querydsl.core.types.Projections;
@@ -268,7 +271,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public RemindArticleCountDtoV3 findTodayRemindCountV3(
+	public RemindArticleCountV3 findTodayRemindCountV3(
 		UUID userId,
 		LocalDateTime startBound,
 		LocalDateTime endBound
@@ -277,7 +280,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.and(article.remindAt.gt(startBound).and(article.remindAt.loe(endBound)));
 
 		return queryFactory
-			.select(Projections.constructor(RemindArticleCountDtoV3.class,
+			.select(Projections.constructor(RemindArticleCountV3.class,
 				article.count(),
 				Expressions.numberTemplate(Long.class,
 					"SUM(CASE WHEN {0} = true THEN 1 ELSE 0 END)", article.isReadAfterRemind).coalesce(0L),
@@ -288,4 +291,46 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.where(baseConditions)
 			.fetchOne();
 	}
+
+	@Override
+	public ArticleWithCountV3 findAllByReadStatus(UUID userId, Boolean readStatus, PageRequest pageRequest) {
+		BooleanExpression baseConditions = article.user.id.eq(userId);
+
+		ArticleInfoV3 counts = queryFactory
+			.select(Projections.constructor(ArticleInfoV3.class,
+				article.count(),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = false THEN 1 ELSE 0 END)", article.isRead).coalesce(0L)
+			))
+			.from(article)
+			.where(baseConditions)
+			.fetchOne();
+
+		BooleanExpression listConditions = (readStatus == null)
+			? baseConditions
+			: baseConditions.and(article.isRead.isFalse());
+
+		List<Article> articles = queryFactory
+			.selectFrom(article)
+			.join(article.user, user).fetchJoin()
+			.where(listConditions)
+			.offset(pageRequest.getOffset())
+			.limit(pageRequest.getPageSize())
+			.orderBy(article.createdAt.desc())
+			.fetch();
+
+		JPAQuery<Long> countQuery = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(listConditions);
+
+		ArticleInfoV3 safeCounts = (counts != null) ? counts : new ArticleInfoV3(0L, 0L);
+
+		return new ArticleWithCountV3(
+			safeCounts.totalCount(),
+			safeCounts.unreadCount(),
+			PageableExecutionUtils.getPage(articles, pageRequest, countQuery::fetchOne)
+		);
+	}
+
 }
