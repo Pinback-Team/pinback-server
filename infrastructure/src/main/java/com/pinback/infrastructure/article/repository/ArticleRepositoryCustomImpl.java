@@ -14,11 +14,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
@@ -262,5 +265,27 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			totalCount,
 			PageableExecutionUtils.getPage(articles, pageable, countQuery::fetchOne)
 		);
+	}
+
+	@Override
+	public RemindArticleCountDtoV3 findTodayRemindCountV3(
+		UUID userId,
+		LocalDateTime startBound,
+		LocalDateTime endBound
+	) {
+		BooleanExpression baseConditions = article.user.id.eq(userId)
+			.and(article.remindAt.gt(startBound).and(article.remindAt.loe(endBound)));
+
+		return queryFactory
+			.select(Projections.constructor(RemindArticleCountDtoV3.class,
+				article.count(),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = true THEN 1 ELSE 0 END)", article.isReadAfterRemind).coalesce(0L),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = false THEN 1 ELSE 0 END)", article.isReadAfterRemind).coalesce(0L)
+			))
+			.from(article)
+			.where(baseConditions)
+			.fetchOne();
 	}
 }

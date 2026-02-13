@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
@@ -116,6 +117,22 @@ public class ArticleGetService implements ArticleGetServicePort {
 			infraResult.unreadCount(),
 			infraResult.totalCount(),
 			infraResult.articles()
+		);
+	}
+
+	@Override
+	public RemindArticleCountDtoV3 findTodayRemindCountV3(User user, LocalDateTime startDateTime,
+		LocalDateTime endDateTime) {
+		RemindArticleCountDtoV3 infraResult = articleRepository.findTodayRemindCountV3(
+			user.getId(),
+			startDateTime,
+			endDateTime
+		);
+		return new RemindArticleCountDtoV3(
+			infraResult.totalCount(),
+			infraResult.readCount(),
+			infraResult.unreadCount()
+
 		);
 	}
 

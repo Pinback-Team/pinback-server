@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
+import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.dto.query.PageQuery;
@@ -22,6 +23,7 @@ import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponseV2;
 import com.pinback.application.article.dto.response.RemindArticleResponseV3;
+import com.pinback.application.article.dto.response.TodayRemindCountResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV2;
 import com.pinback.application.article.dto.response.TodayRemindResponseV3;
@@ -197,6 +199,24 @@ public class GetArticleUsecase implements GetArticlePort {
 			result.readCount(),
 			result.unreadCount(),
 			articleResponses
+		);
+	}
+
+	@Override
+	public TodayRemindCountResponse getRemindArticlesInfo(User user, LocalDateTime now) {
+		LocalDateTime endBound = now;
+		LocalDateTime startBound = now.minusHours(24);
+
+		RemindArticleCountDtoV3 result = articleGetServicePort.findTodayRemindCountV3(
+			user,
+			startBound,
+			endBound
+		);
+
+		return TodayRemindCountResponse.of(
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount()
 		);
 	}
 
