@@ -15,6 +15,7 @@ import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
+import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
@@ -155,6 +156,12 @@ public class GetArticleUsecase implements GetArticlePort {
 			result.unreadCount(),
 			articleResponses
 		);
+	}
+
+	@Override
+	public ArticleDetailResponseV3 getArticleDetailWithMetadata(long articleId) {
+		Article article = articleGetServicePort.findById(articleId);
+		return ArticleDetailResponseV3.from(article);
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
