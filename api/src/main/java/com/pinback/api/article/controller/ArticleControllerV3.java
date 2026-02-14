@@ -122,6 +122,17 @@ public class ArticleControllerV3 {
 		return ResponseDto.ok(response);
 	}
 
+	@Operation(summary = "나의 북마크 카테고리별 아티클 전체보기/안읽음 개수 조회 v3", description = "나의 북마크에서 특정 카테고리 아티클의 전체보기/안읽음 개수를 반환합니다.")
+	@GetMapping("/category/count")
+	public ResponseDto<ArticleCountInfoResponse> getArticlesInfoByCategory(
+		@Parameter(hidden = true) @CurrentUser User user,
+		@Parameter(description = "카테고리 ID") @RequestParam(name = "category-id") Long categoryId
+
+	) {
+		ArticleCountInfoResponse response = getArticlePort.getAllArticlesInfoByCategoryV3(user, categoryId);
+		return ResponseDto.ok(response);
+	}
+
 	// 기존 아티클 메타데이터 처리 후 삭제 예정
 	@PostMapping("/metadata")
 	public ResponseDto<Void> migrateMetadata() {

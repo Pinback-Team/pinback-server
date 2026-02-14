@@ -184,6 +184,16 @@ public class ArticleGetService implements ArticleGetServicePort {
 		);
 	}
 
+	@Override
+	public ArticleCountInfoDtoV3 findAllCountByCategoryV3(User user, Category category) {
+		ArticleCountInfoV3 infraResult = articleRepository.findAllCountByCategoryV3(user.getId(), category.getId());
+		return new ArticleCountInfoDtoV3(
+			infraResult.totalCount(),
+			infraResult.readCount(),
+			infraResult.unreadCount()
+		);
+	}
+
 	private ArticlesWithUnreadCountDto convertToDto(ArticlesWithUnreadCount infraResult) {
 		return new ArticlesWithUnreadCountDto(
 			infraResult.unReadCount(),

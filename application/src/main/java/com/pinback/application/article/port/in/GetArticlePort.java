@@ -41,4 +41,6 @@ public interface GetArticlePort {
 	ArticleCountInfoResponse getAllArticlesInfo(User user);
 
 	ArticlesPageResponseV3 getAllArticlesByCategoryV3(User user, long categoryId, Boolean readStatus, PageQuery query);
+
+	ArticleCountInfoResponse getAllArticlesInfoByCategoryV3(User user, long categoryId);
 }

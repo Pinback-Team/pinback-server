@@ -280,6 +280,20 @@ public class GetArticleUsecase implements GetArticlePort {
 		);
 	}
 
+	@Override
+	public ArticleCountInfoResponse getAllArticlesInfoByCategoryV3(User user, long categoryId) {
+		Category category = getCategoryPort.getCategoryAndUser(categoryId, user);
+
+		ArticleCountInfoDtoV3 result = articleGetServicePort.findAllCountByCategoryV3(user, category);
+
+		return ArticleCountInfoResponse.of(
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount()
+		);
+
+	}
+
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
 		return LocalDateTime.of(
 			now.getYear(),

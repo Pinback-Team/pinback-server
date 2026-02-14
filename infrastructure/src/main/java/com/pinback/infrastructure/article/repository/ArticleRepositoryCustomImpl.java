@@ -401,4 +401,25 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			PageableExecutionUtils.getPage(articles, pageRequest, countQuery::fetchOne)
 		);
 	}
+
+	@Override
+	public ArticleCountInfoV3 findAllCountByCategoryV3(UUID userId, long categoryId) {
+		BooleanExpression baseConditions = article.user.id.eq(userId)
+			.and(article.category.id.eq(categoryId));
+
+		ArticleCountInfoV3 result = queryFactory
+			.select(Projections.constructor(ArticleCountInfoV3.class,
+				article.count(),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = true THEN 1 ELSE 0 END)", article.isRead).coalesce(0L),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = false THEN 1 ELSE 0 END)", article.isRead).coalesce(0L)
+			))
+			.from(article)
+			.where(baseConditions)
+			.fetchOne();
+
+		return Optional.ofNullable(result)
+			.orElseGet(() -> new ArticleCountInfoV3(0L, 0L, 0L));
+	}
 }
