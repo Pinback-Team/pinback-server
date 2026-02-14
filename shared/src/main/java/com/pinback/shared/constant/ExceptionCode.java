@@ -14,6 +14,7 @@ public enum ExceptionCode {
 	CATEGORY_NAME_INVALID(HttpStatus.BAD_REQUEST, "c40003", "카테고리 이름은 공백을 포함할 수 없습니다."),
 	INVALID_FCM_TOKEN(HttpStatus.BAD_REQUEST, "c40004", "유효하지 않은 FCM 토큰입니다."),
 	INVALID_URL(HttpStatus.BAD_REQUEST, "c40005", "유효하지 않은 URL이거나 접속할 수 없는 사이트입니다."),
+	INVALID_READSTATUS(HttpStatus.BAD_REQUEST, "c40006", "잘못된 read-status 상태 값입니다.(전체보기: 생략/안읽음: false)"),
 
 	//401
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "유효하지 않은 토큰입니다."),

@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.common.exception.ArticleNotFoundException;
+import com.pinback.application.common.exception.ArticleNotOwnedException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -219,7 +220,7 @@ class ArticleGetServiceTest extends ServiceTest {
 
 		//when & then
 		assertThatThrownBy(() -> articleGetService.findByUserAndId(user2, article.getId()))
-			.isInstanceOf(ArticleNotFoundException.class);
+			.isInstanceOf(ArticleNotOwnedException.class);
 	}
 
 	@DisplayName("읽지 않은 아티클만 조회하면 읽지 않은 아티클만 반환한다.")
