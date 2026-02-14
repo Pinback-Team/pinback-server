@@ -1,15 +1,15 @@
 package com.pinback.application.article.dto.response;
 
-public record TodayRemindCountResponse(
+public record ArticleCountInfoResponse(
 	long totalArticleCount,
 	long readArticleCount,
 	long unreadArticleCount
 ) {
-	public static TodayRemindCountResponse of(
+	public static ArticleCountInfoResponse of(
 		long totalArticleCount,
 		long readArticleCount,
 		long unreadArticleCount
 	) {
-		return new TodayRemindCountResponse(totalArticleCount, readArticleCount, unreadArticleCount);
+		return new ArticleCountInfoResponse(totalArticleCount, readArticleCount, unreadArticleCount);
 	}
 }

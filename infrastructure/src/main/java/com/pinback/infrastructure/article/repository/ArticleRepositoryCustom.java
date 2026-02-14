@@ -8,9 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.pinback.domain.article.entity.Article;
+import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
-import com.pinback.infrastructure.article.repository.dto.RemindArticleCountV3;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 
@@ -32,7 +32,9 @@ public interface ArticleRepositoryCustom {
 	RemindArticlesWithCountV2 findTodayRemindWithCountV2(UUID userId, Pageable pageable, LocalDateTime startAt,
 		LocalDateTime endAt, Boolean isReadAfterRemind);
 
-	RemindArticleCountV3 findTodayRemindCountV3(UUID userId, LocalDateTime startAt, LocalDateTime endAt);
+	ArticleCountInfoV3 findTodayRemindCountV3(UUID userId, LocalDateTime startAt, LocalDateTime endAt);
 
 	ArticleWithCountV3 findAllByReadStatus(UUID userId, Boolean readStatus, PageRequest pageRequest);
+
+	ArticleCountInfoV3 findAllCountV3(UUID userId);
 }

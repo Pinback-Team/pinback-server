@@ -10,12 +10,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pinback.application.article.dto.ArticleCountInfoDtoV3;
 import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
-import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.dto.query.PageQuery;
+import com.pinback.application.article.dto.response.ArticleCountInfoResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticleResponse;
@@ -26,7 +27,6 @@ import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponseV2;
 import com.pinback.application.article.dto.response.RemindArticleResponseV3;
-import com.pinback.application.article.dto.response.TodayRemindCountResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV2;
 import com.pinback.application.article.dto.response.TodayRemindResponseV3;
@@ -207,17 +207,17 @@ public class GetArticleUsecase implements GetArticlePort {
 	}
 
 	@Override
-	public TodayRemindCountResponse getRemindArticlesInfo(User user, LocalDateTime now) {
+	public ArticleCountInfoResponse getRemindArticlesInfo(User user, LocalDateTime now) {
 		LocalDateTime endBound = now;
 		LocalDateTime startBound = now.minusHours(24);
 
-		RemindArticleCountDtoV3 result = articleGetServicePort.findTodayRemindCountV3(
+		ArticleCountInfoDtoV3 result = articleGetServicePort.findTodayRemindCountV3(
 			user,
 			startBound,
 			endBound
 		);
 
-		return TodayRemindCountResponse.of(
+		return ArticleCountInfoResponse.of(
 			result.totalCount(),
 			result.readCount(),
 			result.unreadCount()
@@ -228,7 +228,6 @@ public class GetArticleUsecase implements GetArticlePort {
 	public GetAllArticlesResponseV3 getAllArticlesV3(User user, Boolean readStatus, PageQuery query) {
 		if (readStatus != null && readStatus) {
 			throw new InvalidReadStatusException();
-
 		}
 
 		ArticlesWithCountDto result = articleGetServicePort.findAllByReadStatus(
@@ -242,6 +241,17 @@ public class GetArticleUsecase implements GetArticlePort {
 			result.totalCount(),
 			result.unreadCount(),
 			articleResponses
+		);
+	}
+
+	@Override
+	public ArticleCountInfoResponse getAllArticlesInfo(User user) {
+		ArticleCountInfoDtoV3 result = articleGetServicePort.findAllCountV3(user);
+
+		return ArticleCountInfoResponse.of(
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount()
 		);
 	}
 

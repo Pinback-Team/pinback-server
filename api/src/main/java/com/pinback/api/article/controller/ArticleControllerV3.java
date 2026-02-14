@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.api.article.dto.request.ArticleCreateRequest;
 import com.pinback.application.article.dto.query.PageQuery;
+import com.pinback.application.article.dto.response.ArticleCountInfoResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
-import com.pinback.application.article.dto.response.TodayRemindCountResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV3;
 import com.pinback.application.article.port.in.CreateArticlePort;
 import com.pinback.application.article.port.in.GetArticlePort;
@@ -76,11 +76,11 @@ public class ArticleControllerV3 {
 
 	@Operation(summary = "리마인드 아티클 읽음/안읽음 개수 조회 v3", description = "오늘 리마인드할 아티클의 읽음/안읽음 개수를 반환합니다.")
 	@GetMapping("/remind/count")
-	public ResponseDto<TodayRemindCountResponse> getRemindArticlesInfo(
+	public ResponseDto<ArticleCountInfoResponse> getRemindArticlesInfo(
 		@Parameter(hidden = true) @CurrentUser User user,
 		@Parameter(description = "현재 시간", example = "2026-02-13T10:00:00") @RequestParam LocalDateTime now
 	) {
-		TodayRemindCountResponse response = getArticlePort.getRemindArticlesInfo(user, now);
+		ArticleCountInfoResponse response = getArticlePort.getRemindArticlesInfo(user, now);
 		return ResponseDto.ok(response);
 	}
 
@@ -94,6 +94,15 @@ public class ArticleControllerV3 {
 	) {
 		PageQuery query = new PageQuery(page, size);
 		GetAllArticlesResponseV3 response = getArticlePort.getAllArticlesV3(user, readStatus, query);
+		return ResponseDto.ok(response);
+	}
+
+	@Operation(summary = "나의 북마크 아티클 전체보기/안읽음 개수 조회 v3", description = "나의 북마크 아티클의 전체보기/안읽음 개수를 반환합니다.")
+	@GetMapping("/count")
+	public ResponseDto<ArticleCountInfoResponse> getArticlesInfo(
+		@Parameter(hidden = true) @CurrentUser User user
+	) {
+		ArticleCountInfoResponse response = getArticlePort.getAllArticlesInfo(user);
 		return ResponseDto.ok(response);
 	}
 

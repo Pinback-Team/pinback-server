@@ -3,12 +3,12 @@ package com.pinback.application.article.port.in;
 import java.time.LocalDateTime;
 
 import com.pinback.application.article.dto.query.PageQuery;
+import com.pinback.application.article.dto.response.ArticleCountInfoResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
-import com.pinback.application.article.dto.response.TodayRemindCountResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV2;
 import com.pinback.application.article.dto.response.TodayRemindResponseV3;
@@ -33,7 +33,9 @@ public interface GetArticlePort {
 
 	TodayRemindResponseV3 getRemindArticlesV3(User user, LocalDateTime now, boolean readStatus, PageQuery query);
 
-	TodayRemindCountResponse getRemindArticlesInfo(User user, LocalDateTime now);
+	ArticleCountInfoResponse getRemindArticlesInfo(User user, LocalDateTime now);
 
 	GetAllArticlesResponseV3 getAllArticlesV3(User user, Boolean readStatus, PageQuery query);
+
+	ArticleCountInfoResponse getAllArticlesInfo(User user);
 }

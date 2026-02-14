@@ -6,6 +6,7 @@ import static com.pinback.domain.user.entity.QUser.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -16,10 +17,10 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.pinback.domain.article.entity.Article;
+import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
-import com.pinback.infrastructure.article.repository.dto.RemindArticleCountV3;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 import com.querydsl.core.types.Projections;
@@ -271,7 +272,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	}
 
 	@Override
-	public RemindArticleCountV3 findTodayRemindCountV3(
+	public ArticleCountInfoV3 findTodayRemindCountV3(
 		UUID userId,
 		LocalDateTime startBound,
 		LocalDateTime endBound
@@ -280,7 +281,7 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 			.and(article.remindAt.gt(startBound).and(article.remindAt.loe(endBound)));
 
 		return queryFactory
-			.select(Projections.constructor(RemindArticleCountV3.class,
+			.select(Projections.constructor(ArticleCountInfoV3.class,
 				article.count(),
 				Expressions.numberTemplate(Long.class,
 					"SUM(CASE WHEN {0} = true THEN 1 ELSE 0 END)", article.isReadAfterRemind).coalesce(0L),
@@ -333,4 +334,24 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		);
 	}
 
+	@Override
+	public ArticleCountInfoV3 findAllCountV3(UUID userId) {
+		BooleanExpression baseConditions = article.user.id.eq(userId);
+
+		// 쿼리 실행
+		ArticleCountInfoV3 result = queryFactory
+			.select(Projections.constructor(ArticleCountInfoV3.class,
+				article.count(),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = true THEN 1 ELSE 0 END)", article.isRead).coalesce(0L),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = false THEN 1 ELSE 0 END)", article.isRead).coalesce(0L)
+			))
+			.from(article)
+			.where(baseConditions)
+			.fetchOne();
+
+		return Optional.ofNullable(result)
+			.orElseGet(() -> new ArticleCountInfoV3(0L, 0L, 0L));
+	}
 }

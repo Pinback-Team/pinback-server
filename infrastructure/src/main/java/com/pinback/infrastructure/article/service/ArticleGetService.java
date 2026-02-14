@@ -8,9 +8,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.pinback.application.article.dto.ArticleCountInfoDtoV3;
 import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
-import com.pinback.application.article.dto.RemindArticleCountDtoV3;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
@@ -20,9 +20,9 @@ import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
+import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
-import com.pinback.infrastructure.article.repository.dto.RemindArticleCountV3;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
 
@@ -124,14 +124,14 @@ public class ArticleGetService implements ArticleGetServicePort {
 	}
 
 	@Override
-	public RemindArticleCountDtoV3 findTodayRemindCountV3(User user, LocalDateTime startDateTime,
+	public ArticleCountInfoDtoV3 findTodayRemindCountV3(User user, LocalDateTime startDateTime,
 		LocalDateTime endDateTime) {
-		RemindArticleCountV3 infraResult = articleRepository.findTodayRemindCountV3(
+		ArticleCountInfoV3 infraResult = articleRepository.findTodayRemindCountV3(
 			user.getId(),
 			startDateTime,
 			endDateTime
 		);
-		return new RemindArticleCountDtoV3(
+		return new ArticleCountInfoDtoV3(
 			infraResult.totalCount(),
 			infraResult.readCount(),
 			infraResult.unreadCount()
@@ -151,6 +151,18 @@ public class ArticleGetService implements ArticleGetServicePort {
 			infraResult.unreadCount(),
 			infraResult.article()
 		);
+	}
+
+	@Override
+	public ArticleCountInfoDtoV3 findAllCountV3(User user) {
+		ArticleCountInfoV3 infraResult = articleRepository.findAllCountV3(user.getId());
+		return new ArticleCountInfoDtoV3(
+			infraResult.totalCount(),
+			infraResult.readCount(),
+			infraResult.unreadCount()
+
+		);
+
 	}
 
 	private ArticlesWithUnreadCountDto convertToDto(ArticlesWithUnreadCount infraResult) {
