@@ -354,4 +354,51 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 		return Optional.ofNullable(result)
 			.orElseGet(() -> new ArticleCountInfoV3(0L, 0L, 0L));
 	}
+
+	@Override
+	public ArticleWithCountV3 findAllByCategoryAndReadStatus(
+		UUID userId,
+		long categoryId,
+		Boolean readStatus,
+		PageRequest pageRequest
+	) {
+		BooleanExpression baseConditions = article.user.id.eq(userId)
+			.and(article.category.id.eq(categoryId));
+
+		ArticleInfoV3 counts = queryFactory
+			.select(Projections.constructor(ArticleInfoV3.class,
+				article.count(),
+				Expressions.numberTemplate(Long.class,
+					"SUM(CASE WHEN {0} = false THEN 1 ELSE 0 END)", article.isRead).coalesce(0L)
+			))
+			.from(article)
+			.where(baseConditions)
+			.fetchOne();
+
+		BooleanExpression listConditions = (readStatus == null)
+			? baseConditions
+			: baseConditions.and(article.isRead.isFalse());
+
+		List<Article> articles = queryFactory
+			.selectFrom(article)
+			.join(article.user, user).fetchJoin()
+			.where(listConditions)
+			.offset(pageRequest.getOffset())
+			.limit(pageRequest.getPageSize())
+			.orderBy(article.createdAt.desc())
+			.fetch();
+
+		JPAQuery<Long> countQuery = queryFactory
+			.select(article.count())
+			.from(article)
+			.where(listConditions);
+
+		ArticleInfoV3 safeCounts = (counts != null) ? counts : new ArticleInfoV3(0L, 0L);
+
+		return new ArticleWithCountV3(
+			safeCounts.totalCount(),
+			safeCounts.unreadCount(),
+			PageableExecutionUtils.getPage(articles, pageRequest, countQuery::fetchOne)
+		);
+	}
 }

@@ -47,4 +47,7 @@ public interface ArticleGetServicePort {
 	ArticlesWithCountDto findAllByReadStatus(User user, Boolean readStatus, PageRequest pageRequest);
 
 	ArticleCountInfoDtoV3 findAllCountV3(User user);
+
+	ArticlesWithCountDto findAllByCategoryAndReadStatus(User user, Category category, Boolean readStatus,
+		PageRequest pageRequest);
 }

@@ -22,6 +22,8 @@ import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticleResponse;
 import com.pinback.application.article.dto.response.ArticleResponseV3;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
+import com.pinback.application.article.dto.response.ArticlesPageResponseV3;
+import com.pinback.application.article.dto.response.CategoryArticleResponseV3;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
@@ -252,6 +254,29 @@ public class GetArticleUsecase implements GetArticlePort {
 			result.totalCount(),
 			result.readCount(),
 			result.unreadCount()
+		);
+	}
+
+	@Override
+	public ArticlesPageResponseV3 getAllArticlesByCategoryV3(User user, long categoryId, Boolean readStatus,
+		PageQuery query) {
+		if (readStatus != null && readStatus) {
+			throw new InvalidReadStatusException();
+		}
+		Category category = getCategoryPort.getCategoryAndUser(categoryId, user);
+
+		ArticlesWithCountDto result = articleGetServicePort.findAllByCategoryAndReadStatus(
+			user, category, readStatus, PageRequest.of(query.pageNumber(), query.pageSize()));
+
+		List<CategoryArticleResponseV3> articleResponses = result.article().stream()
+			.map(CategoryArticleResponseV3::from)
+			.toList();
+
+		return ArticlesPageResponseV3.of(
+			result.totalCount(),
+			result.unreadCount(),
+			category.getName(),
+			articleResponses
 		);
 	}
 

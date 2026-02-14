@@ -37,4 +37,7 @@ public interface ArticleRepositoryCustom {
 	ArticleWithCountV3 findAllByReadStatus(UUID userId, Boolean readStatus, PageRequest pageRequest);
 
 	ArticleCountInfoV3 findAllCountV3(UUID userId);
+
+	ArticleWithCountV3 findAllByCategoryAndReadStatus(UUID userId, long categoryId, Boolean readStatus,
+		PageRequest pageRequest);
 }

@@ -7,6 +7,7 @@ import com.pinback.application.article.dto.response.ArticleCountInfoResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
+import com.pinback.application.article.dto.response.ArticlesPageResponseV3;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
 import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
@@ -38,4 +39,6 @@ public interface GetArticlePort {
 	GetAllArticlesResponseV3 getAllArticlesV3(User user, Boolean readStatus, PageQuery query);
 
 	ArticleCountInfoResponse getAllArticlesInfo(User user);
+
+	ArticlesPageResponseV3 getAllArticlesByCategoryV3(User user, long categoryId, Boolean readStatus, PageQuery query);
 }

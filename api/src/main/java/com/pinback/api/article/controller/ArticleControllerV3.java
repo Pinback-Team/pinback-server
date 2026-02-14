@@ -14,6 +14,7 @@ import com.pinback.api.article.dto.request.ArticleCreateRequest;
 import com.pinback.application.article.dto.query.PageQuery;
 import com.pinback.application.article.dto.response.ArticleCountInfoResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
+import com.pinback.application.article.dto.response.ArticlesPageResponseV3;
 import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
 import com.pinback.application.article.dto.response.TodayRemindResponseV3;
 import com.pinback.application.article.port.in.CreateArticlePort;
@@ -88,7 +89,7 @@ public class ArticleControllerV3 {
 	@GetMapping
 	public ResponseDto<GetAllArticlesResponseV3> getAllArticles(
 		@Parameter(hidden = true) @CurrentUser User user,
-		@Parameter(description = "읽음 상태 (생략: 읽음, false: 안읽음)", example = "false") @RequestParam(name = "read-status", required = false) Boolean readStatus,
+		@Parameter(description = "읽음 상태 (생략: 전체보기, false: 안읽음)", example = "false") @RequestParam(name = "read-status", required = false) Boolean readStatus,
 		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
 		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
 	) {
@@ -103,6 +104,21 @@ public class ArticleControllerV3 {
 		@Parameter(hidden = true) @CurrentUser User user
 	) {
 		ArticleCountInfoResponse response = getArticlePort.getAllArticlesInfo(user);
+		return ResponseDto.ok(response);
+	}
+
+	@Operation(summary = "나의 북마크 카테고리별 아티클 조회 V3", description = "특정 카테고리의 아티클 전체 목록을 조회합니다.")
+	@GetMapping("/category")
+	public ResponseDto<ArticlesPageResponseV3> getAllArticlesByCategory(
+		@Parameter(hidden = true) @CurrentUser User user,
+		@Parameter(description = "카테고리 ID") @RequestParam(name = "category-id") Long categoryId,
+		@Parameter(description = "읽음 상태 (생략시: 전체보기, false: 안읽음)", example = "false") @RequestParam(name = "read-status", required = false) Boolean readStatus,
+		@Parameter(description = "페이지 번호 (0부터 시작)") @RequestParam(defaultValue = "0") int page,
+		@Parameter(description = "페이지 크기") @RequestParam(defaultValue = "8") int size
+	) {
+		PageQuery query = new PageQuery(page, size);
+		ArticlesPageResponseV3 response = getArticlePort.getAllArticlesByCategoryV3(user, categoryId, readStatus,
+			query);
 		return ResponseDto.ok(response);
 	}
 
