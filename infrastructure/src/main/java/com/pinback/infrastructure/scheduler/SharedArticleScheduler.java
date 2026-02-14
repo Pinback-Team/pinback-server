@@ -21,7 +21,7 @@ public class SharedArticleScheduler {
 	private final SharedArticleRedisPort sharedArticleRedisPort;
 	private final ArticleGetServicePort articleGetServicePort;
 
-	@Scheduled(cron = "0 8 * * * *")
+	@Scheduled(cron = "0 0 0 * * *")
 	@Transactional(readOnly = true)
 	public void refreshDailySharedArticles() {
 		log.info("스케줄러 실행: 직무별 공유 아티클 갱신 시작");
