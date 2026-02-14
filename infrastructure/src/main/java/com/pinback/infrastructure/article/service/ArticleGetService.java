@@ -1,6 +1,7 @@
 package com.pinback.infrastructure.article.service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -13,18 +14,21 @@ import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
+import com.pinback.application.article.dto.SharedArticleDto;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.common.exception.ArticleNotFoundException;
 import com.pinback.application.common.exception.ArticleNotOwnedException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 import com.pinback.infrastructure.article.repository.ArticleRepository;
 import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
+import com.pinback.infrastructure.article.repository.dto.SharedArticles;
 
 import lombok.RequiredArgsConstructor;
 
@@ -200,5 +204,27 @@ public class ArticleGetService implements ArticleGetServicePort {
 			infraResult.article(),
 			infraResult.totalCategoryArticleCount()
 		);
+	}
+
+	@Override
+	public List<SharedArticleDto> findTopListByJob(Job job) {
+		SharedArticles infraResult = articleRepository.findTopListByJob(job);
+
+		if (infraResult == null || infraResult.articles() == null) {
+			return List.of();
+		}
+		return infraResult.articles().stream()
+			.map(infra -> new SharedArticleDto(
+				infra.articleId(),
+				infra.url(),
+				infra.title(),
+				infra.thumbnailUrl(),
+				infra.memo(),
+				infra.ownerName(),
+				infra.categoryId(),
+				infra.categoryName(),
+				infra.categoryColor()
+			))
+			.toList();
 	}
 }

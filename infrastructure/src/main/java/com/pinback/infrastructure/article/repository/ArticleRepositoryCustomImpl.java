@@ -17,12 +17,15 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.pinback.domain.article.entity.Article;
+import com.pinback.domain.user.enums.Job;
 import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
+import com.pinback.infrastructure.article.repository.dto.SharedArticle;
+import com.pinback.infrastructure.article.repository.dto.SharedArticles;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -421,5 +424,21 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 
 		return Optional.ofNullable(result)
 			.orElseGet(() -> new ArticleCountInfoV3(0L, 0L, 0L));
+	}
+
+	@Override
+	public SharedArticles findTopListByJob(Job job) {
+		List<Article> articles = queryFactory.selectFrom(article)
+			.join(article.user, user)
+			.where(user.job.eq(job))
+			.orderBy(article.createdAt.desc())
+			.limit(10)
+			.fetch();
+
+		List<SharedArticle> sharedArticles = articles.stream()
+			.map(SharedArticle::from)
+			.toList();
+
+		return SharedArticles.of(sharedArticles);
 	}
 }

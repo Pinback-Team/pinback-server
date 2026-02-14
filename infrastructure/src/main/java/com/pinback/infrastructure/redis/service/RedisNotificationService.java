@@ -4,6 +4,8 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,20 +13,21 @@ import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.user.entity.User;
 import com.pinback.infrastructure.redis.dto.NotificationData;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.context.annotation.Profile;
 
 @Service
 @Profile("!test")
 @Slf4j
-@RequiredArgsConstructor
 public class RedisNotificationService {
 
 	private static final String NOTIFICATION_PREFIX = "notification:";
 	private static final String NOTIFICATION_PREFIX_DATA = "notification:data:";
 	private final RedisTemplate<String, Object> objectRedisTemplate;
+
+	public RedisNotificationService(
+		@Qualifier("objectRedisTemplate") RedisTemplate<String, Object> objectRedisTemplate) {
+		this.objectRedisTemplate = objectRedisTemplate;
+	}
 
 	public void scheduleArticleReminder(Article article, User user, String token) {
 
