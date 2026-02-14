@@ -1,6 +1,7 @@
 package com.pinback.application.article.port.out;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -12,9 +13,11 @@ import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
+import com.pinback.application.article.dto.SharedArticleDto;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
+import com.pinback.domain.user.enums.Job;
 
 public interface ArticleGetServicePort {
 	Optional<Article> findRecentByUser(User user);
@@ -52,4 +55,6 @@ public interface ArticleGetServicePort {
 		PageRequest pageRequest);
 
 	ArticleCountInfoDtoV3 findAllCountByCategoryV3(User user, Category category);
+
+	List<SharedArticleDto> findTopListByJob(Job job);
 }

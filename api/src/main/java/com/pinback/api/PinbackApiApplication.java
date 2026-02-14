@@ -7,6 +7,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.pinback.application.config.ProfileImageConfig;
 
@@ -20,6 +21,7 @@ import com.pinback.application.config.ProfileImageConfig;
 @EnableJpaRepositories("com.pinback.infrastructure")
 @EnableJpaAuditing
 @EnableAsync
+@EnableScheduling
 @EnableConfigurationProperties(ProfileImageConfig.class)
 public class PinbackApiApplication {
 	public static void main(String[] args) {

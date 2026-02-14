@@ -8,11 +8,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.pinback.domain.article.entity.Article;
+import com.pinback.domain.user.enums.Job;
 import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCount;
 import com.pinback.infrastructure.article.repository.dto.RemindArticlesWithCountV2;
+import com.pinback.infrastructure.article.repository.dto.SharedArticles;
 
 public interface ArticleRepositoryCustom {
 	ArticlesWithUnreadCount findAllCustom(UUID userId, Pageable pageable);
@@ -42,4 +44,6 @@ public interface ArticleRepositoryCustom {
 		PageRequest pageRequest);
 
 	ArticleCountInfoV3 findAllCountByCategoryV3(UUID userId, long categoryId);
+
+	SharedArticles findTopListByJob(Job job);
 }

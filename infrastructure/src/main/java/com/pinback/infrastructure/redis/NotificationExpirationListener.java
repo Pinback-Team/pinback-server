@@ -1,5 +1,7 @@
 package com.pinback.infrastructure.redis;
 
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -8,21 +10,25 @@ import org.springframework.stereotype.Component;
 import com.pinback.infrastructure.firebase.FcmService;
 import com.pinback.infrastructure.redis.dto.NotificationData;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.context.annotation.Profile;
 
 @Component
 @Profile("!test")
 @Slf4j
-@RequiredArgsConstructor
 public class NotificationExpirationListener implements MessageListener {
 
 	private static final String NOTIFICATION_PREFIX = "notification:";
 	private static final String NOTIFICATION_PREFIX_DATA = "notification:data:";
 	private final RedisTemplate<String, Object> objectRedisTemplate;
 	private final FcmService fcmService;
+
+	public NotificationExpirationListener(
+		@Qualifier("objectRedisTemplate") RedisTemplate<String, Object> objectRedisTemplate,
+		FcmService fcmService
+	) {
+		this.objectRedisTemplate = objectRedisTemplate;
+		this.fcmService = fcmService;
+	}
 
 	@Override
 	public void onMessage(Message message, byte[] pattern) {

@@ -32,6 +32,7 @@ public enum ExceptionCode {
 	ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "c40403", "아티클이 존재하지 않습니다."),
 	SUBSCRIPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "c40404", "구독정보가 존재하지 않습니다."),
 	JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "c40405", "존재하지 않는 직무입니다."),
+	SHARED_ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "c40406", "관심 직무 핀 목록에 존재하지 않는 아티클입니다."),
 
 	//405
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "c40500", "잘못된 HTTP method 요청입니다."),
