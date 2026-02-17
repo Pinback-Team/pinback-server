@@ -19,8 +19,8 @@ import com.pinback.application.user.port.out.UserSaveServicePort;
 import com.pinback.application.user.port.out.UserUpdateServicePort;
 import com.pinback.application.user.port.out.UserValidateServicePort;
 import com.pinback.application.user.usecase.UserOAuthUsecase;
+import com.pinback.domain.common.enums.Job;
 import com.pinback.domain.user.entity.User;
-import com.pinback.domain.user.enums.Job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

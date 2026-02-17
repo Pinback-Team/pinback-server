@@ -8,7 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.pinback.domain.article.entity.Article;
-import com.pinback.domain.user.enums.Job;
+import com.pinback.domain.common.enums.Job;
 import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
 import com.pinback.infrastructure.article.repository.dto.ArticlesWithUnreadCount;

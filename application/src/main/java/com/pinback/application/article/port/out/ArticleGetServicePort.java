@@ -16,8 +16,8 @@ import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.dto.SharedArticleDto;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
+import com.pinback.domain.common.enums.Job;
 import com.pinback.domain.user.entity.User;
-import com.pinback.domain.user.enums.Job;
 
 public interface ArticleGetServicePort {
 	Optional<Article> findRecentByUser(User user);

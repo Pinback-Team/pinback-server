@@ -9,8 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.pinback.domain.common.enums.Job;
 import com.pinback.domain.user.entity.User;
-import com.pinback.domain.user.enums.Job;
 
 public interface UserRepository extends JpaRepository<User, UUID> {
 

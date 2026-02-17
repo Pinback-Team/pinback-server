@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import com.pinback.application.config.JobImageConfig;
 import com.pinback.application.config.ProfileImageConfig;
 
 @SpringBootApplication(scanBasePackages = {
@@ -22,7 +23,7 @@ import com.pinback.application.config.ProfileImageConfig;
 @EnableJpaAuditing
 @EnableAsync
 @EnableScheduling
-@EnableConfigurationProperties(ProfileImageConfig.class)
+@EnableConfigurationProperties({ProfileImageConfig.class, JobImageConfig.class})
 public class PinbackApiApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(PinbackApiApplication.class, args);

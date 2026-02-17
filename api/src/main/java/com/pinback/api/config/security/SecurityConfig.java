@@ -69,6 +69,10 @@ public class SecurityConfig {
 					"/login/oauth2/code/google"
 				).permitAll()
 
+				.requestMatchers(
+					"/api/v3/enums/jobs"
+				).permitAll()
+
 				.anyRequest().authenticated()
 			)
 			.formLogin(AbstractHttpConfigurer::disable)

@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.application.article.dto.SharedArticleDto;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.article.port.out.SharedArticleRedisPort;
-import com.pinback.domain.user.enums.Job;
+import com.pinback.domain.common.enums.Job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

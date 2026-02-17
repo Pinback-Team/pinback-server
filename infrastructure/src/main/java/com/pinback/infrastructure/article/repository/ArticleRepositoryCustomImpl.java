@@ -17,7 +17,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import com.pinback.domain.article.entity.Article;
-import com.pinback.domain.user.enums.Job;
+import com.pinback.domain.common.enums.Job;
 import com.pinback.infrastructure.article.repository.dto.ArticleCountInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleInfoV3;
 import com.pinback.infrastructure.article.repository.dto.ArticleWithCountV3;
