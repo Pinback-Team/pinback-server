@@ -19,8 +19,8 @@ import com.pinback.application.user.dto.response.UserRemindInfoResponse;
 import com.pinback.application.user.port.in.UserManagementPort;
 import com.pinback.application.user.port.out.AcornServicePort;
 import com.pinback.application.user.port.out.UserGetServicePort;
+import com.pinback.domain.common.enums.Job;
 import com.pinback.domain.user.entity.User;
-import com.pinback.domain.user.enums.Job;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

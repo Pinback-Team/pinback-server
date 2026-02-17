@@ -3,8 +3,8 @@ package com.pinback.application.user.port.out;
 import java.time.LocalTime;
 import java.util.UUID;
 
+import com.pinback.domain.common.enums.Job;
 import com.pinback.domain.user.entity.User;
-import com.pinback.domain.user.enums.Job;
 
 import reactor.core.publisher.Mono;
 
