@@ -54,3 +54,10 @@ profile-images:
     IMAGE3: ${PROFILE_IMAGE3:}
 
 default-thumbnail: ${DEFAULT_THUMBNAIL:}
+
+job-images:
+  images:
+    plan: ${JOB_IMAGE_PLAN}
+    design: ${JOB_IMAGE_DESIGN}
+    frontend: ${JOB_IMAGE_FRONTEND}
+    backend: ${JOB_IMAGE_BACKEND}
