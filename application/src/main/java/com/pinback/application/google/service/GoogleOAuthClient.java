@@ -1,5 +1,7 @@
 package com.pinback.application.google.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import com.pinback.application.common.exception.GoogleEmailMissingException;
 import com.pinback.application.common.exception.GoogleNameMissingException;
 import com.pinback.application.common.exception.GoogleProfileImageMissingException;
 import com.pinback.application.common.exception.GoogleTokenMissingException;
+import com.pinback.application.common.exception.InvalidGoogleUriException;
 import com.pinback.application.google.dto.response.GoogleApiResponse;
 import com.pinback.application.google.dto.response.GoogleTokenResponse;
 import com.pinback.application.google.dto.response.GoogleUserInfoResponse;
@@ -24,7 +27,7 @@ public class GoogleOAuthClient implements GoogleOAuthPort {
 	private final WebClient googleWebClient;
 	private final String googleClientId;
 	private final String googleClientSecret;
-	private final String googleRedirectUri;
+	private final List<String> googleRedirectUris;
 	private final String googleTokenUri;
 	private final String googleUserInfoUri;
 
@@ -32,13 +35,13 @@ public class GoogleOAuthClient implements GoogleOAuthPort {
 		WebClient googleWebClient,
 		@Qualifier("googleClientId") String googleClientId,
 		@Qualifier("googleClientSecret") String googleClientSecret,
-		@Qualifier("googleRedirectUri") String googleRedirectUri,
+		@Qualifier("googleRedirectUris") List<String> googleRedirectUris,
 		@Qualifier("googleTokenUri") String googleTokenUri,
 		@Qualifier("googleUserInfoUri") String googleUserInfoUri) {
 		this.googleWebClient = googleWebClient;
 		this.googleClientId = googleClientId;
 		this.googleClientSecret = googleClientSecret;
-		this.googleRedirectUri = googleRedirectUri;
+		this.googleRedirectUris = googleRedirectUris;
 		this.googleTokenUri = googleTokenUri;
 		this.googleUserInfoUri = googleUserInfoUri;
 	}
@@ -61,12 +64,65 @@ public class GoogleOAuthClient implements GoogleOAuthPort {
 			});
 	}
 
+	@Override
+	public Mono<GoogleUserInfoResponse> fetchUserInfoV3(String code, String uri) {
+
+		return requestAccessTokenV3(code, uri)
+			// 토큰 응답을 UserInfo 요청으로 변환하여 연결
+			.flatMap(tokenResponse -> {
+
+				// Access Token 유효성 검증
+				if (tokenResponse == null || tokenResponse.accessToken() == null) {
+					log.info("tokenResponse: {}", tokenResponse);
+					log.error("Google Access Token 획득 실패: 응답 본문에 토큰이 없습니다. Code: {}", code);
+					return Mono.error(new GoogleTokenMissingException());
+				}
+				// Access Token으로 사용자 정보 요청
+				return getUserInfo(tokenResponse.accessToken());
+			});
+	}
+
 	private Mono<GoogleTokenResponse> requestAccessToken(String code) {
-		log.info("redirect: {}", googleRedirectUri);
+		String firstRedirectUri = googleRedirectUris.getFirst();
+		log.info("redirect: {}", firstRedirectUri);
 		String requestBody = "code=" + code +
 			"&client_id=" + googleClientId +
 			"&client_secret=" + googleClientSecret +
-			"&redirect_uri=" + googleRedirectUri +
+			"&redirect_uri=" + firstRedirectUri +
+			"&grant_type=authorization_code";
+
+		return googleWebClient.post()
+			.uri(googleTokenUri)
+			.contentType(MediaType.APPLICATION_FORM_URLENCODED)
+			.bodyValue(requestBody)
+			.retrieve()
+			// HTTP 오류 발생 시
+			.onStatus(status -> status.isError(), clientResponse ->
+				clientResponse.bodyToMono(String.class)
+					.flatMap(body -> {
+						String errorLog = String.format(
+							"[GoogleOAuth API 에러] HTTP Status: %s, Detail: %s",
+							clientResponse.statusCode(), body
+						);
+						log.error(errorLog);
+						return Mono.error(new GoogleApiException());
+					})
+			)
+			.bodyToMono(GoogleTokenResponse.class);
+	}
+
+	private Mono<GoogleTokenResponse> requestAccessTokenV3(String code, String uri) {
+		if (!googleRedirectUris.contains(uri)) {
+			log.error("허용되지 않은 Redirect URI 요청: {}", uri);
+
+			return Mono.error(new InvalidGoogleUriException());
+		}
+
+		log.info("redirect: {}", uri);
+		String requestBody = "code=" + code +
+			"&client_id=" + googleClientId +
+			"&client_secret=" + googleClientSecret +
+			"&redirect_uri=" + uri +
 			"&grant_type=authorization_code";
 
 		return googleWebClient.post()

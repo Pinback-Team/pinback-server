@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.api.auth.dto.request.SignUpRequestV3;
-import com.pinback.api.google.dto.request.GoogleLoginRequest;
+import com.pinback.api.google.dto.request.GoogleLoginRequestV3;
 import com.pinback.application.auth.dto.SignUpResponse;
 import com.pinback.application.auth.usecase.AuthUsecase;
 import com.pinback.application.google.dto.response.GoogleLoginResponseV3;
@@ -31,9 +31,9 @@ public class GoogleLoginControllerV3 {
 	@Operation(summary = "구글 소셜 로그인 V3", description = "구글 소셜 로그인을 진행하며, 응답에 직무 선택 여부를 포함합니다.")
 	@PostMapping("/google")
 	public Mono<ResponseDto<GoogleLoginResponseV3>> googleLogin(
-		@Valid @RequestBody GoogleLoginRequest request
+		@Valid @RequestBody GoogleLoginRequestV3 request
 	) {
-		return googleUsecase.getUserInfo(request.toCommand())
+		return googleUsecase.getUserInfoV3(request.toCommand())
 			.flatMap(googleResponse -> {
 				return authUsecase.getInfoAndTokenV3(googleResponse.email(), googleResponse.pictureUrl(),
 						googleResponse.name())
