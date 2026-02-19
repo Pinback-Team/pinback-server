@@ -6,4 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface GoogleOAuthPort {
 	Mono<GoogleUserInfoResponse> fetchUserInfo(String code);
+
+	Mono<GoogleUserInfoResponse> fetchUserInfoV3(String code, String uri);
 }
