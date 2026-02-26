@@ -1,5 +1,6 @@
 package com.pinback.api.category.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,9 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.pinback.api.category.dto.request.CreateCategoryRequestV3;
 import com.pinback.api.category.dto.request.UpdateCategoryRequestV3;
+import com.pinback.application.category.dto.response.CategoryDetailResponseV3;
 import com.pinback.application.category.dto.response.CreateCategoryResponseV3;
 import com.pinback.application.category.dto.response.UpdateCategoryResponseV3;
 import com.pinback.application.category.port.in.CreateCategoryPort;
+import com.pinback.application.category.port.in.GetCategoryPort;
 import com.pinback.application.category.port.in.UpdateCategoryPort;
 import com.pinback.domain.user.entity.User;
 import com.pinback.shared.annotation.CurrentUser;
@@ -30,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class CategoryControllerV3 {
 	private final CreateCategoryPort createCategoryPort;
 	private final UpdateCategoryPort updateCategoryPort;
+	private final GetCategoryPort getCategoryPort;
 
 	@Operation(summary = "카테고리 생성 V3", description = "공개여부 설정을 추가하여 새로운 카테고리를 생성합니다")
 	@PostMapping
@@ -50,5 +54,16 @@ public class CategoryControllerV3 {
 	) {
 		UpdateCategoryResponseV3 response = updateCategoryPort.updateCategoryV3(user, categoryId, request.toCommand());
 		return ResponseDto.ok(response);
+	}
+
+	@Operation(summary = "카테고리 상세 조회 V3", description = "공개여부를 포함하여 대시보드에서 사용할 카테고리 정보를 조회합니다")
+	@GetMapping("/{categoryId}")
+	public ResponseDto<CategoryDetailResponseV3> getCategoriesForDashboardV3(
+		@Parameter(hidden = true) @CurrentUser User user,
+		@Parameter(description = "카테고리 ID") @PathVariable Long categoryId
+	) {
+		CategoryDetailResponseV3 response = getCategoryPort.getCategoryDetail(user, categoryId);
+		return ResponseDto.ok(response);
+
 	}
 }

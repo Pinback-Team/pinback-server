@@ -11,6 +11,7 @@ import com.pinback.application.category.dto.CategoriesForDashboardDto;
 import com.pinback.application.category.dto.response.CategoriesForDashboardResponse;
 import com.pinback.application.category.dto.response.CategoriesForExtensionResponse;
 import com.pinback.application.category.dto.response.CategoryDashboardResponse;
+import com.pinback.application.category.dto.response.CategoryDetailResponseV3;
 import com.pinback.application.category.dto.response.CategoryResponse;
 import com.pinback.application.category.port.in.GetCategoryPort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
@@ -62,4 +63,12 @@ public class GetCategoryUsecase implements GetCategoryPort {
 	public Category getCategoryAndUser(long categoryId, User user) {
 		return categoryGetServicePort.getCategoryAndUser(categoryId, user);
 	}
+
+	@Override
+	public CategoryDetailResponseV3 getCategoryDetail(User user, Long categoryId) {
+		Category category = categoryGetServicePort.getCategoryAndUser(categoryId, user);
+
+		return CategoryDetailResponseV3.from(category);
+	}
+
 }
