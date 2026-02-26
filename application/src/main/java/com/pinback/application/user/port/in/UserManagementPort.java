@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.pinback.application.user.dto.command.UpdateUserJobCommand;
 import com.pinback.application.user.dto.response.UserGoogleProfileResponse;
+import com.pinback.application.user.dto.response.UserHasJobInfoResponse;
 import com.pinback.application.user.dto.response.UserInfoResponse;
 import com.pinback.application.user.dto.response.UserJobInfoResponse;
 import com.pinback.application.user.dto.response.UserProfileInfoResponse;
@@ -21,4 +22,6 @@ public interface UserManagementPort {
 	UserGoogleProfileResponse getUserGoogleProfile(User user);
 
 	UserJobInfoResponse updateUserJobInfo(User user, UpdateUserJobCommand command);
+
+	UserHasJobInfoResponse getUserJobInfo(User user);
 }

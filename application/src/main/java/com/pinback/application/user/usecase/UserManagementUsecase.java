@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.application.config.ProfileImageConfig;
 import com.pinback.application.user.dto.command.UpdateUserJobCommand;
 import com.pinback.application.user.dto.response.UserGoogleProfileResponse;
+import com.pinback.application.user.dto.response.UserHasJobInfoResponse;
 import com.pinback.application.user.dto.response.UserInfoResponse;
 import com.pinback.application.user.dto.response.UserJobInfoResponse;
 import com.pinback.application.user.dto.response.UserProfileInfoResponse;
@@ -84,6 +85,15 @@ public class UserManagementUsecase implements UserManagementPort {
 
 		String updatedJob = getUser.getJob().getValue();
 		return UserJobInfoResponse.of(updatedJob);
+	}
+
+	@Override
+	@Transactional
+	public UserHasJobInfoResponse getUserJobInfo(User user) {
+		User getUser = userGetServicePort.findById(user.getId());
+
+		return UserHasJobInfoResponse.of(getUser.hasJob());
+
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
