@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.common.exception.ArticleNotFoundException;
+import com.pinback.application.common.exception.ArticleNotOwnedException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -47,7 +48,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void checkExistsByUserAndUrlTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		String url = "test-url";
 		Article article = article(user, url, category);
 		articleRepository.save(article);
@@ -78,7 +79,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findByIdTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		Article article = articleRepository.save(article(user, "test-url", category));
 
 		//when
@@ -105,7 +106,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findAllTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		articleRepository.save(article(user, "url1", category));
 		articleRepository.save(readArticle(user, "url2", category));
 		PageRequest pageRequest = PageRequest.of(0, 10);
@@ -123,8 +124,8 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findAllByCategoryTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category1 = categoryRepository.save(category(user));
-		Category category2 = categoryRepository.save(Category.create("다른카테고리", user, COLOR2));
+		Category category1 = categoryRepository.save(categoryWithIsPublic(user));
+		Category category2 = categoryRepository.save(Category.createWithIsPublic("다른카테고리", user, COLOR2, true));
 
 		articleRepository.save(article(user, "url1", category1));
 		articleRepository.save(article(user, "url2", category2));
@@ -143,7 +144,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findTodayRemindTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
 		LocalDateTime yesterday = today.minusDays(1);
 
@@ -164,7 +165,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findRecentByUserTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		articleRepository.save(article(user, "url1", category));
 
 		//when
@@ -180,7 +181,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findByUrlAndUserTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		String url = "specific-url";
 		articleRepository.save(article(user, url, category));
 
@@ -197,7 +198,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findByUserAndIdTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		Article article = articleRepository.save(article(user, "test-url", category));
 
 		//when
@@ -214,12 +215,12 @@ class ArticleGetServiceTest extends ServiceTest {
 		//given
 		User user1 = userRepository.save(user());
 		User user2 = userRepository.save(userWithEmail("other@gmail.com"));
-		Category category = categoryRepository.save(category(user1));
+		Category category = categoryRepository.save(categoryWithIsPublic(user1));
 		Article article = articleRepository.save(article(user1, "test-url", category));
 
 		//when & then
 		assertThatThrownBy(() -> articleGetService.findByUserAndId(user2, article.getId()))
-			.isInstanceOf(ArticleNotFoundException.class);
+			.isInstanceOf(ArticleNotOwnedException.class);
 	}
 
 	@DisplayName("읽지 않은 아티클만 조회하면 읽지 않은 아티클만 반환한다.")
@@ -227,7 +228,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findUnreadArticlesTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		articleRepository.save(article(user, "unread-url", category)); // 읽지 않음
 		articleRepository.save(readArticle(user, "read-url", category)); // 읽음
 		PageRequest pageRequest = PageRequest.of(0, 10);
@@ -246,7 +247,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findTodayRemindWithCount_ReadStatus_Test() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
 		LocalDateTime yesterday = today.minusDays(1);
 
@@ -256,7 +257,7 @@ class ArticleGetServiceTest extends ServiceTest {
 		articleRepository.save(articleWithDate(user, "unread-url1", category, today));
 		articleRepository.save(articleWithDate(user, "unread-url2", category, today));
 		articleRepository.save(articleWithDate(user, "unread-url3", category, today));
-		
+
 		// 어제 리마인드 (카운트에 포함되지 않음)
 		articleRepository.save(articleWithDate(user, "yesterday-url", category, yesterday));
 
@@ -265,7 +266,8 @@ class ArticleGetServiceTest extends ServiceTest {
 		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 18, 23, 59, 59, 999999999);
 
 		//when
-		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay, pageRequest, true);
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay,
+			pageRequest, true);
 
 		//then
 		assertThat(result.articles().getContent()).hasSize(2); // 읽은 아티클 2개
@@ -279,7 +281,7 @@ class ArticleGetServiceTest extends ServiceTest {
 	void findTodayRemindWithCount_UnreadStatus_Test() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		LocalDateTime today = LocalDateTime.of(2025, 8, 18, 12, 0, 0);
 
 		// 오늘 리마인드할 아티클들
@@ -294,7 +296,8 @@ class ArticleGetServiceTest extends ServiceTest {
 		LocalDateTime endOfDay = LocalDateTime.of(2025, 8, 18, 23, 59, 59, 999999999);
 
 		//when
-		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay, pageRequest, false);
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay,
+			pageRequest, false);
 
 		//then
 		assertThat(result.articles().getContent()).hasSize(3); // 안읽은 아티클 3개
@@ -313,7 +316,8 @@ class ArticleGetServiceTest extends ServiceTest {
 		PageRequest pageRequest = PageRequest.of(0, 10);
 
 		//when
-		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay, pageRequest, true);
+		RemindArticlesWithCountDto result = articleGetService.findTodayRemindWithCount(user, startOfDay, endOfDay,
+			pageRequest, true);
 
 		//then
 		assertThat(result.articles().getContent()).isEmpty();

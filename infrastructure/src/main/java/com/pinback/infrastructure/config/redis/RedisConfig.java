@@ -3,6 +3,7 @@ package com.pinback.infrastructure.config.redis;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -13,15 +14,15 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.jsontype.impl.LaissezFaireSubTypeValidator;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.pinback.infrastructure.redis.NotificationExpirationListener;
 
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.context.annotation.Profile;
 
 @Configuration
 @RequiredArgsConstructor
@@ -97,6 +98,33 @@ public class RedisConfig {
 			new PatternTopic("__keyevent@*__:expired"));
 
 		return container;
+	}
+
+	@Bean
+	public RedisTemplate<String, Object> sharedArticleRedisTemplate(RedisConnectionFactory connectionFactory) {
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
+		template.setConnectionFactory(connectionFactory);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+
+		objectMapper.activateDefaultTyping(
+			LaissezFaireSubTypeValidator.instance,
+			ObjectMapper.DefaultTyping.NON_FINAL,
+			JsonTypeInfo.As.PROPERTY
+		);
+
+		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(serializer);
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setHashValueSerializer(serializer);
+
+		return template;
 	}
 
 }

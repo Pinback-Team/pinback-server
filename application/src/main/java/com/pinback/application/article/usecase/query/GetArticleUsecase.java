@@ -10,21 +10,32 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.pinback.application.article.dto.ArticleCountInfoDtoV3;
+import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
 import com.pinback.application.article.dto.query.PageQuery;
+import com.pinback.application.article.dto.response.ArticleCountInfoResponse;
 import com.pinback.application.article.dto.response.ArticleDetailResponse;
+import com.pinback.application.article.dto.response.ArticleDetailResponseV3;
 import com.pinback.application.article.dto.response.ArticleResponse;
+import com.pinback.application.article.dto.response.ArticleResponseV3;
 import com.pinback.application.article.dto.response.ArticlesPageResponse;
+import com.pinback.application.article.dto.response.ArticlesPageResponseV3;
+import com.pinback.application.article.dto.response.CategoryArticleResponseV3;
 import com.pinback.application.article.dto.response.GetAllArticlesResponse;
+import com.pinback.application.article.dto.response.GetAllArticlesResponseV3;
 import com.pinback.application.article.dto.response.RemindArticleResponse;
 import com.pinback.application.article.dto.response.RemindArticleResponseV2;
+import com.pinback.application.article.dto.response.RemindArticleResponseV3;
 import com.pinback.application.article.dto.response.TodayRemindResponse;
 import com.pinback.application.article.dto.response.TodayRemindResponseV2;
+import com.pinback.application.article.dto.response.TodayRemindResponseV3;
 import com.pinback.application.article.port.in.GetArticlePort;
 import com.pinback.application.article.port.out.ArticleGetServicePort;
 import com.pinback.application.category.port.in.GetCategoryPort;
+import com.pinback.application.common.exception.InvalidReadStatusException;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
 import com.pinback.domain.user.entity.User;
@@ -155,6 +166,132 @@ public class GetArticleUsecase implements GetArticlePort {
 			result.unreadCount(),
 			articleResponses
 		);
+	}
+
+	@Override
+	public ArticleDetailResponseV3 getArticleDetailWithMetadata(User user, long articleId) {
+		Article article = articleGetServicePort.findByUserAndId(user, articleId);
+		return ArticleDetailResponseV3.from(article);
+	}
+
+	@Override
+	public TodayRemindResponseV3 getRemindArticlesV3(
+		User user,
+		LocalDateTime now,
+		boolean readStatus,
+		PageQuery query
+	) {
+		LocalDateTime endBound = now;
+		LocalDateTime startBound = now.minusHours(24);
+
+		RemindArticlesWithCountDtoV2 result = articleGetServicePort.findTodayRemindWithCountV2(
+			user,
+			startBound,
+			endBound,
+			PageRequest.of(query.pageNumber(), query.pageSize()),
+			readStatus
+		);
+
+		List<RemindArticleResponseV3> articleResponses =
+			result.articles() != null ?
+				result.articles().stream()
+					.map(RemindArticleResponseV3::from)
+					.toList() :
+				Collections.emptyList();
+
+		return TodayRemindResponseV3.of(
+			result.hasNext(),
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount(),
+			articleResponses
+		);
+	}
+
+	@Override
+	public ArticleCountInfoResponse getRemindArticlesInfo(User user, LocalDateTime now) {
+		LocalDateTime endBound = now;
+		LocalDateTime startBound = now.minusHours(24);
+
+		ArticleCountInfoDtoV3 result = articleGetServicePort.findTodayRemindCountV3(
+			user,
+			startBound,
+			endBound
+		);
+
+		return ArticleCountInfoResponse.of(
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount()
+		);
+	}
+
+	@Override
+	public GetAllArticlesResponseV3 getAllArticlesV3(User user, Boolean readStatus, PageQuery query) {
+		if (readStatus != null && readStatus) {
+			throw new InvalidReadStatusException();
+		}
+
+		ArticlesWithCountDto result = articleGetServicePort.findAllByReadStatus(
+			user, readStatus, PageRequest.of(query.pageNumber(), query.pageSize()));
+
+		List<ArticleResponseV3> articleResponses = result.article().stream()
+			.map(ArticleResponseV3::from)
+			.toList();
+
+		return GetAllArticlesResponseV3.of(
+			result.totalCount(),
+			result.unreadCount(),
+			articleResponses
+		);
+	}
+
+	@Override
+	public ArticleCountInfoResponse getAllArticlesInfo(User user) {
+		ArticleCountInfoDtoV3 result = articleGetServicePort.findAllCountV3(user);
+
+		return ArticleCountInfoResponse.of(
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount()
+		);
+	}
+
+	@Override
+	public ArticlesPageResponseV3 getAllArticlesByCategoryV3(User user, long categoryId, Boolean readStatus,
+		PageQuery query) {
+		if (readStatus != null && readStatus) {
+			throw new InvalidReadStatusException();
+		}
+		Category category = getCategoryPort.getCategoryAndUser(categoryId, user);
+
+		ArticlesWithCountDto result = articleGetServicePort.findAllByCategoryAndReadStatus(
+			user, category, readStatus, PageRequest.of(query.pageNumber(), query.pageSize()));
+
+		List<CategoryArticleResponseV3> articleResponses = result.article().stream()
+			.map(CategoryArticleResponseV3::from)
+			.toList();
+
+		return ArticlesPageResponseV3.of(
+			result.totalCount(),
+			result.unreadCount(),
+			category.getName(),
+			articleResponses
+		);
+	}
+
+	@Override
+	public ArticleCountInfoResponse getAllArticlesInfoByCategoryV3(User user, long categoryId) {
+		Category category = getCategoryPort.getCategoryAndUser(categoryId, user);
+
+		ArticleCountInfoDtoV3 result = articleGetServicePort.findAllCountByCategoryV3(user, category);
+
+		return ArticleCountInfoResponse.of(
+			result.totalCount(),
+			result.readCount(),
+			result.unreadCount()
+		);
+
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {

@@ -3,6 +3,7 @@ package com.pinback.application.google.usecase;
 import org.springframework.stereotype.Service;
 
 import com.pinback.application.google.dto.GoogleLoginCommand;
+import com.pinback.application.google.dto.GoogleLoginCommandV3;
 import com.pinback.application.google.dto.response.GoogleUserInfoResponse;
 import com.pinback.application.google.port.out.GoogleOAuthPort;
 
@@ -19,5 +20,13 @@ public class GoogleUsecase {
 		String code = command.code();
 
 		return googleOAuthPort.fetchUserInfo(code);
+	}
+
+	public Mono<GoogleUserInfoResponse> getUserInfoV3(GoogleLoginCommandV3 command) {
+
+		String code = command.code();
+		String uri = command.uri();
+
+		return googleOAuthPort.fetchUserInfoV3(code, uri);
 	}
 }

@@ -14,6 +14,8 @@ public enum ExceptionCode {
 	CATEGORY_NAME_INVALID(HttpStatus.BAD_REQUEST, "c40003", "카테고리 이름은 공백을 포함할 수 없습니다."),
 	INVALID_FCM_TOKEN(HttpStatus.BAD_REQUEST, "c40004", "유효하지 않은 FCM 토큰입니다."),
 	INVALID_URL(HttpStatus.BAD_REQUEST, "c40005", "유효하지 않은 URL이거나 접속할 수 없는 사이트입니다."),
+	INVALID_READSTATUS(HttpStatus.BAD_REQUEST, "c40006", "잘못된 read-status 상태 값입니다.(전체보기: 생략/안읽음: false)"),
+	INVALID_REDIRECT_URI(HttpStatus.BAD_REQUEST, "c40007", "등록되지 않은 리다이렉트 uri 입니다"),
 
 	//401
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "c40101", "유효하지 않은 토큰입니다."),
@@ -30,6 +32,8 @@ public enum ExceptionCode {
 	CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "c40402", "카테고리가 존재하지 않습니다."),
 	ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "c40403", "아티클이 존재하지 않습니다."),
 	SUBSCRIPTION_NOT_FOUND(HttpStatus.NOT_FOUND, "c40404", "구독정보가 존재하지 않습니다."),
+	JOB_NOT_FOUND(HttpStatus.NOT_FOUND, "c40405", "존재하지 않는 직무입니다."),
+	SHARED_ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "c40406", "관심 직무 핀 목록에 존재하지 않는 아티클입니다."),
 
 	//405
 	METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "c40500", "잘못된 HTTP method 요청입니다."),

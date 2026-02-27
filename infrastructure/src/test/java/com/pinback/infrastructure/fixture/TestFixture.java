@@ -23,6 +23,10 @@ public class TestFixture {
 		return Category.create("테스트카테고리", user, CategoryColor.COLOR1);
 	}
 
+	public static Category categoryWithIsPublic(User user) {
+		return Category.createWithIsPublic("테스트카테고리", user, CategoryColor.COLOR1, true);
+	}
+
 	public static Article article(User user) {
 		Category category = category(user);
 		return Article.create("test", "testmemo", user, category, LocalDateTime.of(2025, 7, 7, 12, 0, 0));

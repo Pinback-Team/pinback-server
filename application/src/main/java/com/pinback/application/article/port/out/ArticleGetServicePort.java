@@ -1,17 +1,22 @@
 package com.pinback.application.article.port.out;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.pinback.application.article.dto.ArticleCountInfoDtoV3;
+import com.pinback.application.article.dto.ArticlesWithCountDto;
 import com.pinback.application.article.dto.ArticlesWithUnreadCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDto;
 import com.pinback.application.article.dto.RemindArticlesWithCountDtoV2;
+import com.pinback.application.article.dto.SharedArticleDto;
 import com.pinback.domain.article.entity.Article;
 import com.pinback.domain.category.entity.Category;
+import com.pinback.domain.common.enums.Job;
 import com.pinback.domain.user.entity.User;
 
 public interface ArticleGetServicePort {
@@ -39,4 +44,17 @@ public interface ArticleGetServicePort {
 
 	RemindArticlesWithCountDtoV2 findTodayRemindWithCountV2(User user, LocalDateTime startDateTime,
 		LocalDateTime endDateTime, Pageable pageable, Boolean isReadAfterRemind);
+
+	ArticleCountInfoDtoV3 findTodayRemindCountV3(User user, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+	ArticlesWithCountDto findAllByReadStatus(User user, Boolean readStatus, PageRequest pageRequest);
+
+	ArticleCountInfoDtoV3 findAllCountV3(User user);
+
+	ArticlesWithCountDto findAllByCategoryAndReadStatus(User user, Category category, Boolean readStatus,
+		PageRequest pageRequest);
+
+	ArticleCountInfoDtoV3 findAllCountByCategoryV3(User user, Category category);
+
+	List<SharedArticleDto> findTopListByJob(Job job);
 }

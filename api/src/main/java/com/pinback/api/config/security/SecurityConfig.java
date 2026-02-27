@@ -54,7 +54,9 @@ public class SecurityConfig {
 				.requestMatchers(
 					"/api/v1/auth/token",
 					"/api/v2/auth/google",
-					"/api/v2/auth/signup"
+					"/api/v2/auth/signup",
+					"/api/v3/auth/signup",
+					"/api/v3/auth/google"
 				).permitAll()
 
 				.requestMatchers(
@@ -65,6 +67,10 @@ public class SecurityConfig {
 					"/login/google",
 					"/oauth/callback",
 					"/login/oauth2/code/google"
+				).permitAll()
+
+				.requestMatchers(
+					"/api/v3/enums/jobs"
 				).permitAll()
 
 				.anyRequest().authenticated()

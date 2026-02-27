@@ -31,7 +31,7 @@ fcm: ${FCM_JSON}
 google:
   client-id: ${CLIENT_ID}
   client-secret: ${CLIENT_SECRET}
-  redirect-uri: ${REDIRECT_URI}
+  redirect-uris: ${REDIRECT_URI},${REDIRECT_URI_LOCAL1},${REDIRECT_URI_LOCAL2}
   token-uri: ${TOKEN_URI}
   user-info-uri: ${USER_INFO_URI}
 
@@ -54,3 +54,10 @@ profile-images:
     IMAGE3: ${PROFILE_IMAGE3:}
 
 default-thumbnail: ${DEFAULT_THUMBNAIL:}
+
+job-images:
+  images:
+    plan: ${JOB_IMAGE_PLAN}
+    design: ${JOB_IMAGE_DESIGN}
+    frontend: ${JOB_IMAGE_FRONTEND}
+    backend: ${JOB_IMAGE_BACKEND}

@@ -10,4 +10,8 @@ public record CategoryResponse(
 	public static CategoryResponse from(Category category) {
 		return new CategoryResponse(category.getId(), category.getName(), category.getColor().toString());
 	}
+
+	public static CategoryResponse of(long id, String name, String color) {
+		return new CategoryResponse(id, name, color);
+	}
 }

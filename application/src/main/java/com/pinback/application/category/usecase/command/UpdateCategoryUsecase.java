@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.category.dto.command.UpdateCategoryCommand;
+import com.pinback.application.category.dto.command.UpdateCategoryCommandV3;
 import com.pinback.application.category.dto.response.UpdateCategoryResponse;
+import com.pinback.application.category.dto.response.UpdateCategoryResponseV3;
 import com.pinback.application.category.port.in.UpdateCategoryPort;
 import com.pinback.application.category.port.out.CategoryGetServicePort;
 import com.pinback.domain.category.entity.Category;
@@ -30,5 +32,18 @@ public class UpdateCategoryUsecase implements UpdateCategoryPort {
 		}
 
 		return UpdateCategoryResponse.from(category);
+	}
+
+	@Override
+	public UpdateCategoryResponseV3 updateCategoryV3(User user, Long categoryId, UpdateCategoryCommandV3 command) {
+		Category category = categoryGetService.getCategoryAndUser(categoryId, user);
+		try {
+			category.updateName(command.categoryName());
+		} catch (CategoryNameLengthOverException e) {
+			throw new CategoryNameLengthOverException();
+		}
+		category.updateIsPublic(command.isPublic());
+
+		return UpdateCategoryResponseV3.from(category);
 	}
 }

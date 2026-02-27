@@ -38,7 +38,7 @@ class ArticleDeleteServiceTest extends ServiceTest {
 	void deleteTest() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		Article article = articleRepository.save(article(user, "test-url", category));
 
 		//when
@@ -54,7 +54,7 @@ class ArticleDeleteServiceTest extends ServiceTest {
 	void deleteAllByCategory() {
 		//given
 		User user = userRepository.save(user());
-		Category category = categoryRepository.save(category(user));
+		Category category = categoryRepository.save(categoryWithIsPublic(user));
 		articleRepository.save(article(user, "test-url", category));
 		articleRepository.save(article(user, "test-url2", category));
 		articleRepository.save(article(user, "test-url3", category));
