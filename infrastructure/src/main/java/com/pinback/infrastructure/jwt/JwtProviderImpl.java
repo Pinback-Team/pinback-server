@@ -17,17 +17,22 @@ import com.pinback.application.auth.service.JwtProvider;
 @Component
 public class JwtProviderImpl implements JwtProvider {
 	private static final String ACCESS_TOKEN_SUBJECT = "AccessToken";
+	private static final String REFRESH_TOKEN_SUBJECT = "RefreshToken";
 	private static final String ID_CLAIM = "id";
 
 	private final String key;
 	private final long accessExpirationPeriod;
+	private final long refreshTokenExpirationPeriod;
 	private final JWTCreator.Builder jwtBuilder;
 
 	public JwtProviderImpl(@Value("${jwt.secret-key}") String key,
-		@Value("${jwt.accessExpirationPeriod}") long accessExpirationPeriod, @Value("${jwt.issuer}") String issuer) {
+		@Value("${jwt.accessExpirationPeriod}") long accessExpirationPeriod,
+		@Value("${jwt.refreshExpirationPeriod}") long refreshTokenExpirationPeriod,
+		@Value("${jwt.issuer}") String issuer) {
 
 		this.key = key;
 		this.accessExpirationPeriod = accessExpirationPeriod;
+		this.refreshTokenExpirationPeriod = refreshTokenExpirationPeriod;
 		this.jwtBuilder = JWT.create()
 			.withIssuer(issuer);
 	}
@@ -56,6 +61,15 @@ public class JwtProviderImpl implements JwtProvider {
 		DecodedJWT decodedJWT = getVerifier().verify(token);
 		String userIdStr = decodedJWT.getClaim(ID_CLAIM).asString();
 		return UUID.fromString(userIdStr);
+	}
+
+	@Override
+	public String createRefreshToken(UUID userId) {
+		return jwtBuilder
+			.withClaim(ID_CLAIM, userId.toString())
+			.withSubject(REFRESH_TOKEN_SUBJECT)
+			.withExpiresAt(Instant.now().plusMillis(refreshTokenExpirationPeriod))
+			.sign(Algorithm.HMAC512(key));
 	}
 
 	private JWTVerifier getVerifier() {

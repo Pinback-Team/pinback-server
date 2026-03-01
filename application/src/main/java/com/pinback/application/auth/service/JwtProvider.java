@@ -8,4 +8,6 @@ public interface JwtProvider {
 	boolean validateToken(String token);
 
 	UUID getUserIdFromToken(String token);
+
+	String createRefreshToken(UUID userId);
 }
