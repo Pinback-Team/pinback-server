@@ -1,15 +1,20 @@
 package com.pinback.application.auth.usecase;
 
 import java.time.LocalTime;
+import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.pinback.application.auth.dto.SignUpCommand;
 import com.pinback.application.auth.dto.SignUpCommandV3;
 import com.pinback.application.auth.dto.SignUpResponse;
+import com.pinback.application.auth.dto.SignUpResponseV3;
 import com.pinback.application.auth.dto.TokenResponse;
 import com.pinback.application.auth.service.JwtProvider;
+import com.pinback.application.common.exception.InvalidTokenException;
 import com.pinback.application.config.ProfileImageConfig;
 import com.pinback.application.google.dto.response.GoogleLoginResponse;
 import com.pinback.application.google.dto.response.GoogleLoginResponseV3;
@@ -30,6 +35,7 @@ import reactor.core.publisher.Mono;
 @Service
 @RequiredArgsConstructor
 public class AuthUsecase {
+	private static final String REDIS_REFRESH_TOKEN_PREFIX = "RT:";
 
 	private final UserValidateServicePort userValidateServicePort;
 	private final UserSaveServicePort userSaveServicePort;
@@ -40,6 +46,10 @@ public class AuthUsecase {
 	private final UserUpdateServicePort userUpdateServicePort;
 	private final UserOAuthUsecase userOAuthUsecase;
 	private final ProfileImageConfig profileImageConfig;
+	private final StringRedisTemplate stringRedisTemplate;
+
+	@Value("${jwt.refreshExpirationPeriod}")
+	private long refreshTokenExpirationPeriod;
 
 	@Transactional
 	public SignUpResponse signUp(SignUpCommand signUpCommand) {
@@ -123,9 +133,11 @@ public class AuthUsecase {
 	}
 
 	@Transactional
-	public SignUpResponse signUpV3(SignUpCommandV3 signUpCommand) {
+	public SignUpResponseV3 signUpV3(SignUpCommandV3 signUpCommand) {
 		User user = userGetServicePort.findByEmail(signUpCommand.email());
 		String accessToken = jwtProvider.createAccessToken(user.getId());
+		String refreshToken = jwtProvider.createRefreshToken(user.getId());
+		saveRefreshTokenToRedis(user.getId(), refreshToken);
 		userUpdateServicePort.updateRemindDefault(user.getId(), signUpCommand.remindDefault());
 
 		savePushSubscriptionPort.savePushSubscription(user, signUpCommand.fcmToken());
@@ -135,7 +147,7 @@ public class AuthUsecase {
 		Job job = Job.from(signUpCommand.job());
 		userUpdateServicePort.updateJob(user.getId(), job);
 
-		return SignUpResponse.from(accessToken);
+		return SignUpResponseV3.from(accessToken, refreshToken);
 	}
 
 	@Transactional
@@ -149,11 +161,15 @@ public class AuthUsecase {
 						if (updatedUser.getRemindDefault() != null && updatedUser.getProfileImage() != null) {
 							log.info("기존 사용자 로그인 성공: User ID {}", updatedUser.getId());
 
-							//Access Token 발급
+							//Access Token & Refresh Token 발급
 							String accessToken = jwtProvider.createAccessToken(updatedUser.getId());
+							String refreshToken = jwtProvider.createRefreshToken(updatedUser.getId());
+
+							saveRefreshTokenToRedis(updatedUser.getId(), refreshToken);
 
 							return Mono.just(GoogleLoginResponseV3.loggedIn(
-								updatedUser.hasJob(), updatedUser.getId(), updatedUser.getEmail(), accessToken
+								updatedUser.hasJob(), updatedUser.getId(), updatedUser.getEmail(), accessToken,
+								refreshToken
 							));
 						} else {
 							log.info("기존 사용자 - 온보딩 미완료 유저 처리: User ID {}", updatedUser.getId());
@@ -183,6 +199,25 @@ public class AuthUsecase {
 						);
 					});
 			}));
+	}
+
+	@Transactional
+	public SignUpResponseV3 getNewToken(String refreshToken) {
+		UUID userId = jwtProvider.getUserIdFromToken(refreshToken);
+
+		String redisKey = REDIS_REFRESH_TOKEN_PREFIX + userId.toString();
+		String savedToken = stringRedisTemplate.opsForValue().get(redisKey);
+		if (savedToken == null || !savedToken.equals(refreshToken)) {
+			stringRedisTemplate.delete(redisKey);
+			throw new InvalidTokenException();
+		}
+
+		String newAccessToken = jwtProvider.createAccessToken(userId);
+		String newRefreshToken = jwtProvider.createRefreshToken(userId);
+
+		saveRefreshTokenToRedis(userId, newRefreshToken);
+
+		return SignUpResponseV3.from(newAccessToken, newRefreshToken);
 	}
 
 	private Mono<User> applyMissingUserInfo(User existingUser, String pictureUrl, String name) {
@@ -223,5 +258,14 @@ public class AuthUsecase {
 		} else {
 			return "IMAGE3";
 		}
+	}
+
+	private void saveRefreshTokenToRedis(UUID userId, String refreshToken) {
+		stringRedisTemplate.opsForValue().set(
+			"RT:" + userId.toString(),
+			refreshToken,
+			refreshTokenExpirationPeriod,
+			java.util.concurrent.TimeUnit.MILLISECONDS
+		);
 	}
 }

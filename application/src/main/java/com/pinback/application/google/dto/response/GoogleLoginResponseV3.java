@@ -7,13 +7,15 @@ public record GoogleLoginResponseV3(
 	boolean hasJob,
 	UUID userId,
 	String email,
-	String accessToken
+	String accessToken,
+	String refreshToken
 ) {
-	public static GoogleLoginResponseV3 loggedIn(boolean hasJob, UUID userId, String email, String accessToken) {
-		return new GoogleLoginResponseV3(true, hasJob, userId, email, accessToken);
+	public static GoogleLoginResponseV3 loggedIn(boolean hasJob, UUID userId, String email, String accessToken,
+		String refreshToken) {
+		return new GoogleLoginResponseV3(true, hasJob, userId, email, accessToken, refreshToken);
 	}
 
 	public static GoogleLoginResponseV3 tempLogin(UUID userId, String email) {
-		return new GoogleLoginResponseV3(false, false, userId, email, null);
+		return new GoogleLoginResponseV3(false, false, userId, email, null, null);
 	}
 }
