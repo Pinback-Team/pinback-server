@@ -56,7 +56,8 @@ public class SecurityConfig {
 					"/api/v2/auth/google",
 					"/api/v2/auth/signup",
 					"/api/v3/auth/signup",
-					"/api/v3/auth/google"
+					"/api/v3/auth/google",
+					"/api/v3/auth/reissue"
 				).permitAll()
 
 				.requestMatchers(

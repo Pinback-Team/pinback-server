@@ -79,7 +79,7 @@ public class CreateArticleUsecase implements CreateArticlePort {
 			throw new ArticleAlreadyExistException();
 		}
 
-		if (TextUtil.countGraphemeClusters(command.memo()) >= MEMO_LIMIT_LENGTH) {
+		if (TextUtil.countGraphemeClusters(command.memo()) > MEMO_LIMIT_LENGTH) {
 			throw new MemoLengthLimitException();
 		}
 	}

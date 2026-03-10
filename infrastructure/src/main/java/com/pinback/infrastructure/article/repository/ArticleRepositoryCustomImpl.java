@@ -429,8 +429,12 @@ public class ArticleRepositoryCustomImpl implements ArticleRepositoryCustom {
 	@Override
 	public SharedArticles findTopListByJob(Job job) {
 		List<Article> articles = queryFactory.selectFrom(article)
-			.join(article.user, user)
-			.where(user.job.eq(job))
+			.join(article.user, user).fetchJoin()
+			.join(article.category, category)
+			.where(
+				user.job.eq(job),
+				category.isPublic.isTrue()
+			)
 			.orderBy(article.createdAt.desc())
 			.limit(10)
 			.fetch();

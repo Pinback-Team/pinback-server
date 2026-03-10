@@ -48,7 +48,7 @@ public class UpdateArticleUsecase implements UpdateArticlePort {
 	}
 
 	private void validateMemoLength(String memo) {
-		if (TextUtil.countGraphemeClusters(memo) >= MEMO_LIMIT_LENGTH) {
+		if (TextUtil.countGraphemeClusters(memo) > MEMO_LIMIT_LENGTH) {
 			throw new MemoLengthLimitException();
 		}
 	}
