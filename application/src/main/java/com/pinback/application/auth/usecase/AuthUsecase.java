@@ -167,8 +167,10 @@ public class AuthUsecase {
 
 							saveRefreshTokenToRedis(updatedUser.getId(), refreshToken);
 
+							String jobRole = updatedUser.hasJob() ? updatedUser.getJob().getValue() : null;
+
 							return Mono.just(GoogleLoginResponseV3.loggedIn(
-								updatedUser.hasJob(), updatedUser.getId(), updatedUser.getEmail(), accessToken,
+								updatedUser.hasJob(), jobRole, updatedUser.getId(), updatedUser.getEmail(), accessToken,
 								refreshToken
 							));
 						} else {
