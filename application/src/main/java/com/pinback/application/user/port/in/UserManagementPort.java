@@ -8,6 +8,7 @@ import com.pinback.application.user.dto.response.UserHasJobInfoResponse;
 import com.pinback.application.user.dto.response.UserInfoResponse;
 import com.pinback.application.user.dto.response.UserJobInfoResponse;
 import com.pinback.application.user.dto.response.UserProfileInfoResponse;
+import com.pinback.application.user.dto.response.UserPropertyResponse;
 import com.pinback.application.user.dto.response.UserRemindInfoResponse;
 import com.pinback.domain.user.entity.User;
 
@@ -24,4 +25,6 @@ public interface UserManagementPort {
 	UserJobInfoResponse updateUserJobInfo(User user, UpdateUserJobCommand command);
 
 	UserHasJobInfoResponse getUserJobInfo(User user);
+
+	UserPropertyResponse getUserProperty(User user);
 }

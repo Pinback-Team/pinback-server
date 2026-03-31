@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.pinback.api.user.dto.request.UpdateUserJobRequest;
 import com.pinback.application.user.dto.response.UserHasJobInfoResponse;
 import com.pinback.application.user.dto.response.UserJobInfoResponse;
+import com.pinback.application.user.dto.response.UserPropertyResponse;
 import com.pinback.application.user.port.in.UserManagementPort;
 import com.pinback.domain.user.entity.User;
 import com.pinback.shared.annotation.CurrentUser;
@@ -40,6 +41,14 @@ public class UserControllerV3 {
 		@Parameter(hidden = true) @CurrentUser User user
 	) {
 		UserHasJobInfoResponse response = userManagementPort.getUserJobInfo(user);
+		return ResponseDto.ok(response);
+	}
+
+	@GetMapping("/properties")
+	public ResponseDto<UserPropertyResponse> getUserProperty(
+		@Parameter(hidden = true) @CurrentUser User user
+	) {
+		UserPropertyResponse response = userManagementPort.getUserProperty(user);
 		return ResponseDto.ok(response);
 	}
 }
