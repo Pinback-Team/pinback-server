@@ -16,6 +16,7 @@ import com.pinback.application.user.dto.response.UserHasJobInfoResponse;
 import com.pinback.application.user.dto.response.UserInfoResponse;
 import com.pinback.application.user.dto.response.UserJobInfoResponse;
 import com.pinback.application.user.dto.response.UserProfileInfoResponse;
+import com.pinback.application.user.dto.response.UserPropertyResponse;
 import com.pinback.application.user.dto.response.UserRemindInfoResponse;
 import com.pinback.application.user.port.in.UserManagementPort;
 import com.pinback.application.user.port.out.AcornServicePort;
@@ -94,6 +95,14 @@ public class UserManagementUsecase implements UserManagementPort {
 
 		return UserHasJobInfoResponse.of(getUser.hasJob());
 
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public UserPropertyResponse getUserProperty(User user) {
+		User getUser = userGetServicePort.findById(user.getId());
+
+		return UserPropertyResponse.of(getUser.getId(), getUser.getJob().getValue());
 	}
 
 	private LocalDateTime getRemindDateTime(LocalDateTime now, LocalTime remindDefault) {
