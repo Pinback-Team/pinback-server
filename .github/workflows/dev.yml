@@ -1,23 +1,24 @@
 name: CI/CD Pipeline
+
 on:
   push:
-    branches: [ "dev", "main" ]
+    branches: [main]
   pull_request:
-    branches: [ "dev", "main" ]
+    branches: [main]
 
-env:
-  DOCKER_IMAGE_NAME: pinback
+permissions:
+  contents: read
+
+concurrency:
+  group: main-pipeline-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java-version: [ '21' ]
-      fail-fast: false
     services:
       redis:
-        image: redis:7
+        image: redis:7.2.9
         ports:
           - 6379:6379
         options: >-
@@ -28,35 +29,21 @@ jobs:
     permissions:
       contents: read
       checks: write
-      id-token: write
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           java-version: '21'
-          distribution: 'temurin'
-      # gradle caching
-      - name: Gradle Caching
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*gradle*','**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: Build with Gradle Wrapper
+          distribution: temurin
+          cache: gradle
+      - name: Build and test
         run: ./gradlew clean build --no-daemon --build-cache --parallel --max-workers=4
-
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v5
-        if: success() || failure()
+        if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v4
         with:
           name: build-artifact
           path: api/build/libs/*.jar
@@ -64,169 +51,77 @@ jobs:
   docker-build-and-push:
     needs: build
     runs-on: ubuntu-latest
-    if: success() && github.event_name == 'push'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    outputs:
+      digest: ${{ steps.image.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
-
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
           name: build-artifact
           path: api/build/libs/
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login Docker Hub
-        uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Set Image Tag
-        id: set-tag
-        run: |
-          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "TAG=dev" >> $GITHUB_ENV
-            echo "IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:dev" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "TAG=prod" >> $GITHUB_ENV
-            echo "IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_IMAGE_NAME }}:prod" >> $GITHUB_ENV
-          fi
-
-      - name: Docker Build & push
+      - name: Build and push tested application
+        id: image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile
+          file: Dockerfile
+          platforms: linux/amd64
           push: true
-          tags: ${{ env.IMAGE_TAG }}
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/pinback:prod
+            ${{ secrets.DOCKER_USERNAME }}/pinback:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
   deploy:
     needs: docker-build-and-push
     runs-on: ubuntu-latest
-    if: success() && github.event_name == 'push'
+    timeout-minutes: 20
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    env:
+      GCP_HOST: ${{ secrets.GCP_SSH_HOST }}
+      GCP_USER: ${{ secrets.GCP_SSH_USERNAME }}
+      DEPLOY_DIR: /home/gksql6630/pinback
+      APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/pinback@${{ needs.docker-build-and-push.outputs.digest }}
     steps:
-      # 1. 리포지토리 체크아웃
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. SSH 접속에 필요한 환경 변수 설정
-      - name: Set Environment Variables
-        id: set-env-vars
-        shell: bash
+      - uses: actions/checkout@v4
+      - name: Configure verified SSH connection
+        env:
+          SSH_KEY: ${{ secrets.GCP_SSH_KEY }}
+          KNOWN_HOSTS: ${{ secrets.GCP_SSH_KNOWN_HOSTS }}
         run: |
-          if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
-            echo "HOST=${{ secrets.DEV_EC2_SSH_HOST }}" >> $GITHUB_ENV
-            echo "USERNAME=${{ secrets.DEV_EC2_SSH_USERNAME }}" >> $GITHUB_ENV
-            echo "DEPLOY_DIR=/home/ubuntu/pinback-dev" >> $GITHUB_ENV
-            echo "ENV_SECRET_NAME=DEV_ENV_CONTENT" >> $GITHUB_ENV
-          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            echo "HOST=${{ secrets.EC2_SSH_HOST }}" >> $GITHUB_ENV
-            echo "USERNAME=${{ secrets.EC2_SSH_USERNAME }}" >> $GITHUB_ENV
-            echo "DEPLOY_DIR=/home/ubuntu/pinback" >> $GITHUB_ENV
-            echo "ENV_SECRET_NAME=PROD_ENV_CONTENT" >> $GITHUB_ENV
-          fi
-
-      # 3. known_hosts 등록
-      - name: Add host to known_hosts
+          set -euo pipefail
+          test -n "$GCP_HOST"
+          test -n "$GCP_USER"
+          test -n "$SSH_KEY"
+          test -n "$KNOWN_HOSTS"
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+      - name: Deploy application to GCP
         run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -p 22 ${{ env.HOST }} >> ~/.ssh/known_hosts
-
-      # 4. 원격 서버 초기화
-      - name: Initialize remote server (Force Init)
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.HOST }}
-          username: ${{ env.USERNAME }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
-          debug: true
-          script: |
-            # 1. 배포 디렉토리 생성
-            mkdir -p ${{ env.DEPLOY_DIR }}
-            
-            # 2. 디렉토리 소유권 및 권한 강제 변경
-            sudo chown -R ${{ env.USERNAME }}:${{ env.USERNAME }} ${{ env.DEPLOY_DIR }}
-            
-            # 3. 기존 파일 강제 삭제
-            sudo rm -f ${{ env.DEPLOY_DIR }}/docker-compose.yml || true
-            sudo rm -f ${{ env.DEPLOY_DIR }}/pinback.env || true 
-
-      # 5. docker-compose.yml 파일 복사
-      - name: Copy docker-compose.yml to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.HOST }}
-          username: ${{ env.USERNAME }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
-          source: "docker-compose.yml"
-          target: ${{ env.DEPLOY_DIR }}
-          debug: true
-          overwrite: true
-
-      # 6. pinback.env 파일을 Runner에 임시 생성 후 복사
-      - name: Create & Copy pinback.env to EC2
-        run: |
-          # 환경 변수 이름으로 Secret 값을 가져와 파일 생성
-          
-          if [[ "${{ env.ENV_SECRET_NAME }}" == "DEV_ENV_CONTENT" ]]; then
-              echo "${{ secrets.DEV_ENV_CONTENT }}" > pinback.env
-          elif [[ "${{ env.ENV_SECRET_NAME }}" == "PROD_ENV_CONTENT" ]]; then
-              echo "${{ secrets.PROD_ENV_CONTENT }}" > pinback.env
-          fi
-
-      # 6 - 1
-      - name: Copy pinback.env file
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ env.HOST }}
-          username: ${{ env.USERNAME }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
-          source: "pinback.env"
-          target: ${{ env.DEPLOY_DIR }}
-          debug: true
-          overwrite: true
-
-      # 7. 배포 (docker composee(v2))
-      - name: Deploy with Docker Compose to EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ env.HOST }}
-          username: ${{ env.USERNAME }}
-          key: ${{ github.ref == 'refs/heads/dev' && secrets.DEV_EC2_SSH_KEY || secrets.EC2_SSH_KEY }}
-          debug: true
-          script: |
-            # DEPLOY_DIR 변수를 사용하기 위해 Bash 변수로 재선언
-            DEPLOY_DIR=${{ env.DEPLOY_DIR }}
-            
-            # 1) 배포 디렉터리로 이동
-            cd "$DEPLOY_DIR"
-            
-            # 2) EC2에 미리 만들어둔 pinback.env 파일의 환경 변수 로드
-            if [ ! -f "$DEPLOY_DIR/pinback.env" ]; then
-                echo "ERROR: .env file not found at $DEPLOY_DIR/pinback.env"
-                exit 1
-            fi
-            while IFS='=' read -r name value; do
-              # 주석 및 빈 줄 무시
-              if [[ "$name" =~ ^# ]] || [ -z "$name" ]; then
-                continue
-              fi
-              # 공백 제거 및 export
-              export "$name"="$(echo "$value" | xargs)"
-            done < "$DEPLOY_DIR/pinback.env"
-            
-            # 3) 기존 Docker Compose 스택 중지 및 삭제
-            docker-compose --file "$DEPLOY_DIR/docker-compose.yml" down || true && \
-            
-            # Docker Hub에서 최신 이미지 pull
-            docker-compose --file "$DEPLOY_DIR/docker-compose.yml" pull && \
-            
-            # 5) Docker Compose로 서비스 시작
-            docker-compose --file "$DEPLOY_DIR/docker-compose.yml" up -d --remove-orphans && \
-            
-            # 6) 사용하지 않는 Docker 이미지 정리
-            docker image prune -f
+          set -euo pipefail
+          [[ "$APP_IMAGE" =~ ^[a-z0-9._/-]+@sha256:[a-f0-9]{64}$ ]]
+          ssh -o BatchMode=yes -o StrictHostKeyChecking=yes -o ConnectTimeout=15 \
+            "$GCP_USER@$GCP_HOST" "bash -s -- '$DEPLOY_DIR' '$APP_IMAGE'" <<'REMOTE'
+          set -euo pipefail
+          umask 077
+          cd "$1"
+          docker pull "$2"
+          printf '{"services":{"pinback":{"image":"%s"}}}\n' "$2" > compose.image.yaml
+          docker compose --env-file pinback.env -f compose.yaml -f compose.image.yaml \
+            up -d --no-deps --wait --wait-timeout 600 pinback
+          curl --fail --silent --show-error --max-time 15 http://127.0.0.1:8080/api/v1/test/health
+          REMOTE
+      - name: Verify public HTTPS endpoint
+        run: curl --fail --silent --show-error --retry 3 --max-time 20 https://34.50.8.189.nip.io/api/v1/test/health
+      - name: Remove runner SSH credentials
+        if: always()
+        run: rm -f ~/.ssh/id_ed25519 ~/.ssh/known_hosts

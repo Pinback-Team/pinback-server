@@ -1,0 +1,5 @@
+**
+!api/
+!api/build/
+!api/build/libs/
+!api/build/libs/*.jar
