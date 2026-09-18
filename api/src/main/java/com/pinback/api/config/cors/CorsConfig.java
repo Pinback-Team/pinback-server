@@ -23,9 +23,9 @@ public class CorsConfig {
 			"http://localhost:5173",
 			"http://localhost:5174",
 			"https://pinback-client.vercel.app",
-			"https://pinback.today",
-			"https://landing.pinback.today",
-			"https://www.pinback.today",
+			"https://pinback.site",
+			"https://landing.pinback.site",
+			"https://www.pinback.site",
 			"https://api.pinback.today",
 			"https://dev.pinback.today"
 		));
